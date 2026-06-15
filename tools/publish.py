@@ -117,35 +117,55 @@ def resolve_hero(cfg, post):
     return pool[_stable_idx(post["id"], len(pool))] if pool else "img/logo-bro.png"
 
 
-def resolve_inline(cfg, post, hero):
-    """본문용 사진: 대표사진과 겹치지 않게 풀에서 한 장."""
+def resolve_inline_set(cfg, post, hero, count):
+    """본문용 사진 여러 장: 대표사진과 겹치지 않게, 서로 중복 없이 풀에서 뽑는다."""
     pool = [x for x in _pool(cfg, post.get("cat")) if x != hero]
-    return pool[_stable_idx(post["id"] + "::inline", len(pool))] if pool else None
+    if not pool or count <= 0:
+        return []
+    start = _stable_idx(post["id"] + "::inline", len(pool))
+    ordered = pool[start:] + pool[:start]          # 글마다 시작점만 다르게 회전
+    return ordered[:min(count, len(ordered))]
 
 
 def normalize_body(cfg, post, hero):
-    """body 를 블록 리스트로 정규화. 문단={type:p}, 사진={type:img}.
-    명시 사진이 없고 문단이 충분하면 중간에 사진 한 장을 자동 삽입한다."""
+    """body 를 블록(문단/사진)으로 정규화.
+    명시 사진이 없으면 글 길이에 맞춰 본문 곳곳에 '서로 다른' 사진을 자동 배치한다.
+    (meta.inlineEvery 문단마다 한 장씩 → 글이 길수록 사진도 늘어남)"""
     raw = post.get("body", [])
-    blocks = []
     has_img = any(isinstance(b, dict) and b.get("img") for b in raw)
+    base = []
     for b in raw:
         if isinstance(b, dict) and b.get("img"):
             src = b["img"]
             if src == "auto":
-                src = resolve_inline(cfg, post, hero) or hero
-            blocks.append({"type": "img", "src": src, "caption": b.get("caption", "")})
+                picks = resolve_inline_set(cfg, post, hero, 1)
+                src = picks[0] if picks else hero
+            base.append({"type": "img", "src": src, "caption": b.get("caption", "")})
         else:
-            blocks.append({"type": "p", "text": b if isinstance(b, str) else str(b)})
-    auto = cfg.get("meta", {}).get("autoInlinePhoto", True)
-    if auto and not has_img:
-        para_idx = [i for i, blk in enumerate(blocks) if blk["type"] == "p"]
-        if len(para_idx) >= 4:
-            inline = resolve_inline(cfg, post, hero)
-            if inline:
-                blocks.insert(para_idx[len(para_idx) // 2],
-                              {"type": "img", "src": inline, "caption": ""})
-    return blocks
+            base.append({"type": "p", "text": b if isinstance(b, str) else str(b)})
+
+    meta = cfg.get("meta", {})
+    if not meta.get("autoInlinePhoto", True) or has_img:
+        return base
+
+    n_para = sum(1 for blk in base if blk["type"] == "p")
+    every = max(2, int(meta.get("inlineEvery", 3)))
+    slots = set(range(every, n_para, every))       # 이 문단번호(1-base) '뒤'에 사진 삽입
+    if not slots:
+        return base
+    pics = resolve_inline_set(cfg, post, hero, len(slots))
+    if not pics:
+        return base
+
+    out, pi, k = [], 0, 0
+    for blk in base:
+        out.append(blk)
+        if blk["type"] == "p":
+            pi += 1
+            if pi in slots and k < len(pics):
+                out.append({"type": "img", "src": pics[k], "caption": ""})
+                k += 1
+    return out
 
 
 def resolve_posts(cfg):
