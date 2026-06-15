@@ -1,0 +1,21 @@
+# 모든 검색·AI 로봇 수집 허용
+User-agent: *
+Allow: /
+
+# AI 검색 로봇 명시적 허용 (인용/노출을 원하므로)
+User-agent: GPTBot
+Allow: /
+User-agent: OAI-SearchBot
+Allow: /
+User-agent: ChatGPT-User
+Allow: /
+User-agent: ClaudeBot
+Allow: /
+User-agent: PerplexityBot
+Allow: /
+User-agent: Google-Extended
+Allow: /
+User-agent: Bingbot
+Allow: /
+
+Sitemap: https://brofitness.kr/sitemap.xml

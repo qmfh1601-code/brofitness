@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BRO FITNESS · 회사소개서</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" />
+<link rel="stylesheet" as="style" crossorigin
+  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+<style>
+  :root{
+    --bg:#0E0F13;
+    --bg2:#15161C;
+    --panel:#1A1C24;
+    --panel2:#22242E;
+    --line:#2C2F3A;
+    --txt:#F4F5F7;
+    --mut:#9A9CA8;
+    --mut2:#6E7180;
+    --acc:#FF6A1A;
+    --acc2:#FF8B45;
+    --accSoft:rgba(255,106,26,.14);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  html,body{background:#3a3b40;font-family:"Pretendard","Pretendard Variable",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",sans-serif;color:var(--txt);}
+  body{display:flex;flex-direction:column;align-items:center;gap:24px;padding:34px 0;}
+
+  /* ---- slide frame ---- */
+  .slide{
+    position:relative;width:1280px;height:720px;overflow:hidden;
+    background:var(--bg);color:var(--txt);
+    box-shadow:0 24px 70px rgba(0,0,0,.45);
+  }
+  .pad{position:absolute;inset:0;padding:70px 84px;}
+  .eyebrow{font-size:14px;letter-spacing:.32em;font-weight:700;color:var(--acc);text-transform:uppercase;}
+  .kr-mut{color:var(--mut);}
+  h1,h2,h3{line-height:1.08;letter-spacing:-.01em;font-weight:800;}
+  .num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum";}
+
+  /* page tag */
+  .ptag{position:absolute;right:46px;bottom:34px;font-size:12px;letter-spacing:.18em;color:var(--mut2);font-weight:600;}
+  .brandmark{position:absolute;left:46px;bottom:30px;display:flex;align-items:center;gap:9px;}
+  .brandmark .db{width:18px;height:18px;border-radius:5px;background:var(--acc);position:relative;}
+  .brandmark .db::before,.brandmark .db::after{content:"";position:absolute;top:4px;width:3px;height:10px;background:#0E0F13;border-radius:1px;}
+  .brandmark .db::before{left:3px;}.brandmark .db::after{right:3px;}
+  .brandmark span{font-size:12px;letter-spacing:.22em;font-weight:800;color:var(--mut);}
+
+  .accbar{width:54px;height:5px;border-radius:99px;background:var(--acc);}
+
+  /* ============ 1. COVER ============ */
+  .cover{background:linear-gradient(115deg,#0B0C10 0%,#121319 55%,#1A1414 100%);}
+  .cover .photo{position:absolute;right:0;top:0;width:560px;height:100%;
+    background:url("img/people2.jpg") center/cover no-repeat;}
+  .cover .photo::after{content:"";position:absolute;inset:0;
+    background:linear-gradient(90deg,#0B0C10 0%,rgba(11,12,16,.55) 28%,rgba(11,12,16,.05) 100%);}
+  .cover .glow{position:absolute;left:-120px;bottom:-160px;width:520px;height:520px;border-radius:50%;
+    background:radial-gradient(circle,rgba(255,106,26,.28),transparent 62%);filter:blur(8px);}
+  .cover .inner{position:absolute;left:84px;top:0;height:100%;display:flex;flex-direction:column;justify-content:center;width:720px;}
+  .logo-row{display:flex;align-items:center;gap:14px;margin-bottom:34px;}
+  .logo-cube{width:46px;height:46px;border-radius:12px;background:var(--acc);position:relative;box-shadow:0 8px 24px rgba(255,106,26,.4);}
+  .logo-cube::before,.logo-cube::after{content:"";position:absolute;top:13px;width:6px;height:20px;background:#0E0F13;border-radius:2px;}
+  .logo-cube::before{left:9px;}.logo-cube::after{right:9px;}
+  .logo-row .lt{font-size:24px;font-weight:900;letter-spacing:.04em;}
+  .logo-row .lt b{color:var(--acc);}
+  .cover h1{font-size:78px;font-weight:900;letter-spacing:-.02em;line-height:1.04;}
+  .cover h1 .or{color:var(--acc);}
+  .cover .tag{margin-top:26px;font-size:21px;color:var(--mut);font-weight:500;line-height:1.5;max-width:540px;}
+  .cover .docline{margin-top:46px;display:flex;align-items:center;gap:16px;}
+  .cover .docline .chip{font-size:14px;font-weight:700;letter-spacing:.26em;color:#0E0F13;background:var(--acc);padding:9px 16px;border-radius:7px;}
+  .cover .docline .yr{font-size:14px;letter-spacing:.2em;color:var(--mut2);font-weight:600;}
+
+  /* ============ 2. INDEX ============ */
+  .idx-grid{position:absolute;left:84px;right:84px;top:210px;display:grid;grid-template-columns:1fr 1fr;column-gap:64px;row-gap:0;}
+  .idx-item{display:flex;align-items:flex-start;gap:20px;padding:19px 0;border-bottom:1px solid var(--line);}
+  .idx-item .n{font-size:18px;font-weight:800;color:var(--acc);width:34px;flex:none;font-variant-numeric:tabular-nums;}
+  .idx-item .t{font-size:19px;font-weight:700;}
+  .idx-item .d{font-size:13px;color:var(--mut);margin-top:3px;font-weight:500;}
+
+  /* generic header block */
+  .hd{position:absolute;left:84px;top:70px;}
+  .hd .eyebrow{margin-bottom:16px;}
+  .hd h2{font-size:46px;}
+  .hd h2 .or{color:var(--acc);}
+  .hd .sub{margin-top:14px;font-size:17px;color:var(--mut);max-width:760px;line-height:1.55;font-weight:500;}
+
+  /* ============ 3. STATEMENT ============ */
+  .stmt{background:radial-gradient(120% 90% at 80% 10%,#1c1410 0%,#0E0F13 60%);}
+  .stmt .big{position:absolute;left:84px;top:0;height:100%;display:flex;flex-direction:column;justify-content:center;width:1000px;}
+  .stmt .big h2{font-size:64px;font-weight:900;line-height:1.12;}
+  .stmt .big h2 .or{color:var(--acc);}
+  .stmt .big .strike{color:var(--mut2);text-decoration:line-through;text-decoration-color:var(--acc);text-decoration-thickness:4px;}
+  .stmt .big p{margin-top:32px;font-size:20px;color:var(--mut);max-width:760px;line-height:1.6;font-weight:500;}
+  .stmt .qbadge{position:absolute;right:90px;bottom:90px;font-size:150px;color:rgba(255,106,26,.16);font-weight:900;line-height:1;}
+
+  /* ============ 4. PROBLEM ============ */
+  .prob-cards{position:absolute;left:84px;right:84px;top:250px;display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+  .pcard{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:34px 30px;height:330px;position:relative;}
+  .pcard .ic{width:58px;height:58px;border-radius:14px;background:var(--accSoft);display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:24px;}
+  .pcard h3{font-size:24px;margin-bottom:12px;}
+  .pcard p{font-size:15px;color:var(--mut);line-height:1.6;font-weight:500;}
+  .pcard .tagbad{position:absolute;left:30px;bottom:30px;font-size:12px;font-weight:700;color:#FF6A6A;background:rgba(255,80,80,.12);padding:6px 12px;border-radius:7px;letter-spacing:.04em;}
+
+  /* ============ 5. SOLUTION ============ */
+  .sol{display:flex;}
+  .sol .left{position:absolute;left:0;top:0;width:520px;height:100%;
+    background:url("img/people4.jpg") center/cover no-repeat;}
+  .sol .left::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(14,15,19,.1),rgba(14,15,19,.92));}
+  .sol .right{position:absolute;left:520px;right:0;top:0;height:100%;padding:70px 70px 70px 60px;display:flex;flex-direction:column;justify-content:center;}
+  .sol .eyebrow{margin-bottom:18px;}
+  .sol h2{font-size:42px;line-height:1.14;}
+  .sol h2 .or{color:var(--acc);}
+  .sol .body{margin-top:20px;font-size:16px;color:var(--mut);line-height:1.7;font-weight:500;}
+  .sol .promise{margin-top:28px;display:flex;flex-direction:column;gap:13px;}
+  .sol .promise .pr{display:flex;align-items:center;gap:13px;font-size:16px;font-weight:600;}
+  .sol .promise .ck{width:26px;height:26px;border-radius:50%;background:var(--acc);color:#0E0F13;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;flex:none;}
+
+  /* ============ 6. DIFFERENTIATORS ============ */
+  .diff-grid{position:absolute;left:84px;right:84px;top:236px;display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+  .dcard{border-radius:20px;padding:38px 32px;height:350px;position:relative;overflow:hidden;}
+  .dcard.light{background:var(--panel);border:1px solid var(--line);}
+  .dcard.dark{background:linear-gradient(160deg,#FF6A1A,#E2530A);}
+  .dcard .bigno{font-size:60px;font-weight:900;color:var(--acc);line-height:1;}
+  .dcard.dark .bigno{color:#0E0F13;}
+  .dcard h3{font-size:27px;margin-top:18px;}
+  .dcard.dark h3{color:#0E0F13;}
+  .dcard p{margin-top:14px;font-size:15px;color:var(--mut);line-height:1.6;font-weight:500;}
+  .dcard.dark p{color:rgba(14,15,19,.72);font-weight:600;}
+  .dcard .idx{position:absolute;right:30px;top:30px;font-size:13px;font-weight:700;letter-spacing:.2em;color:var(--mut2);}
+  .dcard.dark .idx{color:rgba(14,15,19,.55);}
+
+  /* ============ 7. COMPARE ============ */
+  .cmp{position:absolute;left:84px;right:84px;top:230px;border:1px solid var(--line);border-radius:18px;overflow:hidden;}
+  .cmp .row{display:grid;grid-template-columns:1.1fr 1.3fr 1.3fr;align-items:center;}
+  .cmp .row + .row{border-top:1px solid var(--line);}
+  .cmp .row > div{padding:21px 30px;font-size:17px;}
+  .cmp .head{background:var(--bg2);}
+  .cmp .head > div{font-weight:800;font-size:16px;letter-spacing:.02em;}
+  .cmp .head .broh{color:var(--acc);}
+  .cmp .lbl{color:var(--mut);font-weight:600;}
+  .cmp .bro{font-weight:800;color:var(--txt);background:rgba(255,106,26,.07);border-left:1px solid var(--line);border-right:1px solid var(--line);}
+  .cmp .bro::before{content:"✓  ";color:var(--acc);font-weight:900;}
+  .cmp .oth{color:var(--mut);font-weight:600;}
+  .cmp .oth::before{content:"✕  ";color:var(--mut2);}
+
+  /* ============ 8. MEMBERSHIP ============ */
+  .mem{display:flex;}
+  .mem .price-card{position:absolute;left:84px;top:228px;width:430px;height:auto;
+    background:linear-gradient(165deg,#22242E,#16171C);border:1px solid var(--line);border-radius:22px;padding:40px 38px;}
+  .mem .price-card .pname{font-size:16px;color:var(--mut);font-weight:700;letter-spacing:.04em;}
+  .mem .price-card .pv{margin-top:14px;display:flex;align-items:baseline;gap:6px;}
+  .mem .price-card .pv .w{font-size:64px;font-weight:900;color:var(--acc);font-variant-numeric:tabular-nums;}
+  .mem .price-card .pv .u{font-size:20px;color:var(--mut);font-weight:600;}
+  .mem .price-card .badges{margin-top:22px;display:flex;flex-wrap:wrap;gap:8px;}
+  .mem .price-card .badges span{font-size:12.5px;font-weight:700;color:var(--acc2);background:var(--accSoft);padding:7px 12px;border-radius:99px;}
+  .mem .price-card .feats{margin-top:24px;border-top:1px solid var(--line);padding-top:22px;display:flex;flex-direction:column;gap:12px;}
+  .mem .price-card .feats div{font-size:14.5px;font-weight:600;color:var(--txt);display:flex;gap:10px;align-items:flex-start;}
+  .mem .price-card .feats div::before{content:"—";color:var(--acc);font-weight:900;}
+  .mem .inc{position:absolute;left:560px;right:84px;top:228px;}
+  .mem .inc .it{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  .icell{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px;height:120px;}
+  .icell .ic{font-size:26px;}
+  .icell h4{font-size:16.5px;margin-top:10px;font-weight:800;}
+  .icell p{font-size:13px;color:var(--mut);margin-top:5px;font-weight:500;line-height:1.45;}
+
+  /* ============ 9. PROGRAMS ============ */
+  .pg-steps{position:absolute;left:84px;right:84px;top:236px;display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+  .stp{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:28px 24px;height:230px;position:relative;}
+  .stp .no{font-size:34px;font-weight:900;color:var(--accSoft);-webkit-text-stroke:1px var(--acc);color:transparent;line-height:1;}
+  .stp h4{font-size:20px;margin-top:18px;font-weight:800;}
+  .stp p{font-size:14px;color:var(--mut);margin-top:10px;line-height:1.55;font-weight:500;}
+  .pg-strip{position:absolute;left:84px;right:84px;bottom:64px;display:flex;gap:14px;}
+  .pg-strip .pp{flex:1;height:74px;border-radius:11px;background:var(--panel2);border:1px solid var(--line);display:flex;align-items:center;gap:12px;padding:0 20px;}
+  .pg-strip .pp .tg{font-size:11px;font-weight:800;letter-spacing:.12em;color:#0E0F13;background:var(--acc);padding:4px 9px;border-radius:5px;}
+  .pg-strip .pp .nm{font-size:15px;font-weight:700;}
+
+  /* ============ 10. TRAINERS ============ */
+  .tr{display:flex;}
+  .tr .right{position:absolute;right:0;top:0;width:480px;height:100%;
+    background:url("img/people1.jpg") center/cover no-repeat;}
+  .tr .right::after{content:"";position:absolute;inset:0;background:linear-gradient(270deg,rgba(14,15,19,.1),rgba(14,15,19,.9));}
+  .tr .left{position:absolute;left:0;right:480px;top:0;height:100%;padding:70px 60px 70px 84px;display:flex;flex-direction:column;justify-content:center;}
+  .tr h2{font-size:44px;}
+  .tr h2 .or{color:var(--acc);}
+  .tr .body{margin-top:20px;font-size:16.5px;color:var(--mut);line-height:1.7;font-weight:500;max-width:580px;}
+  .tr .pts{margin-top:30px;display:flex;flex-direction:column;gap:16px;}
+  .tr .pts .pt{display:flex;gap:16px;align-items:flex-start;}
+  .tr .pts .pt .n{font-size:14px;font-weight:800;color:var(--acc);border:1px solid var(--acc);border-radius:8px;padding:5px 11px;flex:none;font-variant-numeric:tabular-nums;}
+  .tr .pts .pt .x{font-size:16px;font-weight:600;padding-top:5px;}
+  .tr .count{margin-top:34px;font-size:15px;color:var(--mut2);font-weight:600;}
+  .tr .count b{color:var(--acc);font-size:19px;}
+
+  /* ============ 11. BRANCHES ============ */
+  .br-grid{position:absolute;left:84px;right:84px;top:226px;display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+  .bcard{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--panel);}
+  .bcard .ph{height:188px;background-size:cover;background-position:center;position:relative;}
+  .bcard .ph .bdg{position:absolute;left:16px;top:16px;font-size:12px;font-weight:800;letter-spacing:.04em;color:#0E0F13;background:var(--acc);padding:6px 12px;border-radius:7px;}
+  .bcard .info{padding:22px 24px;}
+  .bcard .info h3{font-size:23px;}
+  .bcard .info .ad{font-size:13.5px;color:var(--mut);margin-top:10px;line-height:1.5;font-weight:500;}
+  .bcard .info .meta{margin-top:14px;display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--mut);font-weight:600;}
+  .bcard .info .meta b{color:var(--txt);}
+
+  /* ============ 12. STATS + REVIEWS ============ */
+  .stat-band{position:absolute;left:84px;right:84px;top:222px;display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--line);border-radius:18px;overflow:hidden;}
+  .stat-band .s{padding:34px 28px;border-right:1px solid var(--line);}
+  .stat-band .s:last-child{border-right:none;}
+  .stat-band .s .v{font-size:52px;font-weight:900;color:var(--acc);font-variant-numeric:tabular-nums;line-height:1;}
+  .stat-band .s .v .u{font-size:20px;color:var(--mut);margin-left:3px;}
+  .stat-band .s .l{margin-top:12px;font-size:14px;color:var(--mut);font-weight:600;}
+  .rev{position:absolute;left:84px;right:84px;top:420px;display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+  .rcard{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:28px 26px;height:206px;display:flex;flex-direction:column;}
+  .rcard .stars{color:var(--acc);font-size:15px;letter-spacing:2px;}
+  .rcard p{font-size:15px;line-height:1.6;margin-top:14px;font-weight:500;color:#E6E7EC;flex:1;}
+  .rcard .who{font-size:13px;color:var(--mut);font-weight:700;}
+  .rcard .who .b{color:var(--acc);}
+
+  /* ============ 13. CLOSING ============ */
+  .close{background:linear-gradient(125deg,#0B0C10 0%,#16100C 60%,#241308 100%);}
+  .close .glow{position:absolute;right:-140px;top:-160px;width:560px;height:560px;border-radius:50%;
+    background:radial-gradient(circle,rgba(255,106,26,.32),transparent 62%);}
+  .close .inner{position:absolute;left:84px;top:0;height:100%;display:flex;flex-direction:column;justify-content:center;width:900px;}
+  .close .eyebrow{margin-bottom:22px;}
+  .close h2{font-size:62px;font-weight:900;line-height:1.1;}
+  .close h2 .or{color:var(--acc);}
+  .close .promises{margin-top:34px;display:grid;grid-template-columns:1fr 1fr;gap:14px 40px;max-width:760px;}
+  .close .promises .pr{font-size:17px;font-weight:600;display:flex;gap:12px;align-items:center;}
+  .close .promises .pr .ck{width:24px;height:24px;border-radius:50%;background:var(--acc);color:#0E0F13;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;flex:none;}
+  .close .contact{position:absolute;left:84px;bottom:64px;display:flex;gap:48px;align-items:flex-end;}
+  .close .contact .c .k{font-size:12px;letter-spacing:.2em;color:var(--mut2);font-weight:700;margin-bottom:7px;}
+  .close .contact .c .v{font-size:17px;font-weight:700;}
+  .close .contact .c .v a{color:var(--txt);text-decoration:none;}
+
+  /* ---- print ---- */
+  @page{size:1280px 720px;margin:0;}
+  @media print{
+    html,body{background:#fff;}
+    body{padding:0;gap:0;display:block;}
+    .slide{box-shadow:none;page-break-after:always;break-after:page;}
+    .slide:last-child{page-break-after:auto;}
+  }
+  /* screen helper label */
+  .scr-note{color:#cfd0d6;font-size:13px;font-weight:600;text-align:center;max-width:1280px;line-height:1.6;}
+  @media print{.scr-note{display:none;}}
+</style>
+</head>
+<body>
+
+<!-- ============ 1. COVER ============ -->
+<section class="slide cover">
+  <div class="photo"></div>
+  <div class="glow"></div>
+  <div class="inner">
+    <div class="logo-row">
+      <div class="logo-cube"></div>
+      <div class="lt"><b>BRO</b> FITNESS</div>
+    </div>
+    <h1>등록 말고,<br/><span class="or">구독</span>하세요.</h1>
+    <div class="tag">약정·위약금·강압영업 없는 구독형 피트니스.<br/>운동이 처음인 사람이 가장 환영받는 곳, 브로피트니스입니다.</div>
+    <div class="docline">
+      <div class="chip">COMPANY PROFILE</div>
+      <div class="yr">2026 · 청주 용암 · 금천 · 복대</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 2. INDEX ============ -->
+<section class="slide">
+  <div class="pad">
+    <div class="eyebrow">CONTENTS</div>
+    <h2 style="font-size:46px;margin-top:16px;">회사소개서 <span style="color:var(--acc)">목차</span></h2>
+    <div class="idx-grid">
+      <div class="idx-item"><div class="n">01</div><div><div class="t">브랜드 소개</div><div class="d">등록 말고, 구독하세요</div></div></div>
+      <div class="idx-item"><div class="n">05</div><div><div class="t">멤버십 · 구독 혜택</div><div class="d">월 34,900원에 담긴 것</div></div></div>
+      <div class="idx-item"><div class="n">02</div><div><div class="t">시장의 문제</div><div class="d">시작조차 막는 3가지 부담</div></div></div>
+      <div class="idx-item"><div class="n">06</div><div><div class="t">프로그램</div><div class="d">초보자도 바로 시작</div></div></div>
+      <div class="idx-item"><div class="n">03</div><div><div class="t">브로의 해답</div><div class="d">구독형 피트니스 모델</div></div></div>
+      <div class="idx-item"><div class="n">07</div><div><div class="t">트레이너 철학</div><div class="d">강요하지 않는 사람들</div></div></div>
+      <div class="idx-item"><div class="n">04</div><div><div class="t">핵심 차별점</div><div class="d">가격·자유·노압박</div></div></div>
+      <div class="idx-item"><div class="n">08</div><div><div class="t">지점 안내 · 비전</div><div class="d">3개 지점과 약속</div></div></div>
+    </div>
+  </div>
+  <div class="brandmark"><div class="db"></div><span>BRO FITNESS</span></div>
+  <div class="ptag">02</div>
+</section>
+
+<!-- ============ 3. STATEMENT ============ -->
+<section class="slide stmt">
+  <div class="big">
+    <div class="eyebrow" style="margin-bottom:22px;">OUR STORY</div>
+    <h2>헬스장을 <span class="strike">등록</span>하지 마세요.<br/><span class="or">구독</span>하세요.</h2>
+    <p>한 번 등록하면 12개월, 그만두면 위약금. 그 부담 때문에 운동을 미뤄왔다면 — 브로는 넷플릭스처럼 한 달 단위로 구독하고, 원할 때 멈춥니다. 운동이 처음인 사람이 가장 환영받는 공간, 그게 브로피트니스입니다.</p>
+  </div>
+  <div class="qbadge">”</div>
+  <div class="brandmark"><div class="db"></div><span>BRO FITNESS</span></div>
+  <div class="ptag">03</div>
+</section>
+
+<!-- ============ 4. PROBLEM ============ -->
+<section class="slide">
+  <div class="hd">
+    <div class="eyebrow">THE PROBLEM</div>
+    <h2>운동을 미루게 만드는<br/><span class="or">기존 헬스장의 부담</span></h2>
+  </div>
+  <div class="prob-cards">
+    <div class="pcard">
+      <div class="ic">📑</div>
+      <h3>긴 약정 기간</h3>
+      <p>한 번 등록하면 보통 12개월. 맞는지 알아보기도 전에 1년을 묶어야 하는 구조.</p>
+      <div class="tagbad">시작 전부터 부담</div>
+    </div>
+    <div class="pcard">
+      <div class="ic">💸</div>
+      <h3>중도 해지 위약금</h3>
+      <p>사정이 생겨 그만두면 위약금. 환불 절차도 복잡해 결국 손해를 떠안게 됩니다.</p>
+      <div class="tagbad">멈출 자유 없음</div>
+    </div>
+    <div class="pcard">
+      <div class="ic">🗣️</div>
+      <h3>강압적 영업</h3>
+      <p>PT·보충제 강매와 장기등록 압박. 초보자일수록 눈치 보여 운동에 집중하기 어렵습니다.</p>
+      <div class="tagbad">눈치 보이는 분위기</div>
+    </div>
+  </div>
+  <div class="brandmark"><div class="db"></div><span>BRO FITNESS</span></div>
+  <div class="ptag">04</div>
+</section>
+
+<!-- ============ 5. SOLUTION ============ -->
+<section class="slide sol">
+  <div class="left"></div>
+  <div class="right">
+    <div class="eyebrow">OUR SOLUTION</div>
+    <h2>부담만 빼고,<br/><span class="or">운동만 남겼습니다.</span></h2>
+    <div class="body">넷플릭스처럼 한 달 단위로 구독하고, 원할 때 멈춥니다. 운동이 맞는지 부담 없이 먼저 경험하세요. 초보자가 눈치 보지 않고 들어와 운동만 하고 나갈 수 있는 곳 — 그게 브로피트니스가 만드는 공간입니다.</div>
+    <div class="promise">
+      <div class="pr"><div class="ck">✓</div>PT·보충제 강매를 하지 않습니다</div>
+      <div class="pr"><div class="ck">✓</div>장기등록을 압박하지 않습니다</div>
+      <div class="pr"><div class="ck">✓</div>원할 때 언제든 구독을 멈출 수 있습니다</div>
+      <div class="pr"><div class="ck">✓</div>초보자가 가장 환영받는 헬스장을 지향합니다</div>
+    </div>
+  </div>
+  <div class="ptag">05</div>
+</section>
+
+<!-- ============ 6. DIFFERENTIATORS ============ -->
+<section class="slide">
+  <div class="hd">
+    <div class="eyebrow">WHY BRO</div>
+    <h2>브로피트니스의 <span class="or">3가지 약속</span></h2>
+  </div>
+  <div class="diff-grid">
+    <div class="dcard light">
+      <div class="idx">01</div>
+      <div class="bigno num">34,900<span style="font-size:24px;">원</span></div>
+      <h3>한 달 구독가</h3>
+      <p>딱 한 달만 등록해도 OK. 수십만 원 일시불 없이, 진입장벽 없는 월 구독 요금.</p>
+    </div>
+    <div class="dcard light">
+      <div class="idx">02</div>
+      <div class="bigno">↻</div>
+      <h3>언제든 해지</h3>
+      <p>자동결제지만 원할 때 바로 구독 취소. 약정도, 위약금도 없습니다.</p>
+    </div>
+    <div class="dcard dark">
+      <div class="idx">03</div>
+      <div class="bigno">✓</div>
+      <h3>강압 영업 제로</h3>
+      <p>PT 강매·장기등록 압박 없음. 눈치 보지 않고 운동에만 집중하세요.</p>
+    </div>
+  </div>
+  <div class="brandmark"><div class="db"></div><span>BRO FITNESS</span></div>
+  <div class="ptag">06</div>
+</section>
+
+<!-- ============ 7. COMPARE ============ -->
+<section class="slide">
+  <div class="hd">
+    <div class="eyebrow">BRO vs 일반 헬스장</div>
+    <h2>등록 말고, <span class="or">구독</span>하세요</h2>
+  </div>
+  <div class="cmp">
+    <div class="row head">
+      <div>구분</div><div class="broh">BRO FITNESS</div><div>일반 헬스장</div>
+    </div>
+    <div class="row">
+      <div class="lbl">약정 기간</div><div class="bro">없음 (월 단위)</div><div class="oth">보통 12개월</div>
+    </div>
+    <div class="row">
+      <div class="lbl">중도 해지</div><div class="bro">언제든 가능</div><div class="oth">위약금 발생</div>
+    </div>
+    <div class="row">
+      <div class="lbl">영업 압박</div><div class="bro">없음</div><div class="oth">잦음</div>
+    </div>
+    <div class="row">
+      <div class="lbl">시작 부담</div><div class="bro">월 34,900원</div><div class="oth">수십만 원 일시불</div>
+    </div>
+  </div>
+  <div class="brandmark"><div class="db"></div><span>BRO FITNESS</span></div>
+  <div class="ptag">07</div>
+</section>
+
+<!-- ============ 8. MEMBERSHIP ============ -->
+<section class="slide mem">
+  <div class="hd">
+    <div class="eyebrow">MEMBERSHIP</div>
+    <h2>구독 하나로, <span class="or">이만큼</span></h2>
+  </div>
+  <div class="price-card">
+    <div class="pname">월 구독 멤버십</div>
+    <div class="pv"><span class="w num">34,900</span><span class="u">원 / 월</span></div>
+    <div class="badges">
+      <span>자동결제</span><span>언제든 취소</span><span>한 달만 가능</span><span>약정·위약금 없음</span>
+    </div>
+    <div class="feats">
+      <div>전 지점 헬스 시설 자유 이용</div>
+      <div>샤워실 · 운동복 · 락커 기본 제공</div>
+      <div>비대면 결제로 바로 시작</div>
+      <div>강압 영업 없는 자유로운 이용</div>
+    </div>
+  </div>
+  <div class="inc">
+    <div class="it">
+      <div class="icell"><div class="ic">🏋️</div><h4>전 지점 헬스 시설</h4><p>용암·금천·복대 자유 이용</p></div>
+      <div class="icell"><div class="ic">🚿</div><h4>샤워실 · 락커</h4><p>운동 후 가볍게 씻고 귀가</p></div>
+      <div class="icell"><div class="ic">👕</div><h4>운동복 대여</h4><p>몸만 오면 됩니다</p></div>
+      <div class="icell"><div class="ic">📱</div><h4>비대면 결제 · 관리</h4><p>앱에서 구독 한 번에</p></div>
+      <div class="icell"><div class="ic">🏃</div><h4>그룹 러닝 크루</h4><p>함께 뛰는 정기 모임</p></div>
+      <div class="icell"><div class="ic">🤸</div><h4>바디케어 프로그램</h4><p>통증·자세 케어 중심</p></div>
+    </div>
+  </div>
+  <div class="ptag">08</div>
+</section>
+
+<!-- ============ 9. PROGRAMS ============ -->
+<section class="slide">
+  <div class="hd">
+    <div class="eyebrow">PROGRAMS · BEGINNER JOURNEY</div>
+    <h2>처음이어도 <span class="or">괜찮아요</span></h2>
+  </div>
+  <div class="pg-steps">
+    <div class="stp"><div class="no num">01</div><h4>가볍게 둘러보기</h4><p>무료체험으로 시설과 분위기부터 편하게.</p></div>
+    <div class="stp"><div class="no num">02</div><h4>기구 사용법 익히기</h4><p>초보자 동선과 기본기부터 천천히.</p></div>
+    <div class="stp"><div class="no num">03</div><h4>나만의 루틴 만들기</h4><p>필요하면 트레이너 도움받아 루틴 설계.</p></div>
+    <div class="stp"><div class="no num">04</div><h4>습관으로 만들기</h4><p>부담 없는 구독으로 꾸준히.</p></div>
+  </div>
+  <div class="pg-strip">
+    <div class="pp"><span class="tg">BASIC</span><span class="nm">프리웨이트 &amp; 머신</span></div>
+    <div class="pp"><span class="tg">RUN</span><span class="nm">그룹 러닝 크루</span></div>
+    <div class="pp"><span class="tg">CARE</span><span class="nm">바디 케어 / 재활</span></div>
+    <div class="pp"><span class="tg">PT</span><span class="nm">1:1 맞춤 PT (선택)</span></div>
+  </div>
+  <div class="brandmark"><div class="db"></div><span>BRO FITNESS</span></div>
+  <div class="ptag">09</div>
+</section>
+
+<!-- ============ 10. TRAINERS ============ -->
+<section class="slide tr">
+  <div class="right"></div>
+  <div class="left">
+    <div class="eyebrow">OUR PHILOSOPHY</div>
+    <h2>강요하지 <span class="or">않습니다</span></h2>
+    <div class="body">필요할 때 곁에서 돕고, 평소엔 편하게 둡니다. 운동이 처음인 분이 눈치 보지 않도록 — 그게 브로 트레이너가 일하는 방식입니다.</div>
+    <div class="pts">
+      <div class="pt"><div class="n">01</div><div class="x">먼저 다가가 강매하지 않습니다</div></div>
+      <div class="pt"><div class="n">02</div><div class="x">물어보면 언제든 친절하게 답합니다</div></div>
+      <div class="pt"><div class="n">03</div><div class="x">초보자의 첫 운동을 가장 신경 씁니다</div></div>
+    </div>
+    <div class="count">3개 지점 <b>16명</b>의 트레이너가 함께합니다</div>
+  </div>
+  <div class="ptag">10</div>
+</section>
+
+<!-- ============ 11. BRANCHES ============ -->
+<section class="slide">
+  <div class="hd">
+    <div class="eyebrow">OUR BRANCHES</div>
+    <h2>청주에서 만나는 <span class="or">3개 지점</span></h2>
+  </div>
+  <div class="br-grid">
+    <div class="bcard">
+      <div class="ph" style="background-image:url('img/yongam-1.jpg')"><div class="bdg">용암 1호점</div></div>
+      <div class="info">
+        <h3>용암점</h3>
+        <div class="ad">충북 청주시 상당구 용암동 1690, 3·4층</div>
+        <div class="meta"><div>📞 <b>043-292-9696</b></div><div>🕖 평일 06–24시 · 주말 09–21시</div></div>
+      </div>
+    </div>
+    <div class="bcard">
+      <div class="ph" style="background-image:url('img/geumcheon-2.jpg')"><div class="bdg">금천 2호점</div></div>
+      <div class="info">
+        <h3>금천점</h3>
+        <div class="ad">충북 청주시 상당구 금천동 219, 4층</div>
+        <div class="meta"><div>📞 <b>043-222-9698</b></div><div>🕖 평일 06–24시 · 주말 09–21시</div></div>
+      </div>
+    </div>
+    <div class="bcard">
+      <div class="ph" style="background-image:url('img/bokdae-1.jpg')"><div class="bdg">복대 3호점</div></div>
+      <div class="info">
+        <h3>복대점</h3>
+        <div class="ad">충북 청주시 흥덕구 대농로 68, 8층</div>
+        <div class="meta"><div>📞 <b>010-3489-9697</b></div><div>🕖 평일 06–24시 · 주말 09–21시</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="brandmark"><div class="db"></div><span>BRO FITNESS</span></div>
+  <div class="ptag">11</div>
+</section>
+
+<!-- ============ 12. STATS + REVIEWS ============ -->
+<section class="slide">
+  <div class="hd">
+    <div class="eyebrow">BY THE NUMBERS</div>
+    <h2>숫자로 보는 <span class="or">브로</span></h2>
+  </div>
+  <div class="stat-band">
+    <div class="s"><div class="v num">3<span class="u">개</span></div><div class="l">청주 운영 지점</div></div>
+    <div class="s"><div class="v num">34,900<span class="u">원</span></div><div class="l">한 달 구독가</div></div>
+    <div class="s"><div class="v num">0<span class="u">원</span></div><div class="l">약정 · 위약금</div></div>
+    <div class="s"><div class="v num">100<span class="u">%</span></div><div class="l">강압 영업 없음</div></div>
+  </div>
+  <div class="rev">
+    <div class="rcard">
+      <div class="stars">★★★★★</div>
+      <p>“헬스장 처음인데 아무도 신경 안 써줘서 오히려 편했어요. 운동만 하고 갈 수 있어 좋아요.”</p>
+      <div class="who">20대 직장인 김** · <span class="b">용암점</span></div>
+    </div>
+    <div class="rcard">
+      <div class="stars">★★★★★</div>
+      <p>“한 달만 해보려고 했는데 부담 없으니 계속 다니게 되네요. 강매 진짜 없어요.”</p>
+      <div class="who">30대 주부 이** · <span class="b">복대점</span></div>
+    </div>
+    <div class="rcard">
+      <div class="stars">★★★★★</div>
+      <p>“PT 권유 안 해서 마음 편함. 가격도 착해서 친구한테도 추천했어요.”</p>
+      <div class="who">20대 학생 박** · <span class="b">금천점</span></div>
+    </div>
+  </div>
+  <div class="brandmark"><div class="db"></div><span>BRO FITNESS</span></div>
+  <div class="ptag">12</div>
+</section>
+
+<!-- ============ 13. CLOSING ============ -->
+<section class="slide close">
+  <div class="glow"></div>
+  <div class="inner">
+    <div class="eyebrow">OUR PROMISE</div>
+    <h2>오늘, 가볍게<br/><span class="or">시작해보세요.</span></h2>
+    <div class="promises">
+      <div class="pr"><div class="ck">✓</div>약정 없는 월 단위 구독</div>
+      <div class="pr"><div class="ck">✓</div>언제든 위약금 없이 해지</div>
+      <div class="pr"><div class="ck">✓</div>PT·보충제 강매 없음</div>
+      <div class="pr"><div class="ck">✓</div>초보자가 가장 환영받는 공간</div>
+    </div>
+  </div>
+  <div class="contact">
+    <div class="c"><div class="k">BRAND</div><div class="v">브로피트니스 · BRO FITNESS</div></div>
+    <div class="c"><div class="k">INSTAGRAM</div><div class="v"><a href="https://www.instagram.com/brofitness__official/">@brofitness__official</a></div></div>
+    <div class="c"><div class="k">LOCATION</div><div class="v">청주 용암 · 금천 · 복대</div></div>
+  </div>
+</section>
+
+<div class="scr-note">
+  📄 인쇄용 PDF로 저장 — 브라우저에서 <b>⌘P (인쇄)</b> → 대상 “PDF로 저장” → 용지 가로(Landscape) · 여백 “없음” · “배경 그래픽” 체크 → 저장.<br/>
+  각 화면이 1페이지로 출력됩니다. (이 안내문은 인쇄 시 자동으로 사라집니다.)
+</div>
+
+</body>
+</html>
