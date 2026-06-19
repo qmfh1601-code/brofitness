@@ -448,6 +448,16 @@ window.CONTENT = {
     ctaPrimary: "이력서 보내기",
     ctaSecondary: "문자로 문의",
 
+    // 채용 공고 포스터 (위→아래 순서대로 표시)
+    postersEyebrow: "RECRUIT NOTICE",
+    postersTitle: "채용 공고",
+    posters: [
+      "img/recruit-1.jpg",
+      "img/recruit-2.jpg",
+      "img/recruit-3.jpg",
+      "img/recruit-4.jpg",
+    ],
+
     // 핵심 급여/조건 스탯 밴드
     stats: [
       { num: "60", unit: "%", label: "수업료 정산 비율" },
@@ -508,7 +518,7 @@ window.CONTENT = {
     applyEyebrow: "APPLY NOW",
     applyTitle: "Who's next?",
     applyNotice: "반드시 사진이 포함된 이력서를 메일로 보낸 뒤, 문자로 연락 주세요.",
-    email: "bromens1@naver.com",
+    email: "whdgus1605@naver.com",
     phone: "010-4334-2032",
   },
 

@@ -1756,80 +1756,23 @@ function Careers() {
       {/* 급여/조건 스탯 */}
       <StatBand stats={c.stats} />
 
-      {/* 왜 브로인가 — 핵심 혜택 6 */}
-      <section className="relative overflow-hidden py-20 lg:py-28 bg-cream">
-        <div className="absolute inset-0 bg-grid opacity-50 [mask-image:radial-gradient(ellipse_at_center,black,transparent_75%)]" />
-        <div className="relative max-w-8xl mx-auto px-5 lg:px-8">
-          <Reveal className="text-center mb-14 max-w-2xl mx-auto">
-            <Eyebrow>{c.perksEyebrow}</Eyebrow>
-            <SectionTitle>{c.perksTitle}</SectionTitle>
-            {c.perksDesc && <p className="text-ink/55 mt-4 text-lg">{c.perksDesc}</p>}
+      {/* 채용 공고 포스터 — 운영자가 디자인한 원본 4장 */}
+      <section className="relative overflow-hidden py-16 lg:py-24 bg-ivory">
+        <div className="absolute inset-0 bg-grid opacity-40 [mask-image:radial-gradient(ellipse_at_center,black,transparent_75%)]" />
+        <div className="relative max-w-2xl mx-auto px-5 lg:px-8">
+          <Reveal className="text-center mb-10">
+            <Eyebrow>{c.postersEyebrow}</Eyebrow>
+            <SectionTitle>{c.postersTitle}</SectionTitle>
           </Reveal>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {c.perks.map((p, i) => (
-              <Reveal key={i} delay={i * 60} className="bg-white rounded-3xl p-7 ring-1 ring-ink/[0.06] hover:ring-bro/25 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                <span className="inline-flex w-14 h-14 rounded-2xl bg-gradient-to-br from-white to-bro/[0.12] ring-1 ring-bro/15 items-center justify-center text-3xl mb-4">{p.icon}</span>
-                <h3 className="text-lg font-bold mb-2">{p.t}</h3>
-                <p className="text-ink/55 text-sm leading-relaxed">{p.d}</p>
+          <div className="space-y-5">
+            {(c.posters || []).map((src, i) => (
+              <Reveal key={i} delay={i * 60} className="rounded-2xl overflow-hidden ring-1 ring-ink/[0.06] shadow-xl shadow-ink/10 bg-white">
+                <Img src={src} className="w-full h-auto block" />
               </Reveal>
             ))}
           </div>
         </div>
       </section>
-
-      {/* 급여 예시 — 검정 */}
-      <section className="py-20 lg:py-28 bg-ink text-white">
-        <div className="max-w-5xl mx-auto px-5 lg:px-8">
-          <Reveal className="text-center mb-12 max-w-2xl mx-auto">
-            <Eyebrow light>{c.payEyebrow}</Eyebrow>
-            <SectionTitle>{c.payTitle}</SectionTitle>
-            {c.payDesc && <p className="text-white/60 mt-4 text-lg">{c.payDesc}</p>}
-          </Reveal>
-          <div className="grid sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
-            {c.payRows.map((r, i) => (
-              <Reveal key={i} delay={i * 80} className="rounded-3xl bg-white/5 ring-1 ring-white/10 p-8 text-center">
-                <p className="text-white/60 text-sm mb-2">{r.cond}</p>
-                <p className="font-bold text-4xl md:text-5xl text-bro tracking-tight">{r.pay}</p>
-              </Reveal>
-            ))}
-          </div>
-          {c.payNote && <Reveal className="text-center text-white/50 text-sm mt-8 max-w-xl mx-auto leading-relaxed">{c.payNote}</Reveal>}
-        </div>
-      </section>
-
-      {/* 모집 분야 + 우대 사항 */}
-      <section className="py-20 lg:py-28 bg-cream">
-        <div className="max-w-8xl mx-auto px-5 lg:px-8 grid lg:grid-cols-2 gap-6">
-          <Reveal className="bg-white rounded-3xl p-8 lg:p-10 ring-1 ring-ink/[0.06] shadow-sm">
-            <Eyebrow>RECRUIT</Eyebrow>
-            <SectionTitle className="!text-2xl md:!text-3xl !leading-tight mb-3">{c.roleTitle}</SectionTitle>
-            <p className="inline-flex items-center rounded-full bg-bro/10 text-bro font-bold px-4 py-1.5 text-sm mb-6">{c.roleType}</p>
-            <ul className="space-y-3">
-              {c.duties.map((d, i) => (
-                <li key={i} className="flex items-start gap-3 text-ink/75">
-                  <span className="shrink-0 w-6 h-6 rounded-full bg-bro/10 text-bro flex items-center justify-center text-lg font-bold mt-0.5 leading-none">·</span>
-                  <span className="text-lg">{d}</span>
-                </li>
-              ))}
-            </ul>
-          </Reveal>
-          <Reveal delay={100} className="bg-white rounded-3xl p-8 lg:p-10 ring-1 ring-ink/[0.06] shadow-sm">
-            <Eyebrow>PREFERRED</Eyebrow>
-            <SectionTitle className="!text-2xl md:!text-3xl !leading-tight mb-6">{c.preferredTitle}</SectionTitle>
-            <ul className="space-y-3">
-              {c.preferred.map((d, i) => (
-                <li key={i} className="flex items-start gap-3 text-ink/75">
-                  <span className="shrink-0 w-6 h-6 rounded-full bg-bro text-white flex items-center justify-center text-xs font-bold mt-0.5">✓</span>
-                  <span className="text-lg">{d}</span>
-                </li>
-              ))}
-            </ul>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* 채용 절차 */}
-      <Process data={{ eyebrow: c.stepsEyebrow, title: c.stepsTitle, steps: c.steps }} bg="bg-ivory" />
 
       {/* 지원 방법 — CTA 밴드 */}
       <section className="py-16 lg:py-24 bg-cream">
