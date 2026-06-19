@@ -112,6 +112,7 @@ function Header({ route }) {
     { label: "지점 소개", path: "/branches" },
     { label: "트레이너", path: "/trainers" },
     { label: "칼럼", path: "/column" },
+    { label: "채용", path: "/careers" },
   ];
 
   // 칼럼 상세(다크 시네마틱 히어로)에서는 스크롤 전 내비를 흰색으로
@@ -1449,6 +1450,7 @@ function Footer() {
             <li><button onClick={() => go("/programs")} className="hover:text-bro">프로그램</button></li>
             <li><button onClick={() => go("/branch/yongam")} className="hover:text-bro">지점 안내</button></li>
             <li><button onClick={() => go("/trainers")} className="hover:text-bro">트레이너</button></li>
+            <li><button onClick={() => go("/careers")} className="hover:text-bro">채용</button></li>
             <li><button onClick={() => go("/booking")} className="hover:text-bro">예약·상담</button></li>
           </ul>
         </div>
@@ -1716,6 +1718,147 @@ function ColumnPost({ id }) {
 }
 
 /* ===========================================================================
+ *  채용 / 인재 모집 (프리랜서 트레이너)
+ * ======================================================================== */
+function Careers() {
+  const c = C.careers;
+  if (!c) return null;
+  const digits = (c.phone || "").replace(/[^0-9]/g, "");
+  const mailHref = `mailto:${c.email}?subject=${encodeURIComponent("[브로피트니스] 프리랜서 트레이너 지원")}`;
+  const telHref = `tel:${digits}`;
+  const smsHref = `sms:${digits}`;
+
+  return (
+    <main className="bg-cream text-ink">
+      {/* HERO — 다크 시네마틱 */}
+      <section className="relative overflow-hidden bg-ink text-white pt-28 lg:pt-36 pb-20 lg:pb-28">
+        <div className="absolute inset-0">
+          <Img src={c.heroImage} className="w-full h-full object-cover opacity-25" />
+          <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/85 to-ink/70" />
+          <div className="absolute inset-0 bg-grid-dark opacity-30 [mask-image:radial-gradient(ellipse_at_center,black,transparent_75%)]" />
+        </div>
+        <div className="orb bg-bro/25 w-[30rem] h-[30rem] -top-32 -right-24" />
+        <div className="relative max-w-8xl mx-auto px-5 lg:px-8">
+          <Reveal className="max-w-3xl">
+            <Eyebrow light>{c.eyebrow}</Eyebrow>
+            {c.titleEn && <p className="font-thin italic text-bro text-xl md:text-2xl mb-3">{c.titleEn}</p>}
+            <h1 className="text-5xl md:text-7xl font-bold leading-[1.05] tracking-tight whitespace-pre-line">{c.title}</h1>
+            <p className="text-white/55 font-display tracking-wider2 mt-4">{c.subtitle}</p>
+            <p className="text-white/75 text-lg leading-relaxed mt-6 max-w-2xl">{c.intro}</p>
+            <div className="flex flex-wrap gap-3 mt-8">
+              <Btn size="lg" variant="bro" href={mailHref}>{c.ctaPrimary}</Btn>
+              <Btn size="lg" variant="ghost" href={smsHref}>{c.ctaSecondary}</Btn>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* 급여/조건 스탯 */}
+      <StatBand stats={c.stats} />
+
+      {/* 왜 브로인가 — 핵심 혜택 6 */}
+      <section className="relative overflow-hidden py-20 lg:py-28 bg-cream">
+        <div className="absolute inset-0 bg-grid opacity-50 [mask-image:radial-gradient(ellipse_at_center,black,transparent_75%)]" />
+        <div className="relative max-w-8xl mx-auto px-5 lg:px-8">
+          <Reveal className="text-center mb-14 max-w-2xl mx-auto">
+            <Eyebrow>{c.perksEyebrow}</Eyebrow>
+            <SectionTitle>{c.perksTitle}</SectionTitle>
+            {c.perksDesc && <p className="text-ink/55 mt-4 text-lg">{c.perksDesc}</p>}
+          </Reveal>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {c.perks.map((p, i) => (
+              <Reveal key={i} delay={i * 60} className="bg-white rounded-3xl p-7 ring-1 ring-ink/[0.06] hover:ring-bro/25 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                <span className="inline-flex w-14 h-14 rounded-2xl bg-gradient-to-br from-white to-bro/[0.12] ring-1 ring-bro/15 items-center justify-center text-3xl mb-4">{p.icon}</span>
+                <h3 className="text-lg font-bold mb-2">{p.t}</h3>
+                <p className="text-ink/55 text-sm leading-relaxed">{p.d}</p>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 급여 예시 — 검정 */}
+      <section className="py-20 lg:py-28 bg-ink text-white">
+        <div className="max-w-5xl mx-auto px-5 lg:px-8">
+          <Reveal className="text-center mb-12 max-w-2xl mx-auto">
+            <Eyebrow light>{c.payEyebrow}</Eyebrow>
+            <SectionTitle>{c.payTitle}</SectionTitle>
+            {c.payDesc && <p className="text-white/60 mt-4 text-lg">{c.payDesc}</p>}
+          </Reveal>
+          <div className="grid sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
+            {c.payRows.map((r, i) => (
+              <Reveal key={i} delay={i * 80} className="rounded-3xl bg-white/5 ring-1 ring-white/10 p-8 text-center">
+                <p className="text-white/60 text-sm mb-2">{r.cond}</p>
+                <p className="font-bold text-4xl md:text-5xl text-bro tracking-tight">{r.pay}</p>
+              </Reveal>
+            ))}
+          </div>
+          {c.payNote && <Reveal className="text-center text-white/50 text-sm mt-8 max-w-xl mx-auto leading-relaxed">{c.payNote}</Reveal>}
+        </div>
+      </section>
+
+      {/* 모집 분야 + 우대 사항 */}
+      <section className="py-20 lg:py-28 bg-cream">
+        <div className="max-w-8xl mx-auto px-5 lg:px-8 grid lg:grid-cols-2 gap-6">
+          <Reveal className="bg-white rounded-3xl p-8 lg:p-10 ring-1 ring-ink/[0.06] shadow-sm">
+            <Eyebrow>RECRUIT</Eyebrow>
+            <SectionTitle className="!text-2xl md:!text-3xl !leading-tight mb-3">{c.roleTitle}</SectionTitle>
+            <p className="inline-flex items-center rounded-full bg-bro/10 text-bro font-bold px-4 py-1.5 text-sm mb-6">{c.roleType}</p>
+            <ul className="space-y-3">
+              {c.duties.map((d, i) => (
+                <li key={i} className="flex items-start gap-3 text-ink/75">
+                  <span className="shrink-0 w-6 h-6 rounded-full bg-bro/10 text-bro flex items-center justify-center text-lg font-bold mt-0.5 leading-none">·</span>
+                  <span className="text-lg">{d}</span>
+                </li>
+              ))}
+            </ul>
+          </Reveal>
+          <Reveal delay={100} className="bg-white rounded-3xl p-8 lg:p-10 ring-1 ring-ink/[0.06] shadow-sm">
+            <Eyebrow>PREFERRED</Eyebrow>
+            <SectionTitle className="!text-2xl md:!text-3xl !leading-tight mb-6">{c.preferredTitle}</SectionTitle>
+            <ul className="space-y-3">
+              {c.preferred.map((d, i) => (
+                <li key={i} className="flex items-start gap-3 text-ink/75">
+                  <span className="shrink-0 w-6 h-6 rounded-full bg-bro text-white flex items-center justify-center text-xs font-bold mt-0.5">✓</span>
+                  <span className="text-lg">{d}</span>
+                </li>
+              ))}
+            </ul>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* 채용 절차 */}
+      <Process data={{ eyebrow: c.stepsEyebrow, title: c.stepsTitle, steps: c.steps }} bg="bg-ivory" />
+
+      {/* 지원 방법 — CTA 밴드 */}
+      <section className="py-16 lg:py-24 bg-cream">
+        <div className="max-w-8xl mx-auto px-5 lg:px-8">
+          <Reveal className="relative overflow-hidden rounded-[2.5rem] bg-ink text-white px-7 py-14 lg:p-16 text-center ring-1 ring-white/10">
+            <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-bro to-transparent" />
+            <div className="orb bg-bro/25 w-[30rem] h-[30rem] -top-40 left-1/2 -translate-x-1/2" />
+            <div className="absolute inset-0 bg-grid-dark opacity-30 [mask-image:radial-gradient(ellipse_at_center,black,transparent_70%)]" />
+            <div className="relative">
+              <Eyebrow light>{c.applyEyebrow}</Eyebrow>
+              <h2 className="font-thin italic text-4xl md:text-6xl tracking-tight mb-4">{c.applyTitle}</h2>
+              <p className="text-white/65 text-lg max-w-md mx-auto mb-8">{c.applyNotice}</p>
+              <div className="flex flex-col sm:flex-row flex-wrap justify-center items-center gap-3 mb-8">
+                <a href={mailHref} className="inline-flex items-center gap-2 rounded-full bg-white/10 ring-1 ring-white/15 px-5 py-2.5 font-semibold hover:bg-white/15 transition-colors">📧 {c.email}</a>
+                <a href={telHref} className="inline-flex items-center gap-2 rounded-full bg-white/10 ring-1 ring-white/15 px-5 py-2.5 font-semibold hover:bg-white/15 transition-colors">📞 {c.phone}</a>
+              </div>
+              <div className="flex flex-wrap justify-center gap-3">
+                <Btn size="lg" variant="bro" href={mailHref}>{c.ctaPrimary}</Btn>
+                <Btn size="lg" variant="ghost" href={smsHref}>{c.ctaSecondary}</Btn>
+              </div>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+    </main>
+  );
+}
+
+/* ===========================================================================
  *  라우터 / 루트
  * ======================================================================== */
 function App() {
@@ -1731,6 +1874,7 @@ function App() {
   else if (branch) page = <Branches targetId={branch[1]} />;
   else if (columnPost) page = <ColumnPost id={decodeURIComponent(columnPost[1])} />;
   else if (route === "/column") page = <Column />;
+  else if (route === "/careers") page = <Careers />;
   else if (route === "/booking") page = <Booking />;
   else page = <Home />;
 
