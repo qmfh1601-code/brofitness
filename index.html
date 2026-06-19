@@ -187,12 +187,20 @@
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <!-- Babel 최신 standalone이 JSX를 'automatic' 런타임(react/jsx-runtime import 구문)으로
+       변환하면 모듈 시스템이 없는 브라우저에서 SyntaxError가 나 화면 전체가 비어버린다.
+       → React.createElement 를 쓰는 'classic' 런타임을 강제하는 프리셋을 등록한다. -->
+  <script>
+    Babel.registerPreset('react-classic', {
+      presets: [[Babel.availablePresets['react'], { runtime: 'classic' }]],
+    });
+  </script>
 
   <!-- 콘텐츠 데이터 (운영자 수정 파일) -->
   <script src="src/content.js"></script>
   <!-- 칼럼 데이터 (data/columns.json → publish.py 가 자동 생성. 직접 수정 금지) -->
   <script src="src/columns.js"></script>
   <!-- 앱 본체 -->
-  <script type="text/babel" src="src/app.jsx" data-presets="react"></script>
+  <script type="text/babel" src="src/app.jsx" data-presets="react-classic"></script>
 </body>
 </html>
