@@ -62,9 +62,8 @@ window.CONTENT = {
       eyebrow: "PERSONAL PLAN",
       title: "회원 한 분을 위한, 단 하나의 플랜",
       desc: "똑같은 운동은 없습니다. 회원님의 몸과 목표에 맞춰 설계해드리겠습니다.\n진단부터 설계, 매주 피드백까지. 브로피트니스 트레이너가 끝까지 함께합니다.",
-      // 홈 트레이너 섹션 = 잡지표지(INTERVIEW) 대표 2명. covers에 표지이미지 매핑(있으면 뱃지 숨김 + 표지 사용, 2단 레이아웃).
-      featured: ["g3", "b4"], // 엄정현(용암 트레이너)·정초이(금천 매니저)
-      covers: { g3: "img/cover-eom.jpg", b4: "img/cover-choi.jpg" },
+      // 홈 트레이너 섹션 = 전원 INTERVIEW 표지 앨범. coverAll:true면 trainers.list 전원을 img/cover-<id>.jpg 표지로 앨범 그리드(2~4열) 표시.
+      coverAll: true,
     },
     // [D] 구독 vs 등록 비교 (표 내용은 pricing.compare 재사용)
     comparePreview: {

@@ -813,18 +813,22 @@ function TrainersPreview() {
         </Reveal>
         {(() => {
           const byId = Object.fromEntries(C.trainers.list.map((t) => [t.id, t]));
+          const coverAll = h.coverAll;
           const covers = h.covers || {};
-          const featured = (h.featured && h.featured.length ? h.featured.map((id) => byId[id]).filter(Boolean) : C.trainers.list.slice(0, 4));
-          const coverMode = featured.some((tr) => covers[tr.id]);
-          const gridCls = coverMode
-            ? "grid grid-cols-1 sm:grid-cols-2 gap-6 lg:gap-8 max-w-4xl mx-auto"
-            : "grid grid-cols-2 lg:grid-cols-4 gap-5";
+          const featured = coverAll
+            ? C.trainers.list
+            : (h.featured && h.featured.length ? h.featured.map((id) => byId[id]).filter(Boolean) : C.trainers.list.slice(0, 4));
+          const coverFor = (tr) => coverAll ? ("img/cover-" + tr.id + ".jpg") : covers[tr.id];
+          const coverMode = coverAll || featured.some((tr) => coverFor(tr));
+          const gridCls = coverAll
+            ? "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-5"
+            : (coverMode ? "grid grid-cols-1 sm:grid-cols-2 gap-6 lg:gap-8 max-w-4xl mx-auto" : "grid grid-cols-2 lg:grid-cols-4 gap-5");
           return (
             <div className={gridCls}>
               {featured.map((tr, i) => {
-                const cover = covers[tr.id];
+                const cover = coverFor(tr);
                 return (
-                  <Reveal key={tr.id} delay={i * 70} onClick={() => go("/trainers")} className="group cursor-pointer">
+                  <Reveal key={tr.id} delay={i * (coverAll ? 35 : 70)} onClick={() => go("/trainers")} className="group cursor-pointer">
                     {!cover && tr.role && (
                       <div className="flex justify-center mb-3">
                         <span className="inline-flex items-center gap-1.5 rounded-full bg-bro text-white text-xs font-bold px-3.5 py-1.5 shadow-lg shadow-bro/30">
