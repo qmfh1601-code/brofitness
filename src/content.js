@@ -291,7 +291,7 @@ window.CONTENT = {
         "img/geumcheon-5.jpg", // 머신 + 사인
         "img/geumcheon-4.jpg", // 유니폼 + 인테리어
       ],
-      trainers: ["g1", "g2", "b4", "g4", "g5"],
+      trainers: ["b4", "g4", "g5", "g2", "g1"],
     },
     {
       id: "bokdae",
@@ -336,11 +336,11 @@ window.CONTENT = {
       { id: "y5", name: "염기태", branch: "yongam", image: "img/tr-y5.jpg" },
       { id: "g3", name: "엄정현", branch: "yongam", image: "img/tr-g3.jpg" },
       // ── 금천 2호점 ──
-      { id: "g1", name: "박용석", branch: "geumcheon", image: "img/tr-g1.jpg" },
-      { id: "g2", name: "손구일", branch: "geumcheon", image: "img/tr-g2.jpg" },
       { id: "b4", name: "정초이", role: "매니저", branch: "geumcheon", image: "img/tr-b4.jpg" },
       { id: "g4", name: "엄지현", branch: "geumcheon", image: "img/tr-g4.jpg" },
       { id: "g5", name: "정민주", branch: "geumcheon", image: "img/tr-g5.jpg" },
+      { id: "g2", name: "손구일", branch: "geumcheon", image: "img/tr-g2.jpg" },
+      { id: "g1", name: "박용석", branch: "geumcheon", image: "img/tr-g1.jpg" },
       // ── 복대 3호점 ──
       { id: "b6", name: "홍원성", role: "매니저", branch: "bokdae", image: "img/tr-b6.jpg" },
       { id: "b1", name: "박건후", branch: "bokdae", image: "img/tr-b1.jpg" },
