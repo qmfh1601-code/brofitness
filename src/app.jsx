@@ -942,41 +942,6 @@ function BroAbout() {
     <main className="bg-cream text-ink">
       <PageHead eyebrow={a.eyebrow} title={a.title} desc={a.intro} />
 
-      {/* [1] 작명 스토리 — BRO & SIS */}
-      {a.naming && (
-        <section className="relative overflow-hidden py-16 lg:py-24 bg-ivory">
-          <div className="orb bg-bro/10 w-[34rem] h-[34rem] -top-44 -right-40" />
-          <div className="absolute inset-0 bg-grid opacity-60 [mask-image:radial-gradient(ellipse_at_top,black,transparent_70%)]" />
-          <div className="relative max-w-8xl mx-auto px-5 lg:px-8">
-            <Reveal className="text-center max-w-2xl mx-auto mb-12">
-              <Eyebrow>{a.naming.eyebrow}</Eyebrow>
-              <SectionTitle>{a.naming.title}</SectionTitle>
-              {a.naming.lead && <p className="text-ink/55 mt-4 text-lg">{a.naming.lead}</p>}
-            </Reveal>
-            <div className="grid md:grid-cols-2 gap-5 max-w-4xl mx-auto">
-              {a.naming.cards.map((c, i) => (
-                <Reveal key={i} delay={i * 90} className="relative overflow-hidden bg-white rounded-3xl p-8 lg:p-10 ring-1 ring-ink/[0.07] hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                  <span className="absolute -top-5 -right-1 font-display text-[7rem] leading-none text-bro/10 select-none pointer-events-none">{c.tag}</span>
-                  <div className="relative">
-                    <span className="inline-flex items-baseline gap-2">
-                      <span className="font-display text-3xl text-bro tracking-wide">{c.tag}</span>
-                      <span className="text-ink/40 text-lg font-bold">· {c.ko}</span>
-                    </span>
-                    <p className="mt-5 text-xl font-bold text-ink">{c.line}</p>
-                    <p className="mt-2 text-ink/60 leading-relaxed">{c.desc}</p>
-                  </div>
-                </Reveal>
-              ))}
-            </div>
-            {a.naming.foot && (
-              <Reveal className="text-center mt-10">
-                <p className="text-ink/70 text-lg font-medium max-w-2xl mx-auto leading-relaxed">{a.naming.foot}</p>
-              </Reveal>
-            )}
-          </div>
-        </section>
-      )}
-
       {/* [2] 창업 스토리 */}
       {a.origin && (
         <section className="py-16 lg:py-24 bg-cream">
