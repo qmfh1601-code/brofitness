@@ -1398,7 +1398,7 @@ function Booking() {
                 <textarea value={form.memo} onChange={set("memo")} rows="3" placeholder="궁금한 점을 자유롭게 남겨주세요." className={field} />
               </div>
               <Btn size="lg" variant="bro" className={"w-full " + (!valid ? "opacity-50 pointer-events-none" : "")} onClick={submit}>신청하기</Btn>
-              <p className="text-center text-ink/40 text-xs">* 이름과 연락처는 필수입니다 · 강압 영업은 절대 없습니다</p>
+              <p className="text-center text-ink/40 text-xs">* 이름과 연락처는 필수입니다 · 체험 안내만 드립니다</p>
             </Reveal>
           )}
 
