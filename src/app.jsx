@@ -940,25 +940,91 @@ function BroAbout() {
   const a = C.broAbout;
   return (
     <main className="bg-cream text-ink">
-      <PageHead eyebrow={a.eyebrow} title={a.title} />
+      <PageHead eyebrow={a.eyebrow} title={a.title} desc={a.intro} />
 
-      <section className="py-12 lg:py-16 bg-cream">
-        <div className="max-w-8xl mx-auto px-5 lg:px-8 grid lg:grid-cols-2 gap-10 items-center">
-          <Reveal className="rounded-3xl overflow-hidden aspect-[4/3] lg:aspect-auto lg:h-[460px]">
-            <Img src={a.image} dark className="w-full h-full object-cover" />
-          </Reveal>
-          <Reveal delay={100} className="space-y-5">
-            {a.body.map((t, i) => (
-              <p key={i} className="text-lg md:text-xl text-ink/70 leading-relaxed">{t}</p>
-            ))}
-          </Reveal>
-        </div>
-      </section>
+      {/* [1] 작명 스토리 — BRO & SIS */}
+      {a.naming && (
+        <section className="relative overflow-hidden py-16 lg:py-24 bg-ivory">
+          <div className="orb bg-bro/10 w-[34rem] h-[34rem] -top-44 -right-40" />
+          <div className="absolute inset-0 bg-grid opacity-60 [mask-image:radial-gradient(ellipse_at_top,black,transparent_70%)]" />
+          <div className="relative max-w-8xl mx-auto px-5 lg:px-8">
+            <Reveal className="text-center max-w-2xl mx-auto mb-12">
+              <Eyebrow>{a.naming.eyebrow}</Eyebrow>
+              <SectionTitle>{a.naming.title}</SectionTitle>
+              {a.naming.lead && <p className="text-ink/55 mt-4 text-lg">{a.naming.lead}</p>}
+            </Reveal>
+            <div className="grid md:grid-cols-2 gap-5 max-w-4xl mx-auto">
+              {a.naming.cards.map((c, i) => (
+                <Reveal key={i} delay={i * 90} className="relative overflow-hidden bg-white rounded-3xl p-8 lg:p-10 ring-1 ring-ink/[0.07] hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                  <span className="absolute -top-5 -right-1 font-display text-[7rem] leading-none text-bro/10 select-none pointer-events-none">{c.tag}</span>
+                  <div className="relative">
+                    <span className="inline-flex items-baseline gap-2">
+                      <span className="font-display text-3xl text-bro tracking-wide">{c.tag}</span>
+                      <span className="text-ink/40 text-lg font-bold">· {c.ko}</span>
+                    </span>
+                    <p className="mt-5 text-xl font-bold text-ink">{c.line}</p>
+                    <p className="mt-2 text-ink/60 leading-relaxed">{c.desc}</p>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
+            {a.naming.foot && (
+              <Reveal className="text-center mt-10">
+                <p className="text-ink/70 text-lg font-medium max-w-2xl mx-auto leading-relaxed">{a.naming.foot}</p>
+              </Reveal>
+            )}
+          </div>
+        </section>
+      )}
 
-      {/* 숫자 스탯 */}
+      {/* [2] 창업 스토리 */}
+      {a.origin && (
+        <section className="py-16 lg:py-24 bg-cream">
+          <div className="max-w-8xl mx-auto px-5 lg:px-8 grid lg:grid-cols-2 gap-10 lg:gap-14 items-center">
+            <Reveal className="rounded-3xl overflow-hidden aspect-[4/3] lg:aspect-[4/5] ring-1 ring-ink/10">
+              <Img src={a.origin.image || a.image} dark className="w-full h-full object-cover" />
+            </Reveal>
+            <Reveal delay={100}>
+              <Eyebrow>{a.origin.eyebrow}</Eyebrow>
+              <SectionTitle>{a.origin.title}</SectionTitle>
+              <div className="space-y-4 mt-6">
+                {a.origin.body.map((t, i) => (
+                  <p key={i} className="text-lg text-ink/70 leading-relaxed">{t}</p>
+                ))}
+              </div>
+            </Reveal>
+          </div>
+        </section>
+      )}
+
+      {/* [3] 숫자 스탯 */}
       <StatBand stats={a.stats} />
 
-      {/* 운영팀 한마디 */}
+      {/* [4] 초보가 편한 이유 — 시스템 */}
+      {a.approach && (
+        <section className="py-16 lg:py-24 bg-cream">
+          <div className="max-w-8xl mx-auto px-5 lg:px-8">
+            <Reveal className="max-w-2xl mb-12">
+              <Eyebrow>{a.approach.eyebrow}</Eyebrow>
+              <SectionTitle>{a.approach.title}</SectionTitle>
+              {a.approach.desc && <p className="text-ink/55 mt-4 text-lg">{a.approach.desc}</p>}
+            </Reveal>
+            <div className="grid sm:grid-cols-2 gap-4 lg:gap-5">
+              {a.approach.items.map((it, i) => (
+                <Reveal key={i} delay={i * 70} className="flex items-start gap-5 bg-white rounded-2xl p-6 lg:p-7 ring-1 ring-ink/[0.06] hover:ring-bro/25 hover:shadow-lg transition-all duration-300">
+                  <span className="shrink-0 w-14 h-14 rounded-2xl bg-gradient-to-br from-white to-bro/[0.12] ring-1 ring-bro/15 flex items-center justify-center text-3xl">{it.icon}</span>
+                  <div>
+                    <h3 className="font-bold text-lg mb-1.5">{it.t}</h3>
+                    <p className="text-ink/55 leading-relaxed">{it.d}</p>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* [5] 인용 */}
       {a.quote && (
         <section className="py-16 lg:py-24 bg-cream">
           <div className="max-w-4xl mx-auto px-5 lg:px-8 text-center">
@@ -971,9 +1037,11 @@ function BroAbout() {
         </section>
       )}
 
-      {/* 약속 — 검정 섹션 포인트 */}
-      <section className="py-16 lg:py-24 bg-ink text-white">
-        <div className="max-w-8xl mx-auto px-5 lg:px-8">
+      {/* [6] 약속 + 미션 — 검정 섹션 */}
+      <section className="relative overflow-hidden py-16 lg:py-24 bg-ink text-white">
+        <div className="orb bg-bro/20 w-[34rem] h-[34rem] -bottom-44 -left-40" />
+        <div className="absolute inset-0 bg-grid-dark opacity-40 [mask-image:radial-gradient(ellipse_at_bottom_left,black,transparent_70%)]" />
+        <div className="relative max-w-8xl mx-auto px-5 lg:px-8">
           <Reveal className="mb-10"><Eyebrow light>OUR PROMISE</Eyebrow><SectionTitle>{a.promiseTitle}</SectionTitle></Reveal>
           <div className="grid md:grid-cols-2 gap-4">
             {a.promises.map((p, i) => (
@@ -983,6 +1051,11 @@ function BroAbout() {
               </Reveal>
             ))}
           </div>
+          {a.mission && (
+            <Reveal className="mt-10 border-l-2 border-bro pl-6 max-w-3xl">
+              <p className="text-white/80 text-lg lg:text-xl leading-relaxed">{a.mission}</p>
+            </Reveal>
+          )}
           <Reveal className="mt-12">
             <Btn size="lg" variant="bro" onClick={() => go("/pricing")}>요금제 확인하기 →</Btn>
           </Reveal>
