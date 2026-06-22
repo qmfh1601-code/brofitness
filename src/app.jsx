@@ -962,26 +962,83 @@ function BroAbout() {
         </section>
       )}
 
-      {/* [3] 숫자 스탯 */}
+      {/* [3] 연혁 타임라인 */}
+      {a.timeline && (
+        <section className="py-16 lg:py-24 bg-ivory">
+          <div className="max-w-3xl mx-auto px-5 lg:px-8">
+            <Reveal className="mb-12">
+              <Eyebrow>{a.timeline.eyebrow}</Eyebrow>
+              <SectionTitle>{a.timeline.title}</SectionTitle>
+              {a.timeline.desc && <p className="text-ink/55 mt-4 text-lg">{a.timeline.desc}</p>}
+            </Reveal>
+            <div className="relative pl-8 sm:pl-10">
+              <span className="absolute left-[0.3rem] sm:left-[0.55rem] top-2 bottom-2 w-px bg-bro/25" />
+              <div className="space-y-9">
+                {a.timeline.steps.map((s, i) => (
+                  <Reveal key={i} delay={i * 80} className="relative">
+                    <span className="absolute -left-[1.7rem] sm:-left-[2.2rem] top-1.5 w-3.5 h-3.5 rounded-full bg-bro ring-4 ring-bro/15" />
+                    <p className="font-display text-bro text-sm tracking-widest">{s.step}</p>
+                    <h3 className="font-bold text-xl mt-1">{s.t}</h3>
+                    <p className="text-ink/60 mt-1.5 leading-relaxed">{s.d}</p>
+                  </Reveal>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* [4] 숫자 스탯 */}
       <StatBand stats={a.stats} />
 
-      {/* [4] 초보가 편한 이유 — 시스템 */}
-      {a.approach && (
+      {/* [5] 헬스 × 필라테스 시너지 */}
+      {a.synergy && (
         <section className="py-16 lg:py-24 bg-cream">
           <div className="max-w-8xl mx-auto px-5 lg:px-8">
+            <Reveal className="text-center max-w-2xl mx-auto mb-12">
+              <Eyebrow>{a.synergy.eyebrow}</Eyebrow>
+              <SectionTitle>{a.synergy.title}</SectionTitle>
+              {a.synergy.desc && <p className="text-ink/55 mt-4 text-lg">{a.synergy.desc}</p>}
+            </Reveal>
+            <div className="grid md:grid-cols-2 gap-5 max-w-4xl mx-auto">
+              {a.synergy.cols.map((c, i) => (
+                <Reveal key={i} delay={i * 90} className="bg-white rounded-3xl p-8 ring-1 ring-ink/[0.07] hover:shadow-lg transition-all duration-300">
+                  <span className="font-display text-3xl text-bro">{c.tag}</span>
+                  <p className="text-ink/45 font-bold text-sm mt-1 mb-5">{c.label}</p>
+                  <ul className="space-y-3">
+                    {c.points.map((p, j) => (
+                      <li key={j} className="flex items-start gap-3">
+                        <span className="shrink-0 mt-0.5 w-5 h-5 rounded-full bg-bro/10 text-bro flex items-center justify-center text-xs font-bold">✓</span>
+                        <span className="text-ink/75">{p}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="mt-6 pt-4 border-t border-ink/10 text-ink/45 text-sm">{c.foot}</p>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* [6] 이런 고민, 브로가 해결합니다 */}
+      {a.solve && (
+        <section className="py-16 lg:py-24 bg-ivory">
+          <div className="max-w-8xl mx-auto px-5 lg:px-8">
             <Reveal className="max-w-2xl mb-12">
-              <Eyebrow>{a.approach.eyebrow}</Eyebrow>
-              <SectionTitle>{a.approach.title}</SectionTitle>
-              {a.approach.desc && <p className="text-ink/55 mt-4 text-lg">{a.approach.desc}</p>}
+              <Eyebrow>{a.solve.eyebrow}</Eyebrow>
+              <SectionTitle>{a.solve.title}</SectionTitle>
+              {a.solve.desc && <p className="text-ink/55 mt-4 text-lg">{a.solve.desc}</p>}
             </Reveal>
             <div className="grid sm:grid-cols-2 gap-4 lg:gap-5">
-              {a.approach.items.map((it, i) => (
-                <Reveal key={i} delay={i * 70} className="flex items-start gap-5 bg-white rounded-2xl p-6 lg:p-7 ring-1 ring-ink/[0.06] hover:ring-bro/25 hover:shadow-lg transition-all duration-300">
-                  <span className="shrink-0 w-14 h-14 rounded-2xl bg-gradient-to-br from-white to-bro/[0.12] ring-1 ring-bro/15 flex items-center justify-center text-3xl">{it.icon}</span>
-                  <div>
-                    <h3 className="font-bold text-lg mb-1.5">{it.t}</h3>
-                    <p className="text-ink/55 leading-relaxed">{it.d}</p>
+              {a.solve.items.map((it, i) => (
+                <Reveal key={i} delay={i * 70} className="bg-white rounded-2xl p-6 lg:p-7 ring-1 ring-ink/[0.06] hover:shadow-lg transition-all duration-300">
+                  <p className="text-ink/45 italic leading-relaxed">{it.pain}</p>
+                  <div className="flex items-center gap-2 my-3 text-bro/70">
+                    <span className="h-px flex-1 bg-bro/20" /><span className="text-lg leading-none">↓</span><span className="h-px flex-1 bg-bro/20" />
                   </div>
+                  <h3 className="font-bold text-lg text-ink flex items-center gap-2"><span className="text-bro">✓</span>{it.sol}</h3>
+                  <p className="text-ink/60 mt-1.5 leading-relaxed">{it.d}</p>
                 </Reveal>
               ))}
             </div>
