@@ -807,32 +807,42 @@ function TrainersPreview() {
           <div>
             <Eyebrow>{h.eyebrow}</Eyebrow>
             <SectionTitle>{h.title}</SectionTitle>
-            {h.desc && <p className="text-ink/55 mt-4 text-lg max-w-md">{h.desc}</p>}
+            {h.desc && <p className="text-ink/55 mt-4 text-lg max-w-xl whitespace-pre-line">{h.desc}</p>}
           </div>
           <Btn variant="outline" onClick={() => go("/trainers")}>트레이너 전체보기 →</Btn>
         </Reveal>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
-          {(() => {
-            const byId = Object.fromEntries(C.trainers.list.map((t) => [t.id, t]));
-            const featured = (h.featured && h.featured.length ? h.featured.map((id) => byId[id]).filter(Boolean) : C.trainers.list.slice(0, 4));
-            return featured.map((tr, i) => (
-              <Reveal key={tr.id} delay={i * 70} onClick={() => go("/trainers")} className="group cursor-pointer">
-                {tr.role && (
-                  <div className="flex justify-center mb-3">
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-bro text-white text-xs font-bold px-3.5 py-1.5 shadow-lg shadow-bro/30">
-                      <span className="w-1.5 h-1.5 rounded-full bg-white/90" />{tr.role} · {tr.name}
-                    </span>
-                  </div>
-                )}
-                <div className={"rounded-3xl overflow-hidden bg-white hover:shadow-xl hover:-translate-y-1 transition-all duration-300 " + (tr.role ? "ring-2 ring-bro shadow-lg shadow-bro/20" : "ring-1 ring-ink/10")}>
-                  <div className="aspect-[4/5] overflow-hidden">
-                    <Img src={tr.image} alt={tr.name + (tr.role ? " " + tr.role : " 트레이너")} dark className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                  </div>
-                </div>
-              </Reveal>
-            ));
-          })()}
-        </div>
+        {(() => {
+          const byId = Object.fromEntries(C.trainers.list.map((t) => [t.id, t]));
+          const covers = h.covers || {};
+          const featured = (h.featured && h.featured.length ? h.featured.map((id) => byId[id]).filter(Boolean) : C.trainers.list.slice(0, 4));
+          const coverMode = featured.some((tr) => covers[tr.id]);
+          const gridCls = coverMode
+            ? "grid grid-cols-1 sm:grid-cols-2 gap-6 lg:gap-8 max-w-4xl mx-auto"
+            : "grid grid-cols-2 lg:grid-cols-4 gap-5";
+          return (
+            <div className={gridCls}>
+              {featured.map((tr, i) => {
+                const cover = covers[tr.id];
+                return (
+                  <Reveal key={tr.id} delay={i * 70} onClick={() => go("/trainers")} className="group cursor-pointer">
+                    {!cover && tr.role && (
+                      <div className="flex justify-center mb-3">
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-bro text-white text-xs font-bold px-3.5 py-1.5 shadow-lg shadow-bro/30">
+                          <span className="w-1.5 h-1.5 rounded-full bg-white/90" />{tr.role} · {tr.name}
+                        </span>
+                      </div>
+                    )}
+                    <div className={"rounded-3xl overflow-hidden bg-white hover:shadow-xl hover:-translate-y-1 transition-all duration-300 " + (cover ? "ring-1 ring-ink/10 shadow-lg" : (tr.role ? "ring-2 ring-bro shadow-lg shadow-bro/20" : "ring-1 ring-ink/10"))}>
+                      <div className="aspect-[4/5] overflow-hidden">
+                        <Img src={cover || tr.image} alt={tr.name + (tr.role ? " " + tr.role : " 트레이너")} dark className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                      </div>
+                    </div>
+                  </Reveal>
+                );
+              })}
+            </div>
+          );
+        })()}
       </div>
     </section>
   );
@@ -912,7 +922,7 @@ function PageHead({ eyebrow, title, desc }) {
         <Reveal className="max-w-3xl">
           <Eyebrow>{eyebrow}</Eyebrow>
           <SectionTitle>{title}</SectionTitle>
-          {desc && <p className="text-ink/55 mt-4 text-lg">{desc}</p>}
+          {desc && <p className="text-ink/55 mt-4 text-lg whitespace-pre-line">{desc}</p>}
         </Reveal>
       </div>
     </section>
