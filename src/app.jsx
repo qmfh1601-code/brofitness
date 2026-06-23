@@ -1159,6 +1159,34 @@ function Pricing() {
         </div>
       </section>
 
+      {/* 24시간 강조 배너 */}
+      {p.hours24 && (
+        <section className="pb-4 lg:pb-8 bg-cream">
+          <div className="max-w-5xl mx-auto px-5 lg:px-8">
+            <Reveal className="relative overflow-hidden rounded-3xl bg-ink text-white p-8 lg:p-12 ring-1 ring-white/10">
+              <div className="absolute -top-16 -right-10 w-64 h-64 bg-bro/20 rounded-full blur-3xl" />
+              <div className="relative flex flex-col lg:flex-row lg:items-center gap-6 lg:gap-12">
+                <div className="flex items-end gap-2 shrink-0">
+                  <span className="font-display font-bold leading-none text-bro text-8xl lg:text-9xl tracking-tight">{p.hours24.big}</span>
+                  <span className="text-2xl lg:text-3xl font-bold text-white/90 mb-2 lg:mb-3">{p.hours24.bigUnit}</span>
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-2xl lg:text-3xl font-bold mb-3">{p.hours24.title}</h3>
+                  <p className="text-white/70 leading-relaxed mb-5 max-w-2xl">{p.hours24.desc}</p>
+                  {p.hours24.points && (
+                    <div className="flex flex-wrap gap-2.5">
+                      {p.hours24.points.map((pt, i) => (
+                        <span key={i} className="text-sm font-semibold bg-white/10 text-white px-3.5 py-1.5 rounded-full">✓ {pt}</span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </Reveal>
+          </div>
+        </section>
+      )}
+
       {/* 구독에 포함된 것 */}
       <IncludesGrid data={p.includes} />
 
