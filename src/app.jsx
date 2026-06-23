@@ -1488,19 +1488,48 @@ function Booking() {
   const f = C.booking;
   const [form, setForm] = useState({ program: f.programOptions[0], branch: f.branchOptions[0], name: "", phone: "", date: "", memo: "" });
   const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
   const valid = form.name.trim() && form.phone.trim();
 
-  const submit = () => {
-    if (!valid) return;
+  const submit = async () => {
+    if (!valid || sending) return;
+    const payload = {
+      program: form.program,
+      branch: form.branch,
+      name: form.name,
+      phone: form.phone,
+      date: form.date || "미정",
+      memo: form.memo || "-",
+    };
+
+    // ① 구글 시트 연동(endpoint)이 설정돼 있으면 자동 전송·기록
+    if (f.endpoint) {
+      setSending(true);
+      try {
+        await fetch(f.endpoint, {
+          method: "POST",
+          mode: "no-cors", // Apps Script 웹앱: 응답을 읽지 않고 전송만
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload),
+        });
+      } catch (e) {
+        /* no-cors 특성상 응답을 못 읽음 — 전송 자체는 정상 진행됨 */
+      }
+      setSending(false);
+      setSent(true);
+      return;
+    }
+
+    // ② endpoint가 없으면 mailto 폴백(방문자 메일앱)
     const body =
       `[예약·상담 신청]\n\n` +
-      `희망 항목: ${form.program}\n` +
-      `지점: ${form.branch}\n` +
-      `이름: ${form.name}\n` +
-      `연락처: ${form.phone}\n` +
-      `희망일: ${form.date || "미정"}\n` +
-      `문의내용: ${form.memo || "-"}\n`;
+      `희망 항목: ${payload.program}\n` +
+      `지점: ${payload.branch}\n` +
+      `이름: ${payload.name}\n` +
+      `연락처: ${payload.phone}\n` +
+      `희망일: ${payload.date}\n` +
+      `문의내용: ${payload.memo}\n`;
     const mailto = `mailto:${f.submitTo}?subject=${encodeURIComponent("[홈페이지] 예약·상담 신청 - " + form.name)}&body=${encodeURIComponent(body)}`;
     window.location.href = mailto;
     setSent(true);
@@ -1522,7 +1551,11 @@ function Booking() {
             <Reveal className="bg-white rounded-3xl p-10 text-center border-2 border-bro/30 shadow-xl">
               <div className="text-5xl mb-4">✅</div>
               <h3 className="text-2xl font-bold mb-3">신청이 접수되었어요!</h3>
-              <p className="text-ink/65 mb-2">메일 앱이 열렸다면 그대로 <b className="text-ink">전송</b>만 눌러주세요.</p>
+              {f.endpoint ? (
+                <p className="text-ink/65 mb-2">신청이 정상적으로 <b className="text-ink">전송</b>되었습니다.</p>
+              ) : (
+                <p className="text-ink/65 mb-2">메일 앱이 열렸다면 그대로 <b className="text-ink">전송</b>만 눌러주세요.</p>
+              )}
               <p className="text-ink/45 text-sm mb-8">빠른 시간 안에 연락드리겠습니다.</p>
               <div className="flex flex-col gap-3">
                 <Btn variant="bro" onClick={() => setSent(false)}>다시 신청하기</Btn>
@@ -1561,7 +1594,7 @@ function Booking() {
                 <label className="block text-sm font-bold mb-2 text-ink/70">문의 내용 (선택)</label>
                 <textarea value={form.memo} onChange={set("memo")} rows="3" placeholder="궁금한 점을 자유롭게 남겨주세요." className={field} />
               </div>
-              <Btn size="lg" variant="bro" className={"w-full " + (!valid ? "opacity-50 pointer-events-none" : "")} onClick={submit}>신청하기</Btn>
+              <Btn size="lg" variant="bro" className={"w-full " + (!valid || sending ? "opacity-50 pointer-events-none" : "")} onClick={submit}>{sending ? "전송 중…" : "신청하기"}</Btn>
               <p className="text-center text-ink/40 text-xs">* 이름과 연락처는 필수입니다 · 체험 안내만 드립니다</p>
             </Reveal>
           )}

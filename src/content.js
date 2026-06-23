@@ -514,8 +514,11 @@ window.CONTENT = {
     desc: "연락처만 남겨주세요. 영업 전화 아니에요 — 체험 안내만 드립니다.",
     programOptions: ["무료체험 신청", "구독 멤버십 상담", "12개월 반값 행사 문의", "프로그램 문의"],
     branchOptions: ["용암점", "금천점", "복대점", "아직 미정"],
-    // 신청 내용을 받을 방법(택1): 이메일 수신용 주소. 카카오/구글폼 링크로도 교체 가능.
-    submitTo: "qmfh1601@gmail.com",
+    // 신청 내용을 받을 방법:
+    //  ① endpoint(구글 시트 연동) — 값이 있으면 이 방식으로 자동 전송·기록됨. (Apps Script 웹앱 /exec URL 붙여넣기)
+    //  ② endpoint가 비어 있으면 submitTo 이메일로 mailto 방식(방문자 메일앱) 사용.
+    endpoint: "https://script.google.com/macros/s/AKfycbyTywuWCLiIljnaYhmMCzLz4p3qyhHddloYv4Q2du2zEg7tI7oaV3qvzDz_f1nMrpmClQ/exec", // Apps Script 웹앱(구글 시트 연동)
+    submitTo: "qmfh1601@gmail.com", // 백업용 + 신청 알림 메일 수신 주소
     // 신청 후 진행 단계
     steps: [
       { no: "01", t: "신청 접수", d: "폼을 남기면 바로 접수됩니다." },
