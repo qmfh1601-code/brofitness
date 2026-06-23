@@ -29,6 +29,7 @@ window.CONTENT = {
     image: "img/people1.jpg", // 교체 위치: 메인 대표 사진
     stats: [
       { num: "34,900", unit: "원/월", label: "한 달 구독가" },
+      { num: "24", unit: "시간", label: "전 지점 연중무휴 운영" },
       { num: "3", unit: "개 지점", label: "청주 용암·금천·복대" },
       { num: "0", unit: "원", label: "약정·위약금" },
     ],
@@ -233,9 +234,9 @@ window.CONTENT = {
           { branch: "복대 3호점", price: "38,900원", highlight: true },
         ],
       },
-      badges: ["자동결제", "언제든 구독 취소", "한 달만 등록 가능", "약정·위약금 없음"],
+      badges: ["연중무휴 24시간", "자동결제", "언제든 구독 취소", "한 달만 등록 가능", "약정·위약금 없음"],
       features: [
-        "전 지점 헬스 시설 자유 이용",
+        "전 지점 연중무휴 24시간 자유 이용",
         "샤워실·운동복·락커 기본 제공",
         "비대면 결제로 바로 시작",
         "회원님께 맞춘 운동 플랜 설계",
@@ -260,6 +261,7 @@ window.CONTENT = {
       desc: "월 34,900원에 이 모든 게 들어 있어요.",
       // icon: 3D 이미지(img)가 있으면 그걸 쓰고, 없으면 글자 이모지를 표시합니다.
       items: [
+        { icon: "🕐", img: "https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets/Twelve%20o%E2%80%99clock/3D/twelve_oclock_3d.png", t: "연중무휴 24시간", d: "새벽에도 주말에도 언제든" },
         { icon: "🏋️", img: "https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets/Person%20lifting%20weights/Default/3D/person_lifting_weights_3d_default.png", t: "전 지점 헬스 시설", d: "용암·금천·복대 자유 이용" },
         { icon: "🚿", img: "https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets/Shower/3D/shower_3d.png", t: "샤워실 · 락커", d: "운동 후 가볍게 씻고 귀가" },
         { icon: "👕", img: "https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets/T-shirt/3D/t-shirt_3d.png", t: "운동복 대여", d: "몸만 오면 됩니다" },
@@ -319,7 +321,7 @@ window.CONTENT = {
     },
     // 이용 안내
     info: [
-      { t: "운영시간", d: "평일 06:00–24:00 · 주말 09:00–21:00" },
+      { t: "운영시간", d: "연중무휴 24시간 운영" },
       { t: "이용대상", d: "누구나 — 특히 운동이 처음인 분" },
       { t: "준비물", d: "몸만 오세요. 운동복·락커 제공" },
     ],
@@ -334,7 +336,7 @@ window.CONTENT = {
       addr: "충북 청주시 상당구 용암동 1690, 3·4층",
       mapQuery: "청주시 상당구 용암동 1690", // 카카오맵 검색어
       phone: "043-292-9696", // ← 실제 번호
-      hours: "평일 06:00–24:00 · 주말 09:00–21:00", // ← 실제 시간
+      hours: "연중무휴 24시간 운영", // ← 실제 시간
       naver: "https://map.naver.com/p/search/브로피트니스 용암점", // 네이버 플레이스 (정확한 공유링크로 교체 가능)
       instagram: "https://www.instagram.com/bro__fitness1/", // 용암점 인스타
       kakao: "http://pf.kakao.com/_xexjRPxj/chat", // 용암점 카카오톡 상담
@@ -358,11 +360,11 @@ window.CONTENT = {
       addr: "충북 청주시 상당구 금천동 219, 4층",
       mapQuery: "청주시 상당구 금천동 219", // 카카오맵 검색어
       phone: "043-222-9698",
-      hours: "평일 06:00–24:00 · 주말 09:00–21:00",
+      hours: "연중무휴 24시간 운영",
       naver: "https://map.naver.com/p/search/브로피트니스 금천점", // 네이버 플레이스 (정확한 공유링크로 교체 가능)
       instagram: "https://www.instagram.com/bro__fitness2/", // 금천점 인스타
       kakao: "http://pf.kakao.com/_hurxfxj/chat", // 금천점 카카오톡 상담
-      desc: "넓고 쾌적한 시설. 직장인 동선에 맞춘 운영시간.",
+      desc: "넓고 쾌적한 시설. 연중무휴 24시간 언제든 운동.",
       images: [
         "img/geumcheon-2.jpg", // 프리웨이트 존 (가로·대표/배너)
         "img/geumcheon-7.jpg", // 전경
@@ -382,7 +384,7 @@ window.CONTENT = {
       addr: "충북 청주시 흥덕구 대농로 68, 8층",
       mapQuery: "청주시 흥덕구 대농로 68", // 카카오맵 검색어
       phone: "010-3489-9697",
-      hours: "평일 06:00–24:00 · 주말 09:00–21:00",
+      hours: "연중무휴 24시간 운영",
       naver: "https://map.naver.com/p/search/브로피트니스 복대점", // 네이버 플레이스 (정확한 공유링크로 교체 가능)
       instagram: "https://www.instagram.com/bro__fitness3/", // 복대점 인스타
       kakao: "http://pf.kakao.com/_jxmqzX/chat", // 복대점 카카오톡 상담
