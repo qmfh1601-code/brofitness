@@ -309,10 +309,23 @@ function Home() {
               <div className="absolute -top-12 -right-12 w-48 h-48 bg-bro/25 rounded-full blur-3xl" />
               <div className="relative">
                 <p className="font-display text-bro text-lg tracking-wide mb-1">{C.pricing.main.name}</p>
-                <div className="flex items-end gap-1 mb-6">
+                <div className="flex items-end gap-1 mb-2">
                   <span className="text-6xl md:text-7xl font-bold tracking-tight text-bro">{C.pricing.main.price}</span>
                   <span className="text-white/60 mb-2 text-lg">{C.pricing.main.unit}</span>
                 </div>
+                {C.pricing.main.branchRates && (
+                  <div className="mb-7 mt-4 rounded-2xl overflow-hidden ring-1 ring-white/10">
+                    <p className="text-xs font-bold tracking-wide text-white/50 px-4 pt-3 pb-2">{C.pricing.main.branchRates.title}</p>
+                    <div className="divide-y divide-white/10">
+                      {C.pricing.main.branchRates.rows.map((r, i) => (
+                        <div key={i} className={`flex items-center justify-between px-4 py-2.5 ${r.highlight ? "bg-bro/15" : ""}`}>
+                          <span className={`text-sm ${r.highlight ? "text-white font-semibold" : "text-white/75"}`}>{r.branch}</span>
+                          <span className={`text-sm font-bold ${r.highlight ? "text-bro" : "text-white/90"}`}>{r.price}<span className="text-white/40 font-normal text-xs ml-0.5">/ 월</span></span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 <div className="flex flex-wrap gap-2 mb-7">
                   {C.pricing.main.badges.map((b, i) => (
                     <span key={i} className="text-xs font-semibold bg-white/10 text-white px-3 py-1.5 rounded-full">{b}</span>
@@ -1105,10 +1118,23 @@ function Pricing() {
             <div className="absolute -top-12 -right-12 w-48 h-48 bg-bro/25 rounded-full blur-3xl" />
             <div className="relative">
               <p className="font-display text-bro text-lg tracking-wide mb-1">{p.main.name}</p>
-              <div className="flex items-end gap-1 mb-6">
+              <div className="flex items-end gap-1 mb-2">
                 <span className="text-6xl md:text-7xl font-bold tracking-tight text-bro">{p.main.price}</span>
                 <span className="text-white/60 mb-2 text-lg">{p.main.unit}</span>
               </div>
+              {p.main.branchRates && (
+                <div className="mb-7 mt-4 rounded-2xl overflow-hidden ring-1 ring-white/10">
+                  <p className="text-xs font-bold tracking-wide text-white/50 px-4 pt-3 pb-2">{p.main.branchRates.title}</p>
+                  <div className="divide-y divide-white/10">
+                    {p.main.branchRates.rows.map((r, i) => (
+                      <div key={i} className={`flex items-center justify-between px-4 py-2.5 ${r.highlight ? "bg-bro/15" : ""}`}>
+                        <span className={`text-sm ${r.highlight ? "text-white font-semibold" : "text-white/75"}`}>{r.branch}</span>
+                        <span className={`text-sm font-bold ${r.highlight ? "text-bro" : "text-white/90"}`}>{r.price}<span className="text-white/40 font-normal text-xs ml-0.5">/ 월</span></span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
               <div className="flex flex-wrap gap-2 mb-7">
                 {p.main.badges.map((b, i) => (
                   <span key={i} className="text-xs font-semibold bg-white/10 text-white px-3 py-1.5 rounded-full">{b}</span>

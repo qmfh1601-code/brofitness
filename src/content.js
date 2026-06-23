@@ -225,6 +225,14 @@ window.CONTENT = {
       name: "월 구독 멤버십",
       price: "34,900",
       unit: "원 / 월",
+      branchRates: {
+        title: "지점별 월 구독료",
+        rows: [
+          { branch: "용암 1호점", price: "34,900원" },
+          { branch: "금천 2호점", price: "34,900원" },
+          { branch: "복대 3호점", price: "38,900원", highlight: true },
+        ],
+      },
       badges: ["자동결제", "언제든 구독 취소", "한 달만 등록 가능", "약정·위약금 없음"],
       features: [
         "전 지점 헬스 시설 자유 이용",
