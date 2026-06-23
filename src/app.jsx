@@ -1205,13 +1205,24 @@ function Programs() {
       <section className="py-12 lg:py-16 bg-cream">
         <div className="max-w-8xl mx-auto px-5 lg:px-8 grid md:grid-cols-2 gap-5">
           {p.list.map((prog, i) => (
-            <Reveal key={i} delay={i * 80} className="group relative rounded-3xl overflow-hidden min-h-[300px] flex items-end">
-              <Img src={prog.image} dark className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-              <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/40 to-transparent" />
-              <div className="relative p-7 text-white">
-                <span className="text-xs font-bold bg-bro text-white px-3 py-1 rounded-full">{prog.tag}</span>
-                <h3 className="text-2xl font-bold mt-3 mb-2">{prog.name}</h3>
-                <p className="text-white/75 max-w-md">{prog.desc}</p>
+            <Reveal key={i} delay={i * 80} className="group bg-white rounded-3xl overflow-hidden ring-1 ring-ink/[0.06] shadow-sm flex flex-col">
+              <div className="relative overflow-hidden aspect-[16/10]">
+                <Img src={prog.image} dark className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                <span className="absolute top-4 left-4 text-xs font-bold bg-bro text-white px-3 py-1 rounded-full shadow">{prog.tag}</span>
+              </div>
+              <div className="p-7 flex flex-col flex-1">
+                <h3 className="text-2xl font-bold mb-2 text-ink">{prog.name}</h3>
+                <p className="text-ink/65 leading-relaxed">{prog.desc}</p>
+                {prog.points && (
+                  <ul className="mt-5 pt-5 border-t border-ink/[0.06] space-y-2.5">
+                    {prog.points.map((pt, j) => (
+                      <li key={j} className="flex items-start gap-2.5 text-ink/75">
+                        <span className="text-bro mt-0.5 shrink-0">✓</span>
+                        <span>{pt}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
             </Reveal>
           ))}
