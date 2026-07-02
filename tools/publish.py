@@ -94,52 +94,57 @@ def published_posts(cfg):
     return out
 
 
-# ── 사진: 카테고리별 자동 배정 + 본문 자동 삽입 ──────────────────────
-def _stable_idx(s, n):
-    """문자열로부터 항상 같은 인덱스(빌드마다 사진이 바뀌지 않도록)."""
-    h = 2166136261
-    for ch in str(s):
-        h = ((h ^ ord(ch)) * 16777619) & 0xFFFFFFFF
-    return (h % n) if n else 0
-
-
+# ── 사진: 전 칼럼에 걸쳐 '완전 중복 0' 배정 + 본문 자동 삽입 ──────────
+#   원칙: 사이트 전체에서 사진은 '딱 한 번씩만' 사용한다(대표사진·본문사진 통틀어 중복 0).
+#         - 카테고리에 맞는 사진 우선, 없으면 전체 클린 풀(_all)에서 보강.
+#         - 사진이 모자라면(자리 > 사진 수) 남는 자리는 그냥 비운다(중복하느니 안 넣음).
+#         - 나중에 img/ 에 사진을 추가하고 다시 발행하면 빈 자리가 자동으로 채워진다.
 def _pool(cfg, cat):
     pools = cfg.get("photoPools", {})
     return pools.get(cat) or pools.get("_default") or []
 
 
-def resolve_hero(cfg, post):
-    """대표사진: 지정돼 있으면 그대로, 없거나 'auto'면 카테고리 풀에서 자동 선택."""
-    img = post.get("image")
-    if img and img != "auto":
-        return img
-    pool = _pool(cfg, post.get("cat"))
-    return pool[_stable_idx(post["id"], len(pool))] if pool else "img/logo-bro.png"
+def _cands(cfg, cat):
+    """카테고리 풀 우선 + 전체 클린 풀(_all)로 보강한 후보 목록(중복 제거, 순서 유지)."""
+    pool = _pool(cfg, cat)
+    allp = cfg.get("photoPools", {}).get("_all", [])
+    seen, out = set(), []
+    for x in list(pool) + list(allp):
+        if x and x not in seen:
+            seen.add(x)
+            out.append(x)
+    return out
 
 
-def resolve_inline_set(cfg, post, hero, count):
-    """본문용 사진 여러 장: 대표사진과 겹치지 않게, 서로 중복 없이 풀에서 뽑는다."""
-    pool = [x for x in _pool(cfg, post.get("cat")) if x != hero]
-    if not pool or count <= 0:
-        return []
-    start = _stable_idx(post["id"] + "::inline", len(pool))
-    ordered = pool[start:] + pool[:start]          # 글마다 시작점만 다르게 회전
-    return ordered[:min(count, len(ordered))]
-
-
-def normalize_body(cfg, post, hero):
-    """body 를 블록(문단/사진)으로 정규화.
-    명시 사진이 없으면 글 길이에 맞춰 본문 곳곳에 '서로 다른' 사진을 자동 배치한다.
-    (meta.inlineEvery 문단마다 한 장씩 → 글이 길수록 사진도 늘어남)"""
+def inline_slot_count(cfg, post):
+    """이 글이 본문에 필요로 하는 사진 자리 수(대표사진 제외)."""
     raw = post.get("body", [])
+    has_img = any(isinstance(b, dict) and b.get("img") for b in raw)
+    auto_blocks = sum(1 for b in raw
+                      if isinstance(b, dict) and b.get("img") == "auto")
+    meta = cfg.get("meta", {})
+    if not meta.get("autoInlinePhoto", True) or has_img:
+        return auto_blocks
+    n_para = sum(1 for b in raw if not (isinstance(b, dict) and b.get("img")))
+    every = max(2, int(meta.get("inlineEvery", 3)))
+    return len(set(range(every, n_para, every)))
+
+
+def normalize_body(cfg, post, hero, queue):
+    """body 를 블록(문단/사진)으로 정규화.
+    본문 사진은 미리 배정된 queue(서로 겹치지 않는 사진 목록)에서 하나씩 꺼내 쓴다.
+    queue 가 비면 사진 없이 넘어간다(중복 방지)."""
+    raw = post.get("body", [])
+    q = list(queue)
     has_img = any(isinstance(b, dict) and b.get("img") for b in raw)
     base = []
     for b in raw:
         if isinstance(b, dict) and b.get("img"):
             src = b["img"]
             if src == "auto":
-                picks = resolve_inline_set(cfg, post, hero, 1)
-                src = picks[0] if picks else hero
+                if not q:
+                    continue                       # 남은 유니크 사진 없음 → 건너뜀
+                src = q.pop(0)
             base.append({"type": "img", "src": src, "caption": b.get("caption", "")})
         else:
             base.append({"type": "p", "text": b if isinstance(b, str) else str(b)})
@@ -153,29 +158,59 @@ def normalize_body(cfg, post, hero):
     slots = set(range(every, n_para, every))       # 이 문단번호(1-base) '뒤'에 사진 삽입
     if not slots:
         return base
-    pics = resolve_inline_set(cfg, post, hero, len(slots))
-    if not pics:
-        return base
 
-    out, pi, k = [], 0, 0
+    out, pi = [], 0
     for blk in base:
         out.append(blk)
         if blk["type"] == "p":
             pi += 1
-            if pi in slots and k < len(pics):
-                out.append({"type": "img", "src": pics[k], "caption": ""})
-                k += 1
+            if pi in slots and q:
+                out.append({"type": "img", "src": q.pop(0), "caption": ""})
     return out
 
 
 def resolve_posts(cfg):
-    """발행 대상 글에 대표사진/본문블록을 채운 '완성본' 리스트."""
+    """발행 대상 글에 대표사진/본문블록을 채운 '완성본' 리스트.
+    사이트 전체에서 사진이 '한 번씩만' 쓰이도록 한 배정기로 이어서 처리한다."""
+    posts = published_posts(cfg)
+    used = set()                                    # 사이트 전체에서 이미 쓴 사진
+    # 명시 대표사진은 먼저 예약(자동배정이 가로채지 못하게)
+    reserved = set(p["image"] for p in posts
+                   if p.get("image") and p["image"] != "auto")
+
+    # 1) 대표사진: 명시본 존중, 나머지는 카테고리에 맞는 '아직 안 쓴' 사진
+    hero = {}
+    for p in posts:
+        img = p.get("image")
+        if img and img != "auto":
+            hero[p["id"]] = img
+            used.add(img)
+        else:
+            pick = next((c for c in _cands(cfg, p.get("cat"))
+                         if c not in used and c not in reserved), None) \
+                or next((c for c in _cands(cfg, p.get("cat")) if c not in used), None) \
+                or "img/logo-bro.png"
+            hero[p["id"]] = pick
+            used.add(pick)
+
+    # 2) 본문사진: 라운드로빈으로 공평하게, 매번 '아직 안 쓴' 사진만(중복 0)
+    need = {p["id"]: inline_slot_count(cfg, p) for p in posts}
+    queues = {p["id"]: [] for p in posts}
+    for _ in range(max(need.values()) if need else 0):
+        for p in posts:
+            pid = p["id"]
+            if len(queues[pid]) >= need[pid]:
+                continue
+            pick = next((c for c in _cands(cfg, p.get("cat")) if c not in used), None)
+            if pick:
+                used.add(pick)
+                queues[pid].append(pick)
+
     out = []
-    for p in published_posts(cfg):
-        hero = resolve_hero(cfg, p)
+    for p in posts:
         rp = dict(p)
-        rp["image"] = hero
-        rp["body"] = normalize_body(cfg, p, hero)
+        rp["image"] = hero[p["id"]]
+        rp["body"] = normalize_body(cfg, p, hero[p["id"]], queues[p["id"]])
         out.append(rp)
     return out
 
