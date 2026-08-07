@@ -19,3 +19,4 @@ User-agent: Bingbot
 Allow: /
 
 Sitemap: https://brofitness.kr/sitemap.xml
+Sitemap: https://brofitness.kr/rss.xml

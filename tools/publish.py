@@ -10,7 +10,8 @@ data/columns.json 한 파일을 읽어서 아래를 '자동'으로 생성/갱신
   2) column/index.html     : 칼럼 목록(정적, 크롤 가능)
   3) src/columns.js        : 홈페이지(SPA)가 읽는 데이터  (window.COLUMNS)
   4) sitemap.xml           : 전체 페이지 사이트맵 (자동 갱신)
-  5) <indexnow-key>.txt    : IndexNow 인증 키 파일
+  5) rss.xml               : 최신 30편 RSS 2.0 피드 (네이버 서치어드바이저 RSS 제출용)
+  6) <indexnow-key>.txt    : IndexNow 인증 키 파일
 
 예약발행:
   글마다 date(예 "2026.07.01")를 미래로 적어두면, 그 날짜가 되기 전까진 발행되지 않습니다.
@@ -247,6 +248,7 @@ PAGE = """<!DOCTYPE html>
 <meta property="og:url" content="{url}" />
 <meta property="og:image" content="{img}" />
 <meta name="twitter:card" content="summary_large_image" />
+<link rel="alternate" type="application/rss+xml" title="브로 저널" href="/rss.xml" />
 <link rel="icon" type="image/png" href="/img/logo-bro.png" />
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
 <script type="application/ld+json">
@@ -347,6 +349,52 @@ def render_related(cfg, post, posts):
             '<div class="rgrid">%s</div></div></div>') % cards
 
 
+RSS_WDAY = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+RSS_MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+           "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
+
+def rfc822(d):
+    """RSS pubDate 형식. 글에는 시각 정보가 없으므로 09:00 KST로 고정한다.
+    요일·월 이름은 로케일과 무관하게 영문이어야 하므로 직접 만든다."""
+    return "%s, %02d %s %d 09:00:00 +0900" % (
+        RSS_WDAY[d.weekday()], d.day, RSS_MON[d.month - 1], d.year)
+
+
+def render_rss(cfg, posts, limit=30):
+    meta = cfg["meta"]
+    base = meta["baseUrl"]
+    items = ""
+    for p in posts[:limit]:
+        try:
+            pub = rfc822(parse_date(p["date"]))
+        except Exception:
+            continue
+        url = "%s/column/%s.html" % (base, p["id"])
+        items += ("  <item>\n"
+                  "    <title>%s</title>\n"
+                  "    <link>%s</link>\n"
+                  "    <guid isPermaLink=\"true\">%s</guid>\n"
+                  "    <category>%s</category>\n"
+                  "    <pubDate>%s</pubDate>\n"
+                  "    <description>%s</description>\n"
+                  "  </item>\n") % (esc(p["title"]), esc(url), esc(url),
+                                    esc(p["cat"]), pub, esc(p["excerpt"]))
+    build_date = rfc822(today_kst())
+    return ('<?xml version="1.0" encoding="UTF-8"?>\n'
+            '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">\n'
+            '<channel>\n'
+            '  <title>%s | %s</title>\n'
+            '  <link>%s/column/</link>\n'
+            '  <atom:link href="%s/rss.xml" rel="self" type="application/rss+xml" />\n'
+            '  <description>%s</description>\n'
+            '  <language>ko</language>\n'
+            '  <lastBuildDate>%s</lastBuildDate>\n'
+            '%s</channel>\n</rss>\n') % (
+        esc(meta["title"]), esc(meta["siteName"]), esc(base), esc(base),
+        esc(meta["subtitle"]), build_date, items)
+
+
 def render_post(cfg, post, posts):
     meta = cfg["meta"]
     base = meta["baseUrl"]
@@ -384,7 +432,7 @@ def render_post(cfg, post, posts):
 INDEX = """<!DOCTYPE html>
 <html lang="ko"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>{title} | {site}</title><meta name="description" content="{sub}"/>
-<link rel="canonical" href="{base}/column/"/><link rel="icon" type="image/png" href="/img/logo-bro.png"/>
+<link rel="canonical" href="{base}/column/"/><link rel="alternate" type="application/rss+xml" title="브로 저널" href="/rss.xml"/><link rel="icon" type="image/png" href="/img/logo-bro.png"/>
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"/>
 <style>body{{margin:0;font-family:'Pretendard',system-ui,sans-serif;background:#FBF8F2;color:#0E0E10;line-height:1.7}}
 .wrap{{max-width:760px;margin:0 auto;padding:60px 20px}}h1{{font-size:34px;margin:0 0 6px}}.s{{color:#888;margin:0 0 30px}}
@@ -439,6 +487,9 @@ def build(cfg):
     write(os.path.join(ROOT, "sitemap.xml"),
           '<?xml version="1.0" encoding="UTF-8"?>\n'
           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n%s</urlset>\n' % body)
+
+    print("● RSS 피드(rss.xml) 생성 …")
+    write(os.path.join(ROOT, "rss.xml"), render_rss(cfg, posts))
 
     print("● IndexNow 키 파일 생성 …")
     key = cfg["indexnow"]["key"]
