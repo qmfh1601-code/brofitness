@@ -321,9 +321,22 @@ PAGE = """<!DOCTYPE html>
 
 
 def render_related(cfg, post, posts):
-    same = [p for p in posts if p["id"] != post["id"] and p["cat"] == post["cat"]]
-    rest = [p for p in posts if p["id"] != post["id"] and p["cat"] != post["cat"]]
-    picks = (same + rest)[:3]
+    # post["related"]로 관련글을 직접 지정할 수 있다. 자동 선정은 같은 카테고리의
+    # 앞쪽 글만 반복해서 골라 동네 랜딩끼리 서로 연결되지 않는다(피링크 1개).
+    # 아직 발행일이 안 된 id는 posts에 없으므로 자연히 걸러진다.
+    by_id = {p["id"]: p for p in posts}
+    seen = {post["id"]}
+    picks = []
+    for rid in post.get("related", []):
+        if rid in by_id and rid not in seen:
+            picks.append(by_id[rid])
+            seen.add(rid)
+    same = [p for p in posts if p["id"] not in seen and p["cat"] == post["cat"]]
+    rest = [p for p in posts if p["id"] not in seen and p["cat"] != post["cat"]]
+    for p in same + rest:
+        if len(picks) >= 3:
+            break
+        picks.append(p)
     if not picks:
         return ""
     cards = ""
