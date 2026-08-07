@@ -10,7 +10,7 @@ data/columns.json 한 파일을 읽어서 아래를 '자동'으로 생성/갱신
   2) column/index.html     : 칼럼 목록(정적, 크롤 가능)
   3) src/columns.js        : 홈페이지(SPA)가 읽는 데이터  (window.COLUMNS)
   4) sitemap.xml           : 전체 페이지 사이트맵 (자동 갱신)
-  5) rss.xml               : 최신 30편 RSS 2.0 피드 (네이버 서치어드바이저 RSS 제출용)
+  5) rss.xml               : 최신 20편 RSS 2.0 피드 (네이버 서치어드바이저 RSS 제출용)
   6) <indexnow-key>.txt    : IndexNow 인증 키 파일
 
 예약발행:
@@ -361,7 +361,17 @@ def rfc822(d):
         RSS_WDAY[d.weekday()], d.day, RSS_MON[d.month - 1], d.year)
 
 
-def render_rss(cfg, posts, limit=30):
+def rss_content(cfg, post, base):
+    """RSS 본문. 네이버는 '이미지 링크가 포함된 본문 전체'를 권장하고,
+    피드 안의 모든 URL이 소유확인된 도메인과 같기를 요구한다 → 절대경로로 바꾼다."""
+    html = ('<figure><img src="/%s" alt="%s" /></figure>\n    %s'
+            % (esc(post["image"]), esc(post["title"]),
+               render_body_html(cfg, post["body"])))
+    html = html.replace('src="/', 'src="%s/' % base).replace('href="/', 'href="%s/' % base)
+    return "<![CDATA[%s]]>" % html.replace("]]>", "]]]]><![CDATA[>")
+
+
+def render_rss(cfg, posts, limit=20):
     meta = cfg["meta"]
     base = meta["baseUrl"]
     items = ""
@@ -378,11 +388,14 @@ def render_rss(cfg, posts, limit=30):
                   "    <category>%s</category>\n"
                   "    <pubDate>%s</pubDate>\n"
                   "    <description>%s</description>\n"
+                  "    <content:encoded>%s</content:encoded>\n"
                   "  </item>\n") % (esc(p["title"]), esc(url), esc(url),
-                                    esc(p["cat"]), pub, esc(p["excerpt"]))
+                                    esc(p["cat"]), pub, esc(p["excerpt"]),
+                                    rss_content(cfg, p, base))
     build_date = rfc822(today_kst())
     return ('<?xml version="1.0" encoding="UTF-8"?>\n'
-            '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">\n'
+            '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"'
+            ' xmlns:content="http://purl.org/rss/1.0/modules/content/">\n'
             '<channel>\n'
             '  <title>%s | %s</title>\n'
             '  <link>%s/column/</link>\n'
