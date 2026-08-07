@@ -2,8 +2,13 @@
 # Netlify 가 GitHub 저장소를 받아 배포할 때마다 아래 명령으로
 # 칼럼 정적페이지/사이트맵/SPA 데이터를 '그 시점 한국 날짜' 기준으로 다시 생성한다.
 # → 예약발행: 발행일이 된 글만 자동으로 공개됨.
+#
+# 생성 직후 --ping-new 로 '그날 새로 공개된 글'만 IndexNow(네이버·빙)에 알린다.
+# 전체 URL을 매 배포마다 재제출하면 IndexNow 원칙(변경분만 제출)에 어긋나므로 신규분만 보낸다.
+# 핑이 배포 완료보다 수십 초 앞서지만, 검색봇이 그보다 빨리 오지는 않는다.
+# 핑 실패는 배포를 막지 않는다(ping() 내부에서 예외를 삼킴).
 [build]
-  command = "python3 tools/publish.py"
+  command = "python3 tools/publish.py && python3 tools/publish.py --ping-new"
   publish = "."
 
 [build.environment]

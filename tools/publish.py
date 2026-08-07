@@ -24,7 +24,9 @@ data/columns.json 한 파일을 읽어서 아래를 '자동'으로 생성/갱신
 
 사용법:
   python3 tools/publish.py            # 발행(파일 생성). 그 뒤 폴더를 Netlify에 드래그 배포.
-  python3 tools/publish.py --ping     # 배포 완료 '후' 실행 → 네이버/빙에 새 글 즉시 알림(IndexNow)
+  python3 tools/publish.py --ping     # 배포 완료 '후' 실행 → 네이버/빙에 전체 URL 알림(IndexNow)
+  python3 tools/publish.py --ping-new # 오늘 발행일이 도래한 글만 알림. Netlify 빌드에서 자동 실행됨.
+                                      # (IndexNow 는 변경된 URL만 보내는 게 원칙이라 평소엔 이쪽을 쓴다)
 """
 import json, os, re, html, sys, datetime
 import urllib.request
@@ -437,10 +439,28 @@ def build(cfg):
     print("   배포 끝난 뒤:  python3 tools/publish.py --ping   (네이버·빙에 즉시 알림)")
 
 
-def ping(cfg):
+def newly_published_urls(cfg):
+    """오늘(KST) 발행일이 도래한 글의 URL. 예약분이 자동 공개되는 날 그 글만 알리기 위함."""
+    base = cfg["meta"]["baseUrl"]
+    today = today_kst()
+    out = []
+    for p in cfg["posts"]:
+        if p.get("draft"):
+            continue
+        try:
+            if parse_date(p["date"]) != today:
+                continue
+        except Exception:
+            continue
+        out.append("%s/column/%s.html" % (base, p["id"]))
+    return out
+
+
+def ping(cfg, url_list=None):
     meta = cfg["meta"]; base = meta["baseUrl"]; key = cfg["indexnow"]["key"]
     host = base.split("//")[-1]
-    url_list = ['%s/' % base] + ['%s/column/%s.html' % (base, p["id"]) for p in published_posts(cfg)]
+    if url_list is None:
+        url_list = ['%s/' % base] + ['%s/column/%s.html' % (base, p["id"]) for p in published_posts(cfg)]
     payload = json.dumps({
         "host": host, "key": key, "keyLocation": "%s/%s.txt" % (base, key),
         "urlList": url_list,
@@ -461,5 +481,17 @@ if __name__ == "__main__":
     if "--ping" in sys.argv:
         print("● IndexNow 핑 전송 (배포 후 실행해야 함) …")
         ping(cfg)
+    elif "--ping-new" in sys.argv:
+        # Netlify 빌드에서 호출된다. 어떤 이유로든 핑이 실패해도 배포는 성공해야 하므로
+        # 여기서 모든 예외를 잡고 정상 종료한다.
+        try:
+            urls = newly_published_urls(cfg)
+            if not urls:
+                print("● IndexNow: 오늘 새로 공개된 글 없음 — 핑 생략")
+            else:
+                print("● IndexNow 핑 (오늘 새로 공개된 %d건) …" % len(urls))
+                ping(cfg, urls)
+        except Exception as e:
+            print("● IndexNow 핑 건너뜀(오류: %s) — 배포는 계속됩니다." % e)
     else:
         build(cfg)
