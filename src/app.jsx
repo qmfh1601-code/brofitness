@@ -1491,6 +1491,9 @@ function Booking() {
   const [sending, setSending] = useState(false);
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
   const valid = form.name.trim() && form.phone.trim();
+  // 지점별 카카오채널: 신청이 지부장에게 바로 닿도록 폼과 별개의 즉시 상담 경로를 둔다.
+  const kakaoBranches = C.branches.filter((b) => b.kakao);
+  const pickedKakao = (C.branches.find((b) => b.name === form.branch) || {}).kakao;
 
   const submit = async () => {
     if (!valid || sending) return;
@@ -1518,6 +1521,8 @@ function Booking() {
       }
       setSending(false);
       setSent(true);
+      // 해당 지점 카톡을 바로 띄운다. 팝업 차단되면 완료 화면의 버튼으로 이어간다.
+      if (pickedKakao) { try { window.open(pickedKakao, "_blank", "noopener"); } catch (e) {} }
       return;
     }
 
@@ -1547,6 +1552,22 @@ function Booking() {
             <p className="text-ink/55">{f.desc}</p>
           </Reveal>
 
+          {!sent && kakaoBranches.length > 0 && (
+            <Reveal className="mb-6 bg-white rounded-3xl p-6 border-2 border-[#FEE500] shadow-lg">
+              <p className="font-bold text-ink text-center mb-1">지금 바로 물어보기</p>
+              <p className="text-ink/55 text-sm text-center mb-5">지점 담당자와 카카오톡으로 바로 연결됩니다.</p>
+              <div className="grid grid-cols-3 gap-2.5">
+                {kakaoBranches.map((b) => (
+                  <a key={b.id} href={b.kakao} target="_blank" rel="noopener noreferrer"
+                     className="rounded-2xl bg-[#FEE500] hover:brightness-95 text-[#3C1E1E] font-bold py-3.5 text-center text-sm transition-all">
+                    💬<br />{b.name}
+                  </a>
+                ))}
+              </div>
+              <p className="text-center text-ink/35 text-xs mt-4">또는 아래 양식을 남겨주세요 · 연락드립니다</p>
+            </Reveal>
+          )}
+
           {sent ? (
             <Reveal className="bg-white rounded-3xl p-10 text-center border-2 border-bro/30 shadow-xl">
               <div className="text-5xl mb-4">✅</div>
@@ -1557,6 +1578,13 @@ function Booking() {
                 <p className="text-ink/65 mb-2">메일 앱이 열렸다면 그대로 <b className="text-ink">전송</b>만 눌러주세요.</p>
               )}
               <p className="text-ink/45 text-sm mb-8">빠른 시간 안에 연락드리겠습니다.</p>
+              {pickedKakao && (
+                <div className="mb-6 rounded-2xl bg-[#FEE500]/20 ring-1 ring-[#FEE500] p-5">
+                  <p className="font-bold text-ink mb-1">더 빠르게 답변받고 싶다면</p>
+                  <p className="text-ink/55 text-sm mb-4">{form.branch} 담당자와 카카오톡으로 바로 이야기하실 수 있어요.</p>
+                  <Btn variant="bro" className="w-full" href={pickedKakao}>💬 {form.branch} 카카오톡 상담 →</Btn>
+                </div>
+              )}
               <div className="flex flex-col gap-3">
                 <Btn variant="bro" onClick={() => setSent(false)}>다시 신청하기</Btn>
                 <Btn variant="outline" onClick={() => go("/")}>홈으로</Btn>

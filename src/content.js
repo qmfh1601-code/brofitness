@@ -347,7 +347,7 @@ window.CONTENT = {
       hours: "연중무휴 24시간 운영", // ← 실제 시간
       naver: "https://map.naver.com/p/search/브로피트니스 용암점", // 네이버 플레이스 (정확한 공유링크로 교체 가능)
       instagram: "https://www.instagram.com/bro__fitness1/", // 용암점 인스타
-      kakao: "http://pf.kakao.com/_xexjRPxj/chat", // 용암점 카카오톡 상담
+      kakao: "https://pf.kakao.com/_xexjRPxj/chat", // 용암점 카카오톡 상담
       desc: "동네에서 가장 편하게 들르는 구독형 헬스장. 초보자 환영.",
       images: [
         "img/yongam-1.jpg", // 와이드 전경 + BRO FITNESS 사인 (가로·대표/배너)
@@ -371,7 +371,7 @@ window.CONTENT = {
       hours: "연중무휴 24시간 운영",
       naver: "https://map.naver.com/p/search/브로피트니스 금천점", // 네이버 플레이스 (정확한 공유링크로 교체 가능)
       instagram: "https://www.instagram.com/bro__fitness2/", // 금천점 인스타
-      kakao: "http://pf.kakao.com/_hurxfxj/chat", // 금천점 카카오톡 상담
+      kakao: "https://pf.kakao.com/_hurxfxj/chat", // 금천점 카카오톡 상담
       desc: "넓고 쾌적한 시설. 연중무휴 24시간 언제든 운동.",
       images: [
         "img/geumcheon-2.jpg", // 프리웨이트 존 (가로·대표/배너)
@@ -395,7 +395,7 @@ window.CONTENT = {
       hours: "연중무휴 24시간 운영",
       naver: "https://map.naver.com/p/search/브로피트니스 복대점", // 네이버 플레이스 (정확한 공유링크로 교체 가능)
       instagram: "https://www.instagram.com/bro__fitness3/", // 복대점 인스타
-      kakao: "http://pf.kakao.com/_jxmqzX/chat", // 복대점 카카오톡 상담
+      kakao: "https://pf.kakao.com/_jxmqzX/chat", // 복대점 카카오톡 상담
       desc: "신상 기구 가득. 가장 활기찬 분위기의 지점.",
       images: [
         "img/bokdae-1.jpg", // 와이드 전경 (가로·대표/배너)
