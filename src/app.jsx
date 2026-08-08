@@ -1883,8 +1883,18 @@ function ColumnPost({ id }) {
           <Reveal className="space-y-7">
             {(() => {
               let firstPara = true;
+              let headNo = 0;
               return post.body.map((blk, i) => {
-                // 문자열 = 문단(폴백), 객체 = {type:"p"|"img"} (발행엔진 정규화 결과)
+                // 문자열 = 문단(폴백), 객체 = {type:"p"|"h2"|"img"} (발행엔진 정규화 결과)
+                if (blk && typeof blk === "object" && blk.type === "h2") {
+                  headNo += 1;
+                  return (
+                    <h2 key={i} id={"s" + headNo} className="text-2xl lg:text-3xl font-extrabold tracking-tight text-ink pt-6 scroll-mt-24">
+                      <span className="block w-9 h-[3px] rounded bg-bro mb-4" />
+                      {blk.text}
+                    </h2>
+                  );
+                }
                 if (blk && typeof blk === "object" && blk.type === "img") {
                   return (
                     <figure key={i} className="my-10">

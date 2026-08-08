@@ -30,7 +30,7 @@ data/columns.json 한 파일을 읽어서 아래를 '자동'으로 생성/갱신
                                       # (IndexNow 는 변경된 URL만 보내는 게 원칙이라 평소엔 이쪽을 쓴다)
 """
 import json, os, re, html, sys, datetime
-import urllib.request
+import urllib.request, urllib.parse
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.path.join(ROOT, "data", "columns.json")
@@ -128,7 +128,8 @@ def inline_slot_count(cfg, post):
     meta = cfg.get("meta", {})
     if not meta.get("autoInlinePhoto", True) or has_img:
         return auto_blocks
-    n_para = sum(1 for b in raw if not (isinstance(b, dict) and b.get("img")))
+    n_para = sum(1 for b in raw
+                 if not (isinstance(b, dict) and (b.get("img") or b.get("h2"))))
     every = max(2, int(meta.get("inlineEvery", 3)))
     return len(set(range(every, n_para, every)))
 
@@ -149,6 +150,8 @@ def normalize_body(cfg, post, hero, queue):
                     continue                       # 남은 유니크 사진 없음 → 건너뜀
                 src = q.pop(0)
             base.append({"type": "img", "src": src, "caption": b.get("caption", "")})
+        elif isinstance(b, dict) and b.get("h2"):
+            base.append({"type": "h2", "text": b["h2"]})
         else:
             base.append({"type": "p", "text": b if isinstance(b, str) else str(b)})
 
@@ -219,16 +222,28 @@ def resolve_posts(cfg):
 
 
 def render_body_html(cfg, blocks):
-    out, first_p = [], True
+    out, first_p, h_no = [], True, 0
     for blk in blocks:
         if blk.get("type") == "img":
             cap = ('<figcaption>%s</figcaption>' % esc(blk["caption"])) if blk.get("caption") else ""
             out.append('<figure class="cimg"><img src="/%s" alt="%s" loading="lazy" />%s</figure>'
                        % (esc(blk["src"]), esc(blk.get("caption") or "브로피트니스"), cap))
+        elif blk.get("type") == "h2":
+            h_no += 1
+            out.append('<h2 id="s%d">%s</h2>' % (h_no, esc(blk["text"])))
         else:
             t = smart_link(esc(blk["text"]), cfg.get("smartLinks", {}))
             out.append('<p%s>%s</p>' % (' class="lead"' if first_p else "", t))
             first_p = False
+
+    # 소제목이 3개 이상이면 목차를 첫 소제목 앞에 끼운다(발췌·앵커 노출용)
+    heads = [b for b in blocks if b.get("type") == "h2"]
+    if len(heads) >= 3:
+        toc = ('<nav class="toc" aria-label="목차"><b>이 글의 순서</b><ol>%s</ol></nav>'
+               % "".join('<li><a href="#s%d">%s</a></li>' % (i + 1, esc(h["text"]))
+                         for i, h in enumerate(heads)))
+        first_h = next(i for i, s in enumerate(out) if s.startswith("<h2 "))
+        out.insert(first_h, toc)
     return "\n    ".join(out)
 
 
@@ -237,13 +252,13 @@ PAGE = """<!DOCTYPE html>
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>{title} | {site}</title>
+<title>{seo_title}</title>
 <meta name="description" content="{desc}" />
 <link rel="canonical" href="{url}" />
 <meta name="robots" content="index, follow, max-image-preview:large" />
 <meta property="og:type" content="article" />
 <meta property="og:site_name" content="{site}" />
-<meta property="og:title" content="{title}" />
+<meta property="og:title" content="{seo_title}" />
 <meta property="og:description" content="{desc}" />
 <meta property="og:url" content="{url}" />
 <meta property="og:image" content="{img}" />
@@ -272,6 +287,12 @@ PAGE = """<!DOCTYPE html>
  article{{padding:44px 0 8px;}}
  article p{{font-size:17px;color:rgba(14,14,16,.84);margin:0 0 22px;}}
  article p.lead::first-letter{{float:left;font-size:3.2em;line-height:.8;padding:.04em .12em 0 0;color:var(--bro);font-weight:800;}}
+ article h2{{font-size:22px;line-height:1.4;letter-spacing:-.01em;margin:40px 0 14px;scroll-margin-top:80px;}}
+ article h2::before{{content:"";display:block;width:34px;height:3px;background:var(--bro);border-radius:2px;margin-bottom:14px;}}
+ nav.toc{{background:var(--ivory);border:1px solid rgba(14,14,16,.06);border-radius:16px;padding:18px 22px;margin:0 0 30px;}}
+ nav.toc b{{display:block;font-size:13px;letter-spacing:.08em;color:var(--bro);margin-bottom:10px;}}
+ nav.toc ol{{margin:0;padding-left:20px;}} nav.toc li{{margin:4px 0;font-size:15px;}}
+ nav.toc a{{color:rgba(14,14,16,.78);text-decoration:none;}}
  .ilink{{color:var(--broDark);font-weight:600;text-decoration:underline;text-underline-offset:3px;}}
  figure.cimg{{margin:34px 0;}}
  figure.cimg img{{width:100%;border-radius:18px;display:block;}}
@@ -408,6 +429,50 @@ def render_rss(cfg, posts, limit=20):
         esc(meta["subtitle"]), build_date, items)
 
 
+TITLE_MAX = 60          # 검색결과에서 잘리지 않는 <title> 길이(사이트명 포함)
+
+
+def seo_title(cfg, post):
+    """<title>·og:title 전용 제목. h1(post['title'])은 길어도 되지만 이쪽은 잘리면 안 된다.
+    seoTitle 이 있으면 그걸 쓰고, 없으면 원제에서 부제(— 뒤)를 떼어 줄인다."""
+    site = cfg["meta"]["siteName"]
+    raw = (post.get("seoTitle") or "").strip()
+    if not raw:
+        raw = post["title"].strip()
+        if len(raw) + len(site) + 3 > TITLE_MAX:
+            head = re.split(r"\s[—–-]\s", raw, 1)[0].strip()
+            if 12 <= len(head) < len(raw):
+                raw = head
+    short = cfg["meta"].get("brandShort") or site.split()[0]
+    for suffix in (site, short):
+        full = "%s | %s" % (raw, suffix)
+        if len(full) <= TITLE_MAX:
+            return full
+    return raw
+
+
+def author_entity(cfg):
+    """저자. 실존하지 않는 인물을 지어내지 않고, 글을 쓰는 실제 주체(팀)를 밝힌다.
+    columns.json 의 meta.author 로 실명 바이라인을 넣으면 Person 으로 승격된다."""
+    meta = cfg["meta"]
+    base = meta["baseUrl"]
+    a = meta.get("author")
+    if isinstance(a, dict) and a.get("name"):
+        out = {"@type": a.get("type", "Person"), "name": a["name"]}
+        if a.get("jobTitle"):
+            out["jobTitle"] = a["jobTitle"]
+        if a.get("url"):
+            out["url"] = a["url"]
+        if a.get("sameAs"):
+            out["sameAs"] = a["sameAs"]
+        if a.get("description"):
+            out["description"] = a["description"]
+        out["worksFor"] = {"@id": base + "/#org"}
+        return out
+    return {"@type": "Organization", "@id": base + "/#org",
+            "name": meta["siteName"], "url": base}
+
+
 def render_post(cfg, post, posts):
     meta = cfg["meta"]
     base = meta["baseUrl"]
@@ -422,16 +487,24 @@ def render_post(cfg, post, posts):
         "description": post["excerpt"],
         "image": img_abs,
         "datePublished": iso_date(post["date"]),
-        "dateModified": iso_date(post["date"]),
-        "author": {"@type": "Organization", "name": meta["siteName"]},
-        "publisher": {"@type": "Organization", "name": meta["siteName"],
+        "dateModified": iso_date(post.get("updated") or post["date"]),
+        "author": author_entity(cfg),
+        "publisher": {"@type": "Organization", "@id": base + "/#org",
+                       "name": meta["siteName"],
                        "logo": {"@type": "ImageObject", "url": base + "/img/logo-bro.png"}},
         "mainEntityOfPage": url,
         "articleSection": post["cat"],
+        "inLanguage": "ko-KR",
     }
+    heads = [b["text"] for b in post["body"] if b.get("type") == "h2"]
+    if heads:
+        schema["articleSection"] = post["cat"]
+        schema["hasPart"] = [{"@type": "WebPageElement", "name": h,
+                              "url": "%s#s%d" % (url, i + 1)} for i, h in enumerate(heads)]
     cta = cfg["cta"]
     return PAGE.format(
-        title=esc(post["title"]), site=esc(meta["siteName"]), desc=esc(post["excerpt"]),
+        title=esc(post["title"]), seo_title=esc(seo_title(cfg, post)),
+        site=esc(meta["siteName"]), desc=esc(post["excerpt"]),
         url=esc(url), img=esc(img_abs), img_rel="/" + esc(post["image"]),
         schema=json.dumps(schema, ensure_ascii=False, indent=2),
         cat=esc(post["cat"]), date=esc(post["date"]), body=body_html,
@@ -575,6 +648,11 @@ def breadcrumb(base, trail):
         for i, (name, path) in enumerate(trail)]}
 
 
+def safe_url(u):
+    """sameAs 등 구조화데이터용. 한글·공백이 든 주소를 유효한 URI로 퍼센트 인코딩한다."""
+    return urllib.parse.quote(u, safe=":/?#[]@!$&'()*+,;=~-._")
+
+
 def gym_schema(base, b):
     """지점 하나의 ExerciseGym 구조화데이터. url 은 색인되는 정적 페이지를 가리킨다."""
     return {
@@ -596,7 +674,7 @@ def gym_schema(base, b):
             "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday",
                           "Friday", "Saturday", "Sunday"],
             "opens": "00:00", "closes": "23:59"}],
-        "sameAs": [b["naver"], b["instagram"]],
+        "sameAs": [safe_url(b["naver"]), b["instagram"]],
     }
 
 
