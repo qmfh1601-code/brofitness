@@ -466,6 +466,285 @@ def render_index(cfg, posts):
                         sub=esc(meta["subtitle"]), base=esc(meta["baseUrl"]), items=items)
 
 
+# ------------------------------------------------------------------ 정적 지점·요금 페이지
+# index.html(SPA)은 해시 라우팅(/#/branch/yongam, /#/pricing)이라 검색엔진이 지점·요금을
+# 개별 URL로 인식하지 못한다. 홈의 크롤 가능 텍스트도 사실상 0이라, 지역·상업 키워드로
+# 노출될 페이지가 칼럼밖에 없었다. 같은 정보를 담은 정적 페이지를 만들어 색인 대상에 올린다.
+SITE_JSON = os.path.join(ROOT, "data", "site.json")
+
+
+def load_site():
+    if not os.path.exists(SITE_JSON):
+        return None
+    with open(SITE_JSON, encoding="utf-8") as f:
+        return json.load(f)
+
+
+STATIC_CSS = """<style>
+ :root{--ink:#0E0E10;--bro:#FF6A1A;--broDark:#E2540A;--cream:#FBF8F2;--ivory:#F6F2EA;}
+ *{box-sizing:border-box;} body{margin:0;font-family:'Pretendard',system-ui,sans-serif;background:var(--cream);color:var(--ink);line-height:1.75;-webkit-font-smoothing:antialiased;}
+ a{color:inherit;} .wrap{max-width:820px;margin:0 auto;padding:0 20px;}
+ header.site{border-bottom:1px solid rgba(14,14,16,.08);background:var(--cream);}
+ header.site .wrap{display:flex;align-items:center;height:64px;gap:16px;}
+ header.site .logo img{height:40px;width:auto;display:block;}
+ header.site nav{margin-left:auto;display:flex;gap:14px;font-size:14px;font-weight:600;}
+ header.site nav a{text-decoration:none;color:rgba(14,14,16,.62);}
+ .hero{position:relative;overflow:hidden;background:#14151a;color:#fff;}
+ .hero .cover{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.45;}
+ .hero .scrim{position:absolute;inset:0;background:linear-gradient(to top,#0E0E10,rgba(14,14,16,.6),rgba(14,14,16,.25));}
+ .hero .inner{position:relative;z-index:2;max-width:820px;margin:0 auto;padding:104px 20px 48px;}
+ .eyebrow{color:var(--bro);font-weight:700;font-size:14px;margin:0 0 10px;letter-spacing:.06em;}
+ h1{font-size:30px;line-height:1.3;margin:0 0 14px;}
+ .hero .sub{color:rgba(255,255,255,.72);font-size:16px;margin:0;}
+ main{padding:36px 0 8px;}
+ main p{font-size:17px;color:rgba(14,14,16,.84);margin:0 0 20px;}
+ h2{font-size:22px;margin:38px 0 14px;}
+ h3{font-size:18px;margin:26px 0 8px;}
+ table.info{width:100%;border-collapse:collapse;margin:0 0 26px;font-size:16px;}
+ table.info th{text-align:left;width:32%;padding:12px 10px;background:var(--ivory);border:1px solid rgba(14,14,16,.08);font-weight:700;}
+ table.info td{padding:12px 10px;border:1px solid rgba(14,14,16,.08);}
+ ul.list{padding-left:20px;margin:0 0 24px;} ul.list li{margin:0 0 8px;font-size:16px;}
+ .gal{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:0 0 30px;}
+ .gal img{width:100%;border-radius:14px;display:block;aspect-ratio:4/3;object-fit:cover;}
+ .cta{background:var(--ink);color:#fff;border-radius:20px;padding:32px 26px;text-align:center;margin:34px 0;}
+ .cta .ey{color:var(--bro);font-weight:700;font-size:13px;letter-spacing:.12em;margin:0;}
+ .cta .big{font-size:22px;font-weight:800;margin:8px 0 6px;}
+ .cta .desc{color:rgba(255,255,255,.62);font-size:15px;margin:0;}
+ .btns{margin-top:18px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+ .btn{display:inline-block;text-decoration:none;font-weight:700;padding:13px 22px;border-radius:999px;}
+ .btn.p{background:var(--bro);color:#fff;} .btn.s{border:1px solid rgba(255,255,255,.45);color:#fff;}
+ .cards{display:grid;gap:12px;margin:0 0 30px;}
+ .card{display:block;background:#fff;border:1px solid rgba(14,14,16,.07);border-radius:16px;padding:16px 18px;text-decoration:none;}
+ .card b{display:block;font-size:16px;margin-bottom:4px;}
+ .card span{font-size:14px;color:rgba(14,14,16,.55);}
+ .crumb{font-size:13px;color:rgba(14,14,16,.5);padding:14px 0 0;margin:0;}
+ footer.site{border-top:1px solid rgba(14,14,16,.08);padding:26px 0;color:rgba(14,14,16,.5);font-size:14px;margin-top:20px;}
+ @media(min-width:768px){h1{font-size:38px;}}
+</style>"""
+
+STATIC_NAV = ('<header class="site"><div class="wrap">'
+              '<a class="logo" href="/"><img src="/img/logo-bro.png" alt="브로피트니스 BRO FITNESS" /></a>'
+              '<nav><a href="/pricing.html">요금</a>'
+              '<a href="/branch/yongam.html">용암점</a>'
+              '<a href="/branch/geumcheon.html">금천점</a>'
+              '<a href="/branch/bokdae.html">복대점</a>'
+              '<a href="/column/">저널</a></nav>'
+              '</div></header>')
+
+STATIC_FOOT = ('<footer class="site"><div class="wrap">'
+               '브로피트니스 BRO FITNESS · 청주 '
+               '<a href="/branch/yongam.html">용암점</a> / '
+               '<a href="/branch/geumcheon.html">금천점</a> / '
+               '<a href="/branch/bokdae.html">복대점</a> · '
+               '<a href="/pricing.html">요금 안내</a> · '
+               '<a href="/column/">브로 저널</a> · '
+               '<a href="/">brofitness.kr</a>'
+               '</div></footer>')
+
+
+def static_page(title, desc, url, img_abs, schema, hero, body_html):
+    """정적 페이지 공통 셸(head + 히어로 + 본문)."""
+    return "\n".join([
+        '<!DOCTYPE html>', '<html lang="ko">', '<head>',
+        '<meta charset="UTF-8" />',
+        '<meta name="viewport" content="width=device-width, initial-scale=1.0" />',
+        '<title>%s</title>' % esc(title),
+        '<meta name="description" content="%s" />' % esc(desc),
+        '<link rel="canonical" href="%s" />' % esc(url),
+        '<meta name="robots" content="index, follow, max-image-preview:large" />',
+        '<meta property="og:type" content="website" />',
+        '<meta property="og:site_name" content="브로피트니스 BRO FITNESS" />',
+        '<meta property="og:title" content="%s" />' % esc(title),
+        '<meta property="og:description" content="%s" />' % esc(desc),
+        '<meta property="og:url" content="%s" />' % esc(url),
+        '<meta property="og:image" content="%s" />' % esc(img_abs),
+        '<meta name="twitter:card" content="summary_large_image" />',
+        '<link rel="alternate" type="application/rss+xml" title="브로 저널" href="/rss.xml" />',
+        '<link rel="icon" type="image/png" href="/img/logo-bro.png" />',
+        '<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />',
+        '<script type="application/ld+json">',
+        json.dumps(schema, ensure_ascii=False, indent=2),
+        '</script>', STATIC_CSS, '</head>', '<body>', STATIC_NAV, hero,
+        '<div class="wrap"><main>', body_html, '</main></div>', STATIC_FOOT,
+        '</body>', '</html>', ''])
+
+
+def breadcrumb(base, trail):
+    return {"@type": "BreadcrumbList", "itemListElement": [
+        {"@type": "ListItem", "position": i + 1, "name": name, "item": base + path}
+        for i, (name, path) in enumerate(trail)]}
+
+
+def gym_schema(base, b):
+    """지점 하나의 ExerciseGym 구조화데이터. url 은 색인되는 정적 페이지를 가리킨다."""
+    return {
+        "@type": "ExerciseGym",
+        "@id": "%s/branch/%s.html#gym" % (base, b["id"]),
+        "name": "브로피트니스 %s" % b["name"],
+        "url": "%s/branch/%s.html" % (base, b["id"]),
+        "image": "%s/%s" % (base, b["image"]),
+        "telephone": b["tel"],
+        "priceRange": "월 %s원" % b["price"],
+        "currenciesAccepted": "KRW",
+        "parentOrganization": {"@id": base + "/#org"},
+        "address": {"@type": "PostalAddress", "streetAddress": b["street"],
+                    "addressLocality": "청주시", "addressRegion": "충청북도",
+                    "addressCountry": "KR"},
+        "areaServed": [{"@type": "Place", "name": n} for n in (b.get("nearby") or [])],
+        "openingHoursSpecification": [{
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday",
+                          "Friday", "Saturday", "Sunday"],
+            "opens": "00:00", "closes": "23:59"}],
+        "sameAs": [b["naver"], b["instagram"]],
+    }
+
+
+def branch_related(posts, b):
+    """지점과 지역이 맞는 칼럼을 골라 내부링크로 건다(칼럼 → 지점 반대 방향 연결)."""
+    want = ["%s-gym" % b["id"], "cheongju-24h-gym", "cheongju-no-contract", "cheongju-pt-guide"]
+    by_id = {p["id"]: p for p in posts}
+    return [by_id[i] for i in want if i in by_id]
+
+
+def render_branch(cfg, site, b, posts):
+    base = cfg["meta"]["baseUrl"]
+    url = "%s/branch/%s.html" % (base, b["id"])
+    common = site["common"]
+    # 제목 앞머리는 구 이름(상당구)보다 검색량이 큰 동 이름(용암동)을 쓴다.
+    nearby = b.get("nearby") or []
+    area = nearby[0] if nearby else b["name"]
+    title = "청주 %s 헬스장 브로피트니스 %s | 24시간 무약정" % (area, b["name"])
+    desc = b["summary"]
+    hero = ('<div class="hero"><img class="cover" src="/%s" alt="브로피트니스 %s 내부" />'
+            '<div class="scrim"></div><div class="inner">'
+            '<p class="eyebrow">BRO FITNESS · %s</p><h1>브로피트니스 %s</h1>'
+            '<p class="sub">%s</p></div></div>'
+            % (esc(b["image"]), esc(b["name"]), esc(b.get("label") or b["name"]), esc(b["name"]), esc(desc)))
+    parts = ['<p class="crumb"><a href="/">홈</a> › <a href="/pricing.html">요금·지점</a> › 브로피트니스 %s</p>' % esc(b["name"])]
+    parts += ["<p>%s</p>" % esc(t) for t in b["intro"]]
+    parts.append("<h2>브로피트니스 %s 이용 안내</h2>" % esc(b["name"]))
+    parts.append(
+        '<table class="info">'
+        '<tr><th>주소</th><td>%s</td></tr>'
+        '<tr><th>전화</th><td><a href="tel:%s">%s</a></td></tr>'
+        '<tr><th>운영시간</th><td>%s</td></tr>'
+        '<tr><th>월 구독료</th><td>%s원 (약정·위약금 없음)</td></tr>'
+        '<tr><th>카카오 상담</th><td><a href="%s" rel="nofollow noopener" target="_blank">%s 카카오톡 채널</a></td></tr>'
+        '<tr><th>지도</th><td><a href="%s" rel="nofollow noopener" target="_blank">네이버 지도에서 보기</a></td></tr>'
+        '</table>' % (esc(b["addr"]), esc(b["phone"].replace("-", "")), esc(b["phone"]),
+                      esc(common["hours"]), esc(b["price"]), esc(b["kakao"]),
+                      esc(b["name"]), esc(b["naver"])))
+    parts.append("<h2>구독에 포함된 것</h2>")
+    parts.append('<ul class="list">%s</ul>'
+                 % "".join("<li>%s</li>" % esc(x) for x in common["includes"]))
+    parts.append("<h2>등록 조건</h2>")
+    parts.append('<ul class="list">%s</ul>'
+                 % "".join("<li>%s</li>" % esc(x) for x in common["policy"]))
+    parts.append("<h2>%s 시설</h2>" % esc(b["name"]))
+    parts.append('<div class="gal">%s</div>'
+                 % "".join('<img src="/%s" alt="브로피트니스 %s 시설 사진" loading="lazy" />'
+                           % (esc(g), esc(b["name"])) for g in b.get("gallery") or []))
+    parts.append(
+        '<div class="cta"><p class="ey">START TODAY</p>'
+        '<p class="big">%s, 이번 달부터 시작하세요.</p>'
+        '<p class="desc">월 %s원 · 약정 없음 · 연중무휴 24시간</p>'
+        '<div class="btns"><a class="btn p" href="%s" rel="nofollow noopener" target="_blank">카카오톡으로 문의</a>'
+        '<a class="btn s" href="/#/booking">무료체험 예약</a></div></div>'
+        % (esc(b["name"]), esc(b["price"]), esc(b["kakao"])))
+    others = [x for x in site["branches"] if x["id"] != b["id"]]
+    parts.append("<h2>다른 지점</h2>")
+    parts.append('<div class="cards">%s</div>' % "".join(
+        '<a class="card" href="/branch/%s.html"><b>브로피트니스 %s</b><span>%s · 월 %s원</span></a>'
+        % (esc(x["id"]), esc(x["name"]), esc(x["addr"]), esc(x["price"])) for x in others))
+    rel = branch_related(posts, b)
+    if rel:
+        parts.append("<h2>읽어볼 만한 글</h2>")
+        parts.append('<div class="cards">%s</div>' % "".join(
+            '<a class="card" href="/column/%s.html"><b>%s</b><span>브로 저널</span></a>'
+            % (esc(p["id"]), esc(p["title"])) for p in rel))
+    schema = {"@context": "https://schema.org", "@graph": [
+        gym_schema(base, b),
+        breadcrumb(base, [("홈", "/"), ("요금·지점", "/pricing.html"),
+                          ("브로피트니스 %s" % b["name"], "/branch/%s.html" % b["id"])]),
+    ]}
+    return static_page(title, desc, url, "%s/%s" % (base, b["image"]),
+                       schema, hero, "\n".join(parts))
+
+
+PRICING_FAQ = [
+    ("약정 기간이 정말 없나요?",
+     "없습니다. 한 달 단위 구독이라 다음 달에 이어갈지 말지를 매달 정하시면 됩니다. 중간에 멈춰도 위약금이 붙지 않습니다."),
+    ("한 달만 다녀도 되나요?",
+     "됩니다. 한 달만 이용하고 구독을 취소하셔도 추가로 내실 비용이 없습니다."),
+    ("몇 시까지 운영하나요?",
+     "용암·금천·복대 전 지점 모두 연중무휴 24시간 운영입니다. 새벽이나 심야, 주말과 공휴일에도 이용하실 수 있습니다."),
+    ("운동복이나 수건을 챙겨가야 하나요?",
+     "운동복 대여와 락커, 샤워실이 구독 요금에 포함되어 있어 몸만 오시면 됩니다."),
+    ("지점마다 요금이 다른가요?",
+     "용암점과 금천점은 월 34,900원, 복대점은 월 38,900원입니다. 지점별 시설 규모에 따라 차이가 있습니다."),
+]
+
+
+def render_pricing(cfg, site, posts):
+    base = cfg["meta"]["baseUrl"]
+    url = "%s/pricing.html" % base
+    pr = site["pricing"]
+    common = site["common"]
+    title = "청주 헬스장 요금 | 월 34,900원부터 무약정 구독 — 브로피트니스"
+    desc = pr["desc"]
+    hero = ('<div class="hero"><img class="cover" src="/%s" alt="브로피트니스 회원 운동 모습" />'
+            '<div class="scrim"></div><div class="inner">'
+            '<p class="eyebrow">MEMBERSHIP</p><h1>%s</h1>'
+            '<p class="sub">청주 용암 · 금천 · 복대 전 지점, 연중무휴 24시간</p></div></div>'
+            % (esc(pr["image"]), esc(pr["title"])))
+    parts = ['<p class="crumb"><a href="/">홈</a> › 요금 안내</p>']
+    parts += ["<p>%s</p>" % esc(t) for t in pr["intro"]]
+    parts.append("<h2>지점별 월 구독료</h2>")
+    parts.append('<table class="info"><tr><th>지점</th><th>주소</th><th>월 구독료</th></tr>%s</table>'
+                 % "".join('<tr><td><a href="/branch/%s.html">브로피트니스 %s</a></td>'
+                           '<td>%s</td><td>%s원</td></tr>'
+                           % (esc(b["id"]), esc(b["name"]), esc(b["addr"]), esc(b["price"]))
+                           for b in site["branches"]))
+    parts.append("<h2>요금에 포함된 것</h2>")
+    parts.append('<ul class="list">%s</ul>'
+                 % "".join("<li>%s</li>" % esc(x) for x in common["includes"]))
+    parts.append("<h2>알아두실 점</h2>")
+    parts.append('<ul class="list">%s</ul>'
+                 % "".join("<li>%s</li>" % esc(x) for x in pr["notes"]))
+    parts.append("<h2>자주 묻는 질문</h2>")
+    for q, a in PRICING_FAQ:
+        parts.append("<h3>%s</h3><p>%s</p>" % (esc(q), esc(a)))
+    parts.append(
+        '<div class="cta"><p class="ey">START TODAY</p>'
+        '<p class="big">이번 달부터, 34,900원.</p>'
+        '<p class="desc">용암·금천점 월 34,900원 · 복대점 월 38,900원</p>'
+        '<p class="desc">약정 없이 한 달만 다녀 보셔도 됩니다.</p>'
+        '<div class="btns"><a class="btn p" href="/#/booking">무료체험 예약하기</a>'
+        '<a class="btn s" href="/column/">브로 저널 보기</a></div></div>')
+    parts.append("<h2>지점 안내</h2>")
+    parts.append('<div class="cards">%s</div>' % "".join(
+        '<a class="card" href="/branch/%s.html"><b>브로피트니스 %s</b><span>%s · %s</span></a>'
+        % (esc(b["id"]), esc(b["name"]), esc(b["addr"]), esc(common["hours"]))
+        for b in site["branches"]))
+    schema = {"@context": "https://schema.org", "@graph": [
+        {"@type": "FAQPage", "mainEntity": [
+            {"@type": "Question", "name": q,
+             "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in PRICING_FAQ]},
+        breadcrumb(base, [("홈", "/"), ("요금 안내", "/pricing.html")]),
+    ] + [gym_schema(base, b) for b in site["branches"]]}
+    return static_page(title, desc, url, "%s/%s" % (base, pr["image"]),
+                       schema, hero, "\n".join(parts))
+
+
+def static_urls(cfg, site):
+    if not site:
+        return []
+    base = cfg["meta"]["baseUrl"]
+    return ["%s/pricing.html" % base] + \
+           ["%s/branch/%s.html" % (base, b["id"]) for b in site["branches"]]
+
+
 def write(path, content):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
@@ -491,9 +770,20 @@ def build(cfg):
           "/* 자동 생성됨 — 직접 수정 금지. 글 수정은 data/columns.json + publish.py */\n"
           "window.COLUMNS = " + json.dumps(spa, ensure_ascii=False) + ";\n")
 
+    site = load_site()
+    if site:
+        print("● 정적 지점·요금 페이지 생성 …")
+        for b in site["branches"]:
+            write(os.path.join(ROOT, "branch", b["id"] + ".html"),
+                  render_branch(cfg, site, b, posts))
+        write(os.path.join(ROOT, "pricing.html"), render_pricing(cfg, site, posts))
+    else:
+        print("● data/site.json 없음 — 지점·요금 정적 페이지 생략")
+
     print("● 사이트맵(sitemap.xml) 생성 …")
     today = today_kst().isoformat()
     urls = ['%s/' % base, '%s/column/' % base]
+    urls += static_urls(cfg, site)
     urls += ['%s/column/%s.html' % (base, p["id"]) for p in posts]
     body = "".join(
         '  <url><loc>%s</loc><lastmod>%s</lastmod></url>\n' % (esc(u), today) for u in urls)
@@ -537,7 +827,8 @@ def ping(cfg, url_list=None):
     meta = cfg["meta"]; base = meta["baseUrl"]; key = cfg["indexnow"]["key"]
     host = base.split("//")[-1]
     if url_list is None:
-        url_list = ['%s/' % base] + ['%s/column/%s.html' % (base, p["id"]) for p in published_posts(cfg)]
+        url_list = ['%s/' % base] + static_urls(cfg, load_site()) + \
+                   ['%s/column/%s.html' % (base, p["id"]) for p in published_posts(cfg)]
     payload = json.dumps({
         "host": host, "key": key, "keyLocation": "%s/%s.txt" % (base, key),
         "urlList": url_list,
