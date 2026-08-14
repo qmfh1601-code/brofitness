@@ -29,7 +29,7 @@ data/columns.json 한 파일을 읽어서 아래를 '자동'으로 생성/갱신
   python3 tools/publish.py --ping-new # 오늘 발행일이 도래한 글만 알림. Netlify 빌드에서 자동 실행됨.
                                       # (IndexNow 는 변경된 URL만 보내는 게 원칙이라 평소엔 이쪽을 쓴다)
 """
-import json, os, re, html, sys, datetime
+import json, os, re, html, sys, datetime, hashlib
 import urllib.request, urllib.parse
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -573,6 +573,7 @@ STATIC_CSS = """<style>
  main p{font-size:17px;color:rgba(14,14,16,.84);margin:0 0 20px;}
  h2{font-size:22px;margin:38px 0 14px;}
  h3{font-size:18px;margin:26px 0 8px;}
+ h3.q{margin:24px 0 6px;line-height:1.45;} h3.q + p{margin:0 0 4px;}
  table.info{width:100%;border-collapse:collapse;margin:0 0 26px;font-size:16px;}
  table.info th{text-align:left;width:32%;padding:12px 10px;background:var(--ivory);border:1px solid rgba(14,14,16,.08);font-weight:700;}
  table.info td{padding:12px 10px;border:1px solid rgba(14,14,16,.08);}
@@ -654,8 +655,22 @@ def safe_url(u):
 
 
 def gym_schema(base, b):
-    """지점 하나의 ExerciseGym 구조화데이터. url 은 색인되는 정적 페이지를 가리킨다."""
-    return {
+    """지점 하나의 ExerciseGym 구조화데이터. url 은 색인되는 정적 페이지를 가리킨다.
+
+    주소는 도로명(road)을 쓴다. 구글·애플은 도로명을 정본으로 잡기 때문에
+    지번으로 적어 두면 지도 데이터와 같은 업체로 묶이지 않을 수 있다.
+    """
+    addr = {"@type": "PostalAddress",
+            "streetAddress": b.get("road") or b["street"],
+            "addressLocality": "청주시", "addressRegion": "충청북도",
+            "addressCountry": "KR"}
+    if b.get("postal"):
+        addr["postalCode"] = b["postal"]
+    same = [safe_url(b["naver"])]
+    if b.get("kakaoMap"):
+        same.append(b["kakaoMap"])
+    same.append(b["instagram"])
+    s = {
         "@type": "ExerciseGym",
         "@id": "%s/branch/%s.html#gym" % (base, b["id"]),
         "name": "브로피트니스 %s" % b["name"],
@@ -665,17 +680,27 @@ def gym_schema(base, b):
         "priceRange": "월 %s원" % b["price"],
         "currenciesAccepted": "KRW",
         "parentOrganization": {"@id": base + "/#org"},
-        "address": {"@type": "PostalAddress", "streetAddress": b["street"],
-                    "addressLocality": "청주시", "addressRegion": "충청북도",
-                    "addressCountry": "KR"},
+        "address": addr,
         "areaServed": [{"@type": "Place", "name": n} for n in (b.get("nearby") or [])],
         "openingHoursSpecification": [{
             "@type": "OpeningHoursSpecification",
             "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday",
                           "Friday", "Saturday", "Sunday"],
             "opens": "00:00", "closes": "23:59"}],
-        "sameAs": [safe_url(b["naver"]), b["instagram"]],
+        "hasMap": safe_url(b["naver"]),
+        "sameAs": same,
     }
+    if b.get("geo"):
+        s["geo"] = {"@type": "GeoCoordinates",
+                    "latitude": b["geo"]["lat"], "longitude": b["geo"]["lng"]}
+    return s
+
+
+def faq_schema(pairs):
+    """(질문, 답) 목록 → FAQPage. 질문을 검색 문장 그대로 쓰는 것이 핵심이다."""
+    return {"@type": "FAQPage", "mainEntity": [
+        {"@type": "Question", "name": q,
+         "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in pairs]}
 
 
 def branch_related(posts, b):
@@ -705,20 +730,30 @@ def render_branch(cfg, site, b, posts):
     parts.append(
         '<table class="info">'
         '<tr><th>주소</th><td>%s</td></tr>'
+        '<tr><th>지번</th><td>%s</td></tr>'
         '<tr><th>전화</th><td><a href="tel:%s">%s</a></td></tr>'
         '<tr><th>운영시간</th><td>%s</td></tr>'
         '<tr><th>월 구독료</th><td>%s원 (약정·위약금 없음)</td></tr>'
         '<tr><th>카카오 상담</th><td><a href="%s" rel="nofollow noopener" target="_blank">%s 카카오톡 채널</a></td></tr>'
-        '<tr><th>지도</th><td><a href="%s" rel="nofollow noopener" target="_blank">네이버 지도에서 보기</a></td></tr>'
-        '</table>' % (esc(b["addr"]), esc(b["phone"].replace("-", "")), esc(b["phone"]),
+        '<tr><th>지도</th><td><a href="%s" rel="nofollow noopener" target="_blank">네이버 지도</a>'
+        ' · <a href="%s" rel="nofollow noopener" target="_blank">카카오맵</a></td></tr>'
+        '</table>' % (esc(b.get("road") or b["addr"]), esc(b.get("jibun") or b["addr"]),
+                      esc(b["phone"].replace("-", "")), esc(b["phone"]),
                       esc(common["hours"]), esc(b["price"]), esc(b["kakao"]),
-                      esc(b["name"]), esc(b["naver"])))
+                      esc(b["name"]), esc(b["naver"]), esc(b.get("kakaoMap") or b["naver"])))
     parts.append("<h2>구독에 포함된 것</h2>")
     parts.append('<ul class="list">%s</ul>'
                  % "".join("<li>%s</li>" % esc(x) for x in common["includes"]))
     parts.append("<h2>등록 조건</h2>")
     parts.append('<ul class="list">%s</ul>'
                  % "".join("<li>%s</li>" % esc(x) for x in common["policy"]))
+    # 질문형 소제목 + 두세 문장 즉답. AI 개요·챗봇이 그대로 인용해 가는 형태라
+    # 답을 첫 문장에서 끝내고, 부연은 그다음에 붙인다.
+    faq = [(f["q"], f["a"]) for f in (b.get("faq") or [])]
+    if faq:
+        parts.append("<h2>브로피트니스 %s 자주 묻는 질문</h2>" % esc(b["name"]))
+        parts.append("".join('<h3 class="q">%s</h3><p>%s</p>' % (esc(q), esc(a))
+                             for q, a in faq))
     parts.append("<h2>%s 시설</h2>" % esc(b["name"]))
     parts.append('<div class="gal">%s</div>'
                  % "".join('<img src="/%s" alt="브로피트니스 %s 시설 사진" loading="lazy" />'
@@ -741,26 +776,44 @@ def render_branch(cfg, site, b, posts):
         parts.append('<div class="cards">%s</div>' % "".join(
             '<a class="card" href="/column/%s.html"><b>%s</b><span>브로 저널</span></a>'
             % (esc(p["id"]), esc(p["title"])) for p in rel))
-    schema = {"@context": "https://schema.org", "@graph": [
-        gym_schema(base, b),
-        breadcrumb(base, [("홈", "/"), ("요금·지점", "/pricing.html"),
-                          ("브로피트니스 %s" % b["name"], "/branch/%s.html" % b["id"])]),
-    ]}
+    graph = [gym_schema(base, b)]
+    if faq:
+        graph.append(faq_schema(faq))
+    graph.append(breadcrumb(base, [("홈", "/"), ("요금·지점", "/pricing.html"),
+                                   ("브로피트니스 %s" % b["name"],
+                                    "/branch/%s.html" % b["id"])]))
+    schema = {"@context": "https://schema.org", "@graph": graph}
     return static_page(title, desc, url, "%s/%s" % (base, b["image"]),
                        schema, hero, "\n".join(parts))
 
 
+# 소제목을 '사람이 검색창에 치는 문장' 그대로 쓴다. AI 개요·챗봇은 질문과 글자가
+# 겹치는 문단을 통째로 인용하므로, 답은 첫 문장에서 끝내고 부연을 뒤에 붙인다.
 PRICING_FAQ = [
-    ("약정 기간이 정말 없나요?",
-     "없습니다. 한 달 단위 구독이라 다음 달에 이어갈지 말지를 매달 정하시면 됩니다. 중간에 멈춰도 위약금이 붙지 않습니다."),
-    ("한 달만 다녀도 되나요?",
-     "됩니다. 한 달만 이용하고 구독을 취소하셔도 추가로 내실 비용이 없습니다."),
-    ("몇 시까지 운영하나요?",
-     "용암·금천·복대 전 지점 모두 연중무휴 24시간 운영입니다. 새벽이나 심야, 주말과 공휴일에도 이용하실 수 있습니다."),
-    ("운동복이나 수건을 챙겨가야 하나요?",
-     "운동복 대여와 락커, 샤워실이 구독 요금에 포함되어 있어 몸만 오시면 됩니다."),
-    ("지점마다 요금이 다른가요?",
-     "용암점과 금천점은 월 34,900원, 복대점은 월 38,900원입니다. 지점별 시설 규모에 따라 차이가 있습니다."),
+    ("청주 헬스장 가격은 얼마인가요?",
+     "브로피트니스 기준 한 달 34,900원부터입니다. 용암점과 금천점이 월 34,900원, 복대점이 월 38,900원이며 약정과 위약금이 없습니다. 이 금액에 샤워실·락커·운동복 대여가 모두 포함됩니다."),
+    ("헬스장 한 달만 등록할 수 있나요?",
+     "가능합니다. 브로피트니스는 한 달 단위 구독이라 한 달만 이용하고 그만두셔도 추가로 내실 비용이 없습니다. 12개월 약정을 걸지 않기 때문에 다음 달에 이어갈지를 매달 정하시면 됩니다."),
+    ("헬스장 약정과 무약정은 무엇이 다른가요?",
+     "약정은 6~12개월치를 먼저 결제하고 중도 해지하면 위약금을 무는 방식이고, 무약정은 매달 결제하고 언제든 멈출 수 있는 방식입니다. 할인율은 약정이 높지만, 못 가는 달이 생기면 그 손해가 그대로 남습니다."),
+    ("청주 24시간 헬스장은 어디에 있나요?",
+     "브로피트니스는 상당구 용암동·금천동, 흥덕구 복대동 세 곳 모두 연중무휴 24시간 운영합니다. 정기 휴무일이 없어 새벽·심야는 물론 주말과 공휴일에도 이용하실 수 있습니다."),
+    ("헬스장 등록할 때 운동복이나 수건을 챙겨가야 하나요?",
+     "브로피트니스는 챙겨 오실 것이 없습니다. 운동복 대여와 락커, 샤워실이 월 구독료에 포함되어 있어 몸만 오시면 됩니다. 별도 대여료를 받지 않습니다."),
+    ("헬스장 지점마다 요금이 다른가요?",
+     "브로피트니스는 용암점과 금천점이 월 34,900원, 복대점이 월 38,900원입니다. 지점별 시설 규모에 따른 차이이며, 약정이 없고 포함 항목이 같은 점은 세 지점 모두 동일합니다."),
+    ("헬스와 PT는 무엇이 다른가요?",
+     "헬스는 기구와 시설을 자유롭게 이용하는 것이고, PT는 트레이너가 1:1로 프로그램을 짜고 자세를 봐 주는 수업입니다. 브로피트니스에서는 헬스 구독만 이용하셔도 되고, 필요할 때만 PT를 따로 추가하셔도 됩니다."),
+    ("헬스장 처음 등록하는데 PT를 꼭 받아야 하나요?",
+     "필수는 아닙니다. 다만 운동이 완전히 처음이라면 기구 사용법과 기본 자세를 잡는 초반 몇 회만 PT로 배우고 이후 혼자 이어가는 방식이 부담이 적습니다. 브로피트니스는 PT 없이 헬스만 이용하셔도 제약이 없습니다."),
+    ("헬스장 중간에 그만두면 환불되나요?",
+     "브로피트니스는 한 달 단위 결제라 환불을 다툴 일이 거의 없습니다. 다음 달 구독을 이어가지 않으시면 그대로 종료되고, 위약금이나 잔여 기간 정산이 붙지 않습니다."),
+    ("무료체험을 해 볼 수 있나요?",
+     "가능합니다. 등록 전에 시설을 직접 보고 운동해 보실 수 있도록 무료체험을 운영합니다. 홈페이지 예약이나 지점 카카오톡 채널로 원하시는 날짜를 남겨 주시면 됩니다."),
+    ("주차는 되나요?",
+     "세 지점 모두 건물 주차장을 이용하실 수 있습니다. 복대점은 무료 주차가 가능하고, 용암점과 금천점은 건물 주차장 사정에 따라 달라질 수 있어 방문 전 지점에 확인하시는 편이 정확합니다."),
+    ("문화비 소득공제를 받을 수 있나요?",
+     "브로피트니스는 문화비 소득공제 가맹점입니다. 헬스장 이용료는 연말정산에서 도서·공연비 등과 함께 문화비 소득공제 대상에 들어갑니다. 실제 공제 적용 여부는 결제 수단과 개인 조건에 따라 달라질 수 있습니다."),
 ]
 
 
@@ -782,7 +835,8 @@ def render_pricing(cfg, site, posts):
     parts.append('<table class="info"><tr><th>지점</th><th>주소</th><th>월 구독료</th></tr>%s</table>'
                  % "".join('<tr><td><a href="/branch/%s.html">브로피트니스 %s</a></td>'
                            '<td>%s</td><td>%s원</td></tr>'
-                           % (esc(b["id"]), esc(b["name"]), esc(b["addr"]), esc(b["price"]))
+                           % (esc(b["id"]), esc(b["name"]),
+                              esc(b.get("road") or b["addr"]), esc(b["price"]))
                            for b in site["branches"]))
     parts.append("<h2>요금에 포함된 것</h2>")
     parts.append('<ul class="list">%s</ul>'
@@ -790,9 +844,9 @@ def render_pricing(cfg, site, posts):
     parts.append("<h2>알아두실 점</h2>")
     parts.append('<ul class="list">%s</ul>'
                  % "".join("<li>%s</li>" % esc(x) for x in pr["notes"]))
-    parts.append("<h2>자주 묻는 질문</h2>")
+    parts.append("<h2>청주 헬스장 자주 묻는 질문</h2>")
     for q, a in PRICING_FAQ:
-        parts.append("<h3>%s</h3><p>%s</p>" % (esc(q), esc(a)))
+        parts.append('<h3 class="q">%s</h3><p>%s</p>' % (esc(q), esc(a)))
     parts.append(
         '<div class="cta"><p class="ey">START TODAY</p>'
         '<p class="big">이번 달부터, 34,900원.</p>'
@@ -806,9 +860,7 @@ def render_pricing(cfg, site, posts):
         % (esc(b["id"]), esc(b["name"]), esc(b["addr"]), esc(common["hours"]))
         for b in site["branches"]))
     schema = {"@context": "https://schema.org", "@graph": [
-        {"@type": "FAQPage", "mainEntity": [
-            {"@type": "Question", "name": q,
-             "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in PRICING_FAQ]},
+        faq_schema(PRICING_FAQ),
         breadcrumb(base, [("홈", "/"), ("요금 안내", "/pricing.html")]),
     ] + [gym_schema(base, b) for b in site["branches"]]}
     return static_page(title, desc, url, "%s/%s" % (base, pr["image"]),
@@ -828,6 +880,48 @@ def write(path, content):
     with open(path, "w", encoding="utf-8") as f:
         f.write(content)
     print("  생성:", os.path.relpath(path, ROOT))
+
+
+LASTMOD_STATE = os.path.join(ROOT, "data", "lastmod.json")
+
+
+def _url_to_file(url, base):
+    """사이트맵 URL → 실제 파일 경로. 디렉터리 주소는 index.html 로 본다."""
+    rel = url[len(base):].lstrip("/") or "index.html"
+    if rel.endswith("/"):
+        rel += "index.html"
+    return os.path.join(ROOT, rel)
+
+
+def sitemap_lastmod(urls, base, today):
+    """URL별 lastmod. 파일 내용 해시가 지난 회차와 같으면 이전 날짜를 유지한다.
+
+    빌드할 때마다 오늘 날짜를 찍으면 78개 URL 전부가 매일 수정된 것처럼 보여
+    구글이 사이트맵의 lastmod 를 신뢰하지 않게 된다. 그래서 해시를 data/lastmod.json
+    에 남겨 두고, 실제로 바뀐 페이지만 날짜를 올린다.
+    """
+    try:
+        with open(LASTMOD_STATE, encoding="utf-8") as f:
+            state = json.load(f)
+    except Exception:
+        state = {}
+    out, new_state = {}, {}
+    for u in urls:
+        path = _url_to_file(u, base.rstrip("/"))
+        try:
+            with open(path, "rb") as f:
+                h = hashlib.sha1(f.read()).hexdigest()
+        except OSError:
+            h = None
+        prev = state.get(u) or {}
+        # 칼럼 발행일은 '2026.08.09' 꼴이라 사이트맵 규격(ISO 8601)에 맞게 고친다.
+        pdate = (prev.get("date") or "").replace(".", "-")
+        if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", pdate):
+            pdate = ""
+        out[u] = pdate if (h and prev.get("hash") == h and pdate) else today
+        new_state[u] = {"hash": h, "date": out[u]}
+    write(LASTMOD_STATE, json.dumps(new_state, ensure_ascii=False, indent=1) + "\n")
+    return out
 
 
 def build(cfg):
@@ -863,8 +957,12 @@ def build(cfg):
     urls = ['%s/' % base, '%s/column/' % base]
     urls += static_urls(cfg, site)
     urls += ['%s/column/%s.html' % (base, p["id"]) for p in posts]
+    # lastmod 를 매번 오늘로 찍으면 "전 페이지가 매일 수정됐다"고 알리는 셈이라
+    # 검색엔진이 사이트맵 날짜를 통째로 무시한다. 페이지 내용이 실제로 바뀐 날만 올린다.
+    lastmod = sitemap_lastmod(urls, base, today)
     body = "".join(
-        '  <url><loc>%s</loc><lastmod>%s</lastmod></url>\n' % (esc(u), today) for u in urls)
+        '  <url><loc>%s</loc><lastmod>%s</lastmod></url>\n' % (esc(u), lastmod[u])
+        for u in urls)
     write(os.path.join(ROOT, "sitemap.xml"),
           '<?xml version="1.0" encoding="UTF-8"?>\n'
           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n%s</urlset>\n' % body)

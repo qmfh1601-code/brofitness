@@ -1509,16 +1509,18 @@ function Booking() {
     // ① 구글 시트 연동(endpoint)이 설정돼 있으면 자동 전송·기록
     if (f.endpoint) {
       setSending(true);
-      try {
-        await fetch(f.endpoint, {
+      // 시트(백업)와 간부앱(텔레그램 알림·예약명단)에 동시에 보낸다.
+      // 각각 따로 catch 해서, 한쪽이 죽어도 다른 쪽 전송을 막지 않는다.
+      const post = (url) =>
+        fetch(url, {
           method: "POST",
-          mode: "no-cors", // Apps Script 웹앱: 응답을 읽지 않고 전송만
+          mode: "no-cors", // 응답을 읽지 않고 전송만(프리플라이트 회피)
           headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify(payload),
-        });
-      } catch (e) {
-        /* no-cors 특성상 응답을 못 읽음 — 전송 자체는 정상 진행됨 */
-      }
+        }).catch(() => {});
+      const targets = [post(f.endpoint)];
+      if (f.notifyEndpoint) targets.push(post(f.notifyEndpoint));
+      await Promise.all(targets);
       setSending(false);
       setSent(true);
       // 해당 지점 카톡을 바로 띄운다. 팝업 차단되면 완료 화면의 버튼으로 이어간다.

@@ -24,3 +24,6 @@ img/[0-9].png
 img/Untitled-*.png
 img/h.JPG
 img/런닝사진완성*
+
+# 파이썬 캐시
+__pycache__/

@@ -341,7 +341,7 @@ window.CONTENT = {
       id: "yongam",
       name: "용암점",
       menuLabel: "용암 1호점", // 상단 메뉴 드롭다운 표시명
-      addr: "충북 청주시 상당구 용암동 1690, 3·4층",
+      addr: "충북 청주시 상당구 용암동 1690, 4층",
       mapQuery: "청주시 상당구 용암동 1690", // 카카오맵 검색어
       phone: "043-292-9696", // ← 실제 번호
       hours: "연중무휴 24시간 운영", // ← 실제 시간
@@ -518,6 +518,10 @@ window.CONTENT = {
     //  ① endpoint(구글 시트 연동) — 값이 있으면 이 방식으로 자동 전송·기록됨. (Apps Script 웹앱 /exec URL 붙여넣기)
     //  ② endpoint가 비어 있으면 submitTo 이메일로 mailto 방식(방문자 메일앱) 사용.
     endpoint: "https://script.google.com/macros/s/AKfycbyTywuWCLiIljnaYhmMCzLz4p3qyhHddloYv4Q2du2zEg7tI7oaV3qvzDz_f1nMrpmClQ/exec", // Apps Script 웹앱(구글 시트 연동)
+    // ③ 간부앱 수신구 — endpoint(구글 시트)와 '동시에' 보낸다. 시트는 그대로 백업이고,
+    //    이쪽이 텔레그램 알림 + 간부앱 예약신청 명단(연락 여부 관리)을 담당한다.
+    //    한쪽이 실패해도 다른 쪽은 그대로 전송된다.
+    notifyEndpoint: "https://bro-fitness-three.vercel.app/api/booking?key=A37gTKJSMTH1oM_Y031JexzL", // 간부앱
     submitTo: "qmfh1601@gmail.com", // 백업용 + 신청 알림 메일 수신 주소
     // 신청 후 진행 단계
     steps: [
