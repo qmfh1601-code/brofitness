@@ -314,7 +314,13 @@ PAGE = """<!DOCTYPE html>
 </style>
 </head>
 <body>
-<header class="site"><div class="wrap"><a class="logo" href="/"><img src="/img/logo-bro.png" alt="{site}" /></a></div></header>
+<header class="site"><div class="wrap"><a class="logo" href="/"><img src="/img/logo-bro.png" alt="{site}" /></a>
+<nav style="margin-left:auto;display:flex;gap:14px;font-size:14px;font-weight:600;">
+<a style="text-decoration:none;color:rgba(14,14,16,.62);" href="/pricing.html">요금</a>
+<a style="text-decoration:none;color:rgba(14,14,16,.62);" href="/branch/yongam.html">용암점</a>
+<a style="text-decoration:none;color:rgba(14,14,16,.62);" href="/branch/geumcheon.html">금천점</a>
+<a style="text-decoration:none;color:rgba(14,14,16,.62);" href="/branch/bokdae.html">복대점</a>
+</nav></div></header>
 <div class="hero">
   <img class="cover" src="{img_rel}" alt="{title}" />
   <div class="scrim"></div>
@@ -337,7 +343,12 @@ PAGE = """<!DOCTYPE html>
   </div>
 </div>
 {related}
-<footer class="site"><div class="wrap">{site} · 충북 청주시 용암 / 금천 / 복대점 · <a href="/">brofitness.kr</a></div></footer>
+<footer class="site"><div class="wrap">{site} · 충북 청주시
+<a href="/branch/yongam.html">용암점</a> /
+<a href="/branch/geumcheon.html">금천점</a> /
+<a href="/branch/bokdae.html">복대점</a> ·
+<a href="/pricing.html">요금 안내</a> ·
+<a href="/">brofitness.kr</a></div></footer>
 </body>
 </html>
 """
@@ -523,9 +534,16 @@ INDEX = """<!DOCTYPE html>
 <style>body{{margin:0;font-family:'Pretendard',system-ui,sans-serif;background:#FBF8F2;color:#0E0E10;line-height:1.7}}
 .wrap{{max-width:760px;margin:0 auto;padding:60px 20px}}h1{{font-size:34px;margin:0 0 6px}}.s{{color:#888;margin:0 0 30px}}
 a.item{{display:block;padding:18px 0;border-top:1px solid #eee;text-decoration:none}}a.item .c{{color:#FF6A1A;font-size:13px;font-weight:700}}
-a.item h2{{font-size:18px;margin:6px 0 4px}}a.item p{{margin:0;color:#666;font-size:14px}}</style></head>
+a.item h2{{font-size:18px;margin:6px 0 4px}}a.item p{{margin:0;color:#666;font-size:14px}}
+nav.b{{display:flex;gap:14px;font-size:14px;margin:0 0 22px}}nav.b a{{color:#666;text-decoration:none;font-weight:600}}
+footer.b{{border-top:1px solid #eee;margin-top:30px;padding-top:20px;font-size:13px;color:#999}}footer.b a{{color:#999}}
+</style></head>
 <body><div class="wrap"><a href="/" style="color:#FF6A1A;font-weight:600;text-decoration:none">← 브로피트니스</a>
-<h1>{title}</h1><p class="s">{sub}</p>{items}</div></body></html>
+<h1>{title}</h1><p class="s">{sub}</p>
+<nav class="b"><a href="/pricing.html">요금</a><a href="/branch/yongam.html">용암점</a><a href="/branch/geumcheon.html">금천점</a><a href="/branch/bokdae.html">복대점</a></nav>
+{items}
+<footer class="b">브로피트니스 BRO FITNESS · 충북 청주시 <a href="/branch/yongam.html">용암점</a> / <a href="/branch/geumcheon.html">금천점</a> / <a href="/branch/bokdae.html">복대점</a> · <a href="/">brofitness.kr</a></footer>
+</div></body></html>
 """
 
 
@@ -924,6 +942,23 @@ def sitemap_lastmod(urls, base, today):
     return out
 
 
+def sitemap_freshness(u, base):
+    """changefreq/priority. 홈·지점페이지처럼 상업 키워드를 노리는 페이지를
+    검색엔진에 더 자주/중요하게 봐달라고 명시한다(칼럼 글은 발행 후엔 안 바뀜)."""
+    rel = u[len(base):].rstrip("/")
+    if rel == "":
+        cf, pr = "daily", "1.0"
+    elif rel == "/column":
+        cf, pr = "daily", "0.8"
+    elif rel.startswith("/branch/"):
+        cf, pr = "weekly", "0.8"
+    elif rel == "/pricing.html":
+        cf, pr = "weekly", "0.6"
+    else:
+        cf, pr = "monthly", "0.6"
+    return "<changefreq>%s</changefreq><priority>%s</priority>" % (cf, pr)
+
+
 def build(cfg):
     meta = cfg["meta"]; base = meta["baseUrl"]
     posts = resolve_posts(cfg)          # 발행일이 된 글만 + 사진 자동 배정
@@ -961,7 +996,8 @@ def build(cfg):
     # 검색엔진이 사이트맵 날짜를 통째로 무시한다. 페이지 내용이 실제로 바뀐 날만 올린다.
     lastmod = sitemap_lastmod(urls, base, today)
     body = "".join(
-        '  <url><loc>%s</loc><lastmod>%s</lastmod></url>\n' % (esc(u), lastmod[u])
+        '  <url><loc>%s</loc><lastmod>%s</lastmod>%s</url>\n'
+        % (esc(u), lastmod[u], sitemap_freshness(u, base))
         for u in urls)
     write(os.path.join(ROOT, "sitemap.xml"),
           '<?xml version="1.0" encoding="UTF-8"?>\n'
