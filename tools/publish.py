@@ -348,7 +348,7 @@ PAGE = """<!DOCTYPE html>
 <a href="/branch/geumcheon.html">금천점</a> /
 <a href="/branch/bokdae.html">복대점</a> ·
 <a href="/pricing.html">요금 안내</a> ·
-<a href="/">brofitness.kr</a></div></footer>
+<a href="/">청주 헬스장 브로피트니스</a></div></footer>
 </body>
 </html>
 """
@@ -542,7 +542,7 @@ footer.b{{border-top:1px solid #eee;margin-top:30px;padding-top:20px;font-size:1
 <h1>{title}</h1><p class="s">{sub}</p>
 <nav class="b"><a href="/pricing.html">요금</a><a href="/branch/yongam.html">용암점</a><a href="/branch/geumcheon.html">금천점</a><a href="/branch/bokdae.html">복대점</a></nav>
 {items}
-<footer class="b">브로피트니스 BRO FITNESS · 충북 청주시 <a href="/branch/yongam.html">용암점</a> / <a href="/branch/geumcheon.html">금천점</a> / <a href="/branch/bokdae.html">복대점</a> · <a href="/">brofitness.kr</a></footer>
+<footer class="b">브로피트니스 BRO FITNESS · 충북 청주시 <a href="/branch/yongam.html">용암점</a> / <a href="/branch/geumcheon.html">금천점</a> / <a href="/branch/bokdae.html">복대점</a> · <a href="/">청주 헬스장 브로피트니스</a></footer>
 </div></body></html>
 """
 
@@ -630,7 +630,7 @@ STATIC_FOOT = ('<footer class="site"><div class="wrap">'
                '<a href="/branch/bokdae.html">복대점</a> · '
                '<a href="/pricing.html">요금 안내</a> · '
                '<a href="/column/">브로 저널</a> · '
-               '<a href="/">brofitness.kr</a>'
+               '<a href="/">청주 헬스장 브로피트니스</a>'
                '</div></footer>')
 
 
