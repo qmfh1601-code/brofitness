@@ -959,6 +959,16 @@ def sitemap_freshness(u, base):
     return "<changefreq>%s</changefreq><priority>%s</priority>" % (cf, pr)
 
 
+def sitemap_image(img, base):
+    """이미지 사이트맵(image:image) 태그. 구글에 "이 페이지엔 이 사진이 있다"고
+    명시적으로 알려 검색결과 썸네일 노출 후보에 올린다. og:image 로 이미 쓰는
+    파일을 그대로 재사용한다."""
+    if not img:
+        return ""
+    src = img if img.startswith("http") else "%s/%s" % (base, img.lstrip("/"))
+    return "<image:image><image:loc>%s</image:loc></image:image>" % esc(src)
+
+
 def build(cfg):
     meta = cfg["meta"]; base = meta["baseUrl"]
     posts = resolve_posts(cfg)          # 발행일이 된 글만 + 사진 자동 배정
@@ -995,13 +1005,18 @@ def build(cfg):
     # lastmod 를 매번 오늘로 찍으면 "전 페이지가 매일 수정됐다"고 알리는 셈이라
     # 검색엔진이 사이트맵 날짜를 통째로 무시한다. 페이지 내용이 실제로 바뀐 날만 올린다.
     lastmod = sitemap_lastmod(urls, base, today)
+    img_by_url = {'%s/' % base: "img/people1.jpg"}
+    if site:
+        img_by_url.update({'%s/branch/%s.html' % (base, b["id"]): b["image"] for b in site["branches"]})
+    img_by_url.update({'%s/column/%s.html' % (base, p["id"]): p["image"] for p in posts})
     body = "".join(
-        '  <url><loc>%s</loc><lastmod>%s</lastmod>%s</url>\n'
-        % (esc(u), lastmod[u], sitemap_freshness(u, base))
+        '  <url><loc>%s</loc><lastmod>%s</lastmod>%s%s</url>\n'
+        % (esc(u), lastmod[u], sitemap_freshness(u, base), sitemap_image(img_by_url.get(u), base))
         for u in urls)
     write(os.path.join(ROOT, "sitemap.xml"),
           '<?xml version="1.0" encoding="UTF-8"?>\n'
-          '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n%s</urlset>\n' % body)
+          '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" '
+          'xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n%s</urlset>\n' % body)
 
     print("● RSS 피드(rss.xml) 생성 …")
     write(os.path.join(ROOT, "rss.xml"), render_rss(cfg, posts))
