@@ -35,6 +35,16 @@ import urllib.request, urllib.parse
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.path.join(ROOT, "data", "columns.json")
 
+# GTM 컨테이너 ID 발급 후 이 한 줄만 바꾸면 전 페이지(칼럼·지점·요금)에 반영된다.
+GTM_ID = "GTM-MBTNB8PR"
+GTM_HEAD = """<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','%s');</script>""" % GTM_ID
+GTM_BODY = ('<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=%s" '
+            'height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>') % GTM_ID
+
 
 def load():
     with open(DATA, encoding="utf-8") as f:
@@ -250,6 +260,8 @@ def render_body_html(cfg, blocks):
 PAGE = """<!DOCTYPE html>
 <html lang="ko">
 <head>
+{gtm_head}
+<script src="/src/utm.js"></script>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>{seo_title}</title>
@@ -314,6 +326,7 @@ PAGE = """<!DOCTYPE html>
 </style>
 </head>
 <body>
+{gtm_body}
 <header class="site"><div class="wrap"><a class="logo" href="/"><img src="/img/logo-bro.png" alt="{site}" /></a>
 <nav style="margin-left:auto;display:flex;gap:14px;font-size:14px;font-weight:600;">
 <a style="text-decoration:none;color:rgba(14,14,16,.62);" href="/pricing.html">요금</a>
@@ -514,6 +527,7 @@ def render_post(cfg, post, posts):
                               "url": "%s#s%d" % (url, i + 1)} for i, h in enumerate(heads)]
     cta = cfg["cta"]
     return PAGE.format(
+        gtm_head=GTM_HEAD, gtm_body=GTM_BODY,
         title=esc(post["title"]), seo_title=esc(seo_title(cfg, post)),
         site=esc(meta["siteName"]), desc=esc(post["excerpt"]),
         url=esc(url), img=esc(img_abs), img_rel="/" + esc(post["image"]),
@@ -527,7 +541,10 @@ def render_post(cfg, post, posts):
 
 
 INDEX = """<!DOCTYPE html>
-<html lang="ko"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<html lang="ko"><head>
+{gtm_head}
+<script src="/src/utm.js"></script>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>{title} | {site}</title><meta name="description" content="{sub}"/>
 <link rel="canonical" href="{base}/column/"/><link rel="alternate" type="application/rss+xml" title="브로 저널" href="/rss.xml"/><link rel="icon" type="image/png" href="/img/logo-bro.png"/>
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"/>
@@ -538,7 +555,9 @@ a.item h2{{font-size:18px;margin:6px 0 4px}}a.item p{{margin:0;color:#666;font-s
 nav.b{{display:flex;gap:14px;font-size:14px;margin:0 0 22px}}nav.b a{{color:#666;text-decoration:none;font-weight:600}}
 footer.b{{border-top:1px solid #eee;margin-top:30px;padding-top:20px;font-size:13px;color:#999}}footer.b a{{color:#999}}
 </style></head>
-<body><div class="wrap"><a href="/" style="color:#FF6A1A;font-weight:600;text-decoration:none">← 브로피트니스</a>
+<body>
+{gtm_body}
+<div class="wrap"><a href="/" style="color:#FF6A1A;font-weight:600;text-decoration:none">← 브로피트니스</a>
 <h1>{title}</h1><p class="s">{sub}</p>
 <nav class="b"><a href="/pricing.html">요금</a><a href="/branch/yongam.html">용암점</a><a href="/branch/geumcheon.html">금천점</a><a href="/branch/bokdae.html">복대점</a></nav>
 {items}
@@ -553,7 +572,8 @@ def render_index(cfg, posts):
     for p in posts:
         items += ('<a class="item" href="/column/%s.html"><span class="c">#%s</span>'
                   '<h2>%s</h2><p>%s</p></a>') % (esc(p["id"]), esc(p["cat"]), esc(p["title"]), esc(p["excerpt"]))
-    return INDEX.format(title=esc(meta["title"]), site=esc(meta["siteName"]),
+    return INDEX.format(gtm_head=GTM_HEAD, gtm_body=GTM_BODY,
+                        title=esc(meta["title"]), site=esc(meta["siteName"]),
                         sub=esc(meta["subtitle"]), base=esc(meta["baseUrl"]), items=items)
 
 
@@ -638,6 +658,7 @@ def static_page(title, desc, url, img_abs, schema, hero, body_html):
     """정적 페이지 공통 셸(head + 히어로 + 본문)."""
     return "\n".join([
         '<!DOCTYPE html>', '<html lang="ko">', '<head>',
+        GTM_HEAD, '<script src="/src/utm.js"></script>',
         '<meta charset="UTF-8" />',
         '<meta name="viewport" content="width=device-width, initial-scale=1.0" />',
         '<title>%s</title>' % esc(title),
@@ -656,7 +677,7 @@ def static_page(title, desc, url, img_abs, schema, hero, body_html):
         '<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />',
         '<script type="application/ld+json">',
         json.dumps(schema, ensure_ascii=False, indent=2),
-        '</script>', STATIC_CSS, '</head>', '<body>', STATIC_NAV, hero,
+        '</script>', STATIC_CSS, '</head>', '<body>', GTM_BODY, STATIC_NAV, hero,
         '<div class="wrap"><main>', body_html, '</main></div>', STATIC_FOOT,
         '</body>', '</html>', ''])
 

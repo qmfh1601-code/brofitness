@@ -1497,6 +1497,7 @@ function Booking() {
 
   const submit = async () => {
     if (!valid || sending) return;
+    const utm = (window.getBroUTM && window.getBroUTM()) || {};
     const payload = {
       program: form.program,
       branch: form.branch,
@@ -1504,6 +1505,21 @@ function Booking() {
       phone: form.phone,
       date: form.date || "미정",
       memo: form.memo || "-",
+      utm_source: utm.utm_source || "",
+      utm_medium: utm.utm_medium || "",
+      utm_campaign: utm.utm_campaign || "",
+    };
+    // GTM 트리거용: 메타/당근/GA4 전환 태그가 이 이벤트를 구독한다.
+    const pushLead = () => {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: "generate_lead_bro",
+        lead_branch: payload.branch,
+        lead_program: payload.program,
+        utm_source: payload.utm_source,
+        utm_medium: payload.utm_medium,
+        utm_campaign: payload.utm_campaign,
+      });
     };
 
     // ① 구글 시트 연동(endpoint)이 설정돼 있으면 자동 전송·기록
@@ -1523,6 +1539,7 @@ function Booking() {
       await Promise.all(targets);
       setSending(false);
       setSent(true);
+      pushLead();
       // 해당 지점 카톡을 바로 띄운다. 팝업 차단되면 완료 화면의 버튼으로 이어간다.
       if (pickedKakao) { try { window.open(pickedKakao, "_blank", "noopener"); } catch (e) {} }
       return;
@@ -1540,6 +1557,7 @@ function Booking() {
     const mailto = `mailto:${f.submitTo}?subject=${encodeURIComponent("[홈페이지] 예약·상담 신청 - " + form.name)}&body=${encodeURIComponent(body)}`;
     window.location.href = mailto;
     setSent(true);
+    pushLead();
   };
 
   const field = "w-full bg-white border border-ink/15 rounded-xl px-4 py-3 text-ink placeholder-ink/30 focus:border-bro focus:ring-2 focus:ring-bro/20 focus:outline-none transition-all";
