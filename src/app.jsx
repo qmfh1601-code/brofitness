@@ -1495,6 +1495,22 @@ function Booking() {
   const kakaoBranches = C.branches.filter((b) => b.kakao);
   const pickedKakao = (C.branches.find((b) => b.name === form.branch) || {}).kakao;
 
+  // GTM 트리거용: 메타/당근/GA4 전환 태그가 이 이벤트를 구독한다.
+  // 폼 제출뿐 아니라 '지금 바로 물어보기' 카카오 버튼 클릭도 같은 전환으로 잡는다 —
+  // 광고 유입자는 폼 대신 카톡으로 바로 빠지는 비중이 커서, 안 잡으면 전환이 실제보다 적게 집계된다.
+  const pushLead = (branch, program) => {
+    const utm = (window.getBroUTM && window.getBroUTM()) || {};
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: "generate_lead_bro",
+      lead_branch: branch,
+      lead_program: program,
+      utm_source: utm.utm_source || "",
+      utm_medium: utm.utm_medium || "",
+      utm_campaign: utm.utm_campaign || "",
+    });
+  };
+
   const submit = async () => {
     if (!valid || sending) return;
     const utm = (window.getBroUTM && window.getBroUTM()) || {};
@@ -1508,18 +1524,6 @@ function Booking() {
       utm_source: utm.utm_source || "",
       utm_medium: utm.utm_medium || "",
       utm_campaign: utm.utm_campaign || "",
-    };
-    // GTM 트리거용: 메타/당근/GA4 전환 태그가 이 이벤트를 구독한다.
-    const pushLead = () => {
-      window.dataLayer = window.dataLayer || [];
-      window.dataLayer.push({
-        event: "generate_lead_bro",
-        lead_branch: payload.branch,
-        lead_program: payload.program,
-        utm_source: payload.utm_source,
-        utm_medium: payload.utm_medium,
-        utm_campaign: payload.utm_campaign,
-      });
     };
 
     // ① 구글 시트 연동(endpoint)이 설정돼 있으면 자동 전송·기록
@@ -1539,7 +1543,7 @@ function Booking() {
       await Promise.all(targets);
       setSending(false);
       setSent(true);
-      pushLead();
+      pushLead(payload.branch, payload.program);
       // 해당 지점 카톡을 바로 띄운다. 팝업 차단되면 완료 화면의 버튼으로 이어간다.
       if (pickedKakao) { try { window.open(pickedKakao, "_blank", "noopener"); } catch (e) {} }
       return;
@@ -1557,7 +1561,7 @@ function Booking() {
     const mailto = `mailto:${f.submitTo}?subject=${encodeURIComponent("[홈페이지] 예약·상담 신청 - " + form.name)}&body=${encodeURIComponent(body)}`;
     window.location.href = mailto;
     setSent(true);
-    pushLead();
+    pushLead(payload.branch, payload.program);
   };
 
   const field = "w-full bg-white border border-ink/15 rounded-xl px-4 py-3 text-ink placeholder-ink/30 focus:border-bro focus:ring-2 focus:ring-bro/20 focus:outline-none transition-all";
@@ -1579,6 +1583,7 @@ function Booking() {
               <div className="grid grid-cols-3 gap-2.5">
                 {kakaoBranches.map((b) => (
                   <a key={b.id} href={b.kakao} target="_blank" rel="noopener noreferrer"
+                     onClick={() => pushLead(b.name, "카카오톡 문의")}
                      className="rounded-2xl bg-[#FEE500] hover:brightness-95 text-[#3C1E1E] font-bold py-3.5 text-center text-sm transition-all">
                     💬<br />{b.name}
                   </a>
