@@ -245,7 +245,7 @@ window.CONTENT = {
       badges: ["연중무휴 24시간", "자동결제", "언제든 구독 취소", "한 달만 등록 가능", "약정·위약금 없음"],
       features: [
         "연중무휴 24시간 자유 이용",
-        "샤워실·운동복·락커 기본 제공",
+        "샤워실 무료 이용 (락커·운동복은 별도)",
         "비대면 결제로 바로 시작",
         "회원님께 맞춘 운동 플랜 설계",
       ],
@@ -271,8 +271,7 @@ window.CONTENT = {
       items: [
         { icon: "🕐", img: "https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets/Twelve%20o%E2%80%99clock/3D/twelve_oclock_3d.png", t: "연중무휴 24시간", d: "새벽에도 주말에도 언제든" },
         { icon: "🏋️", img: "https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets/Person%20lifting%20weights/Default/3D/person_lifting_weights_3d_default.png", t: "헬스 시설 전체", d: "등록 지점을 자유롭게" },
-        { icon: "🚿", img: "https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets/Shower/3D/shower_3d.png", t: "샤워실 · 락커", d: "운동 후 가볍게 씻고 귀가" },
-        { icon: "👕", img: "https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets/T-shirt/3D/t-shirt_3d.png", t: "운동복 대여", d: "몸만 오면 됩니다" },
+        { icon: "🚿", img: "https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets/Shower/3D/shower_3d.png", t: "샤워실 이용", d: "운동 후 가볍게 씻고 귀가" },
         { icon: "📱", img: "https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets/Mobile%20phone/3D/mobile_phone_3d.png", t: "비대면 결제 · 관리", d: "앱에서 구독 한 번에" },
         { icon: "🏃", img: "https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets/Person%20running/Default/3D/person_running_3d_default.png", t: "그룹 러닝 크루", d: "함께 뛰는 정기 모임" },
         { icon: "🤸", img: "https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets/Person%20cartwheeling/Default/3D/person_cartwheeling_3d_default.png", t: "바디케어 프로그램", d: "통증·자세 케어 중심" },
@@ -331,7 +330,7 @@ window.CONTENT = {
     info: [
       { t: "운영시간", d: "연중무휴 24시간 운영" },
       { t: "이용대상", d: "누구나 — 특히 운동이 처음인 분" },
-      { t: "준비물", d: "몸만 오세요. 운동복·락커 제공" },
+      { t: "준비물", d: "운동복은 직접 챙겨 오세요 (현장 대여 가능, 별도 비용)" },
     ],
   },
 
