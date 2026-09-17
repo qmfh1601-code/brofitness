@@ -382,7 +382,7 @@ window.CONTENT = {
         "img/geumcheon-5.jpg", // 머신 + 사인
         "img/geumcheon-4.jpg", // 유니폼 + 인테리어
       ],
-      trainers: ["g4", "g5", "g2", "g1"],
+      trainers: ["g4", "g5", "g2", "g1", "g6"],
     },
     {
       id: "bokdae",
@@ -407,7 +407,7 @@ window.CONTENT = {
         "img/bokdae-3.jpg", // 프리웨이트 + 시계
         "img/bokdae-8.jpg", // 머신 존 2
       ],
-      trainers: ["b1", "b2", "b3", "b5", "b6", "b4"],
+      trainers: ["b1", "b2", "b3", "b5", "b6", "b7"],
     },
   ],
 
@@ -431,13 +431,14 @@ window.CONTENT = {
       { id: "g5", name: "정민주", branch: "geumcheon", image: "img/tr-g5.jpg" },
       { id: "g2", name: "손구일", branch: "geumcheon", image: "img/tr-g2.jpg" },
       { id: "g1", name: "박용석", branch: "geumcheon", image: "img/tr-g1.jpg" },
+      { id: "g6", name: "정준수", branch: "geumcheon", image: "img/tr-g6.jpg" },
       // ── 복대 3호점 ──
       { id: "b6", name: "홍원성", role: "매니저", branch: "bokdae", image: "img/tr-b6.jpg" },
-      { id: "b4", name: "정초이", branch: "bokdae", image: "img/tr-b4.jpg" },
       { id: "b1", name: "박건후", branch: "bokdae", image: "img/tr-b1.jpg" },
       { id: "b2", name: "박지민", branch: "bokdae", image: "img/tr-b2.jpg" },
       { id: "b3", name: "임성민", branch: "bokdae", image: "img/tr-b3.jpg" },
       { id: "b5", name: "최세규", branch: "bokdae", image: "img/tr-b5.jpg" },
+      { id: "b7", name: "김병준", branch: "bokdae", image: "img/tr-b7.jpg" },
     ],
     // 트레이너 철학
     philosophy: {
