@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
-  <url><loc>https://brofitness.kr/</loc><lastmod>2026-09-07</lastmod><changefreq>daily</changefreq><priority>1.0</priority><image:image><image:loc>https://brofitness.kr/img/people1.jpg</image:loc></image:image></url>
+  <url><loc>https://brofitness.kr/</loc><lastmod>2026-09-30</lastmod><changefreq>daily</changefreq><priority>1.0</priority><image:image><image:loc>https://brofitness.kr/img/people1.jpg</image:loc></image:image></url>
   <url><loc>https://brofitness.kr/column/</loc><lastmod>2026-09-30</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
   <url><loc>https://brofitness.kr/pricing.html</loc><lastmod>2026-09-07</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://brofitness.kr/branch/yongam.html</loc><lastmod>2026-09-07</lastmod><changefreq>weekly</changefreq><priority>0.8</priority><image:image><image:loc>https://brofitness.kr/img/yongam-1.jpg</image:loc></image:image></url>
@@ -139,4 +139,15 @@
   <url><loc>https://brofitness.kr/column/rest-day.html</loc><lastmod>2026-09-21</lastmod><changefreq>monthly</changefreq><priority>0.6</priority><image:image><image:loc>https://brofitness.kr/img/yongam-3.jpg</image:loc></image:image></url>
   <url><loc>https://brofitness.kr/column/subscribe-tip.html</loc><lastmod>2026-09-24</lastmod><changefreq>monthly</changefreq><priority>0.6</priority><image:image><image:loc>https://brofitness.kr/img/bokdae-2.jpg</image:loc></image:image></url>
   <url><loc>https://brofitness.kr/column/member-story-1.html</loc><lastmod>2026-09-29</lastmod><changefreq>monthly</changefreq><priority>0.6</priority><image:image><image:loc>https://brofitness.kr/img/people3.jpg</image:loc></image:image></url>
+  <!-- community:start -->
+  <url><loc>https://brofitness.kr/community/</loc><lastmod>2026-09-29</lastmod></url>
+  <url><loc>https://brofitness.kr/community/squat-knee-cave.html</loc><lastmod>2026-09-29</lastmod></url>
+  <url><loc>https://brofitness.kr/community/owanwan-3weeks.html</loc><lastmod>2026-09-28</lastmod></url>
+  <url><loc>https://brofitness.kr/community/cvs-protein-combo.html</loc><lastmod>2026-09-27</lastmod></url>
+  <url><loc>https://brofitness.kr/community/beginner-3split-routine.html</loc><lastmod>2026-09-25</lastmod></url>
+  <url><loc>https://brofitness.kr/community/how-to-not-skip.html</loc><lastmod>2026-09-24</lastmod></url>
+  <url><loc>https://brofitness.kr/community/geumcheon-evening-crowd.html</loc><lastmod>2026-09-22</lastmod></url>
+  <url><loc>https://brofitness.kr/community/cardio-or-weight-first.html</loc><lastmod>2026-09-20</lastmod></url>
+  <url><loc>https://brofitness.kr/community/stairs-got-easier.html</loc><lastmod>2026-09-18</lastmod></url>
+  <!-- community:end -->
 </urlset>

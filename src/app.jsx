@@ -112,6 +112,7 @@ function Header({ route }) {
     { label: "지점 소개", path: "/branches" },
     { label: "트레이너", path: "/trainers" },
     { label: "칼럼", path: "/column" },
+    { label: "커뮤니티", path: "/community" },
     { label: "채용", path: "/careers" },
   ];
 
@@ -2072,6 +2073,287 @@ function Careers() {
 }
 
 /* ===========================================================================
+ *  커뮤니티 — 회원 아바타 / 헬퍼
+ * ======================================================================== */
+function avatarColor(name) {
+  let h = 0;
+  const s = name || "?";
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+  return "hsl(" + (h % 360) + ", 42%, 46%)";
+}
+function Avatar({ name, size = 40 }) {
+  const ch = (name || "?").slice(0, 1);
+  return (
+    <span className="inline-flex items-center justify-center rounded-full text-white font-bold flex-none"
+      style={{ width: size, height: size, background: avatarColor(name), fontSize: Math.round(size * 0.42) }}>
+      {ch}
+    </span>
+  );
+}
+function firstParaText(post) {
+  const b = (post.body || []).find((x) => x && (x.type === "p" || typeof x === "string"));
+  return b ? (typeof b === "object" ? b.text : b) : "";
+}
+
+/* ===========================================================================
+ *  커뮤니티 — 글 목록 (포럼형: 필터 + 고정글 + 카드 리스트)
+ * ======================================================================== */
+function Community() {
+  const data = window.COMMUNITY || { posts: [], categories: [], meta: {} };
+  const posts = data.posts || [];
+  const meta = data.meta || {};
+  const [active, setActive] = useState("전체보기");
+  const tabs = ["전체보기", ...(data.categories || [])];
+
+  const filtered = active === "전체보기" ? posts : posts.filter((p) => p.cat === active);
+  const ordered = [...filtered.filter((p) => p.pinned), ...filtered.filter((p) => !p.pinned)];
+
+  return (
+    <main className="bg-cream text-ink min-h-screen">
+      {/* 헤더 */}
+      <section className="pt-28 lg:pt-36 pb-8 lg:pb-10 bg-ivory text-center">
+        <div className="max-w-8xl mx-auto px-5 lg:px-8">
+          <Reveal>
+            <p className="font-display tracking-wider2 text-bro text-sm mb-3">{meta.eyebrow || "BRO COMMUNITY"}</p>
+            <h1 className="text-4xl md:text-6xl font-bold tracking-tight">{meta.title || "브로 커뮤니티"}</h1>
+            <p className="text-ink/55 mt-4 text-lg">{meta.subtitle}</p>
+            {meta.notice && (
+              <p className="mt-5 inline-block rounded-full bg-bro/10 text-broDark text-sm font-medium px-5 py-2">{meta.notice}</p>
+            )}
+          </Reveal>
+        </div>
+      </section>
+
+      {/* 분류 필터 칩 */}
+      <section className="bg-ivory pb-10">
+        <div className="max-w-5xl mx-auto px-5 lg:px-8">
+          <Reveal className="flex flex-wrap justify-center gap-2.5">
+            {tabs.map((t) => (
+              <button key={t} onClick={() => setActive(t)}
+                className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 ${
+                  active === t
+                    ? "bg-bro text-white shadow-lg shadow-bro/25"
+                    : "bg-cream text-ink/70 ring-1 ring-ink/10 hover:text-bro hover:ring-bro/40"
+                }`}>
+                {t}
+              </button>
+            ))}
+          </Reveal>
+        </div>
+      </section>
+
+      {/* 글 리스트 */}
+      <section className="py-10 lg:py-14">
+        <div className="max-w-3xl mx-auto px-5 lg:px-8">
+          {ordered.length === 0 ? (
+            <p className="text-center text-ink/40 py-20">아직 이 분류의 글이 없어요.</p>
+          ) : (
+            <div className="flex flex-col gap-4">
+              {ordered.map((p, i) => (
+                <Reveal key={p.id} delay={(i % 4) * 60}>
+                  <button onClick={() => go("/community/" + p.id)}
+                    className="group w-full text-left bg-white rounded-2xl ring-1 ring-ink/5 shadow-sm hover:shadow-lg transition-shadow duration-300 p-5 lg:p-6 flex gap-4">
+                    <Avatar name={p.author} size={44} />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1.5">
+                        <span className="text-bro font-semibold text-xs">#{p.cat}</span>
+                        {p.pinned && (
+                          <span className="text-[11px] font-semibold text-white bg-bro/90 rounded-full px-2 py-0.5">고정</span>
+                        )}
+                      </div>
+                      <h3 className="text-base lg:text-lg font-bold leading-snug tracking-tight group-hover:text-bro transition-colors line-clamp-2">{p.title}</h3>
+                      <p className="text-ink/50 text-sm mt-1.5 line-clamp-1">{firstParaText(p)}</p>
+                      <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-ink/40 text-xs">
+                        <span className="font-semibold text-ink/60">{p.author}</span>
+                        <span>{p.date}</span>
+                        <span>댓글 {(p.comments || []).length}</span>
+                        <span>좋아요 {p.likes || 0}</span>
+                      </div>
+                    </div>
+                  </button>
+                </Reveal>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+    </main>
+  );
+}
+
+/* ===========================================================================
+ *  커뮤니티 — 댓글 작성 박스 (정적 사이트 → 예약/상담으로 연결)
+ * ======================================================================== */
+function CommentComposer() {
+  const [val, setVal] = useState("");
+  const [sent, setSent] = useState(false);
+
+  if (sent) {
+    return (
+      <div className="mt-6 rounded-2xl bg-bro/8 ring-1 ring-bro/20 p-6 text-center">
+        <p className="font-semibold text-ink">브로 커뮤니티는 회원과 함께 채워가는 공간이에요.</p>
+        <p className="text-ink/60 text-sm mt-1.5">무료체험으로 시작하면 커뮤니티 참여도 함께 열려요. 청주 용암·금천·복대에서 같이 운동해요!</p>
+        <Btn className="mt-4" variant="bro" onClick={() => go("/booking")}>무료체험 예약하기</Btn>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-6">
+      <textarea value={val} onChange={(e) => setVal(e.target.value)}
+        placeholder="따뜻한 댓글을 남겨보세요…"
+        className="w-full rounded-2xl bg-white ring-1 ring-ink/10 focus:ring-bro/50 outline-none p-4 text-ink text-sm resize-none h-24 transition-shadow" />
+      <div className="mt-2.5 flex justify-end">
+        <Btn size="sm" variant="bro" onClick={() => setSent(true)}>댓글 등록</Btn>
+      </div>
+    </div>
+  );
+}
+
+/* ===========================================================================
+ *  커뮤니티 — 글 상세 (본문 + 댓글)
+ * ======================================================================== */
+function CommunityPost({ id }) {
+  const data = window.COMMUNITY || { posts: [] };
+  const posts = data.posts || [];
+  const post = posts.find((p) => p.id === id);
+
+  if (!post) {
+    return (
+      <main className="bg-cream text-ink min-h-screen pt-36 pb-24 text-center">
+        <p className="text-ink/50 text-lg">글을 찾을 수 없습니다.</p>
+        <Btn className="mt-6" variant="bro" onClick={() => go("/community")}>커뮤니티 목록으로</Btn>
+      </main>
+    );
+  }
+
+  const comments = post.comments || [];
+  const others = posts.filter((p) => p.id !== post.id);
+  const sameCat = others.filter((p) => p.cat === post.cat);
+  const more = [...sameCat, ...others.filter((p) => p.cat !== post.cat)].slice(0, 2);
+
+  return (
+    <main className="bg-cream text-ink min-h-screen">
+      {/* 헤더 (밝은 톤) */}
+      <section className="pt-28 lg:pt-32 pb-8 bg-ivory">
+        <div className="max-w-3xl mx-auto px-5 lg:px-8">
+          <Reveal>
+            <button onClick={() => go("/community")} className="text-ink/45 text-sm hover:text-bro transition-colors mb-5 inline-flex items-center gap-1.5">← 브로 커뮤니티</button>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-bro font-semibold text-sm">#{post.cat}</span>
+              {post.pinned && <span className="text-[11px] font-semibold text-white bg-bro/90 rounded-full px-2 py-0.5">고정</span>}
+            </div>
+            <h1 className="text-2xl md:text-4xl font-bold leading-snug tracking-tight">{post.title}</h1>
+            <div className="mt-5 flex items-center gap-3">
+              <Avatar name={post.author} size={40} />
+              <div>
+                <div className="font-semibold text-ink text-sm">{post.author}</div>
+                <div className="text-ink/40 text-xs mt-0.5">{post.date}</div>
+              </div>
+            </div>
+            <div className="mt-5 flex items-center gap-4 text-ink/45 text-sm border-t border-ink/10 pt-4">
+              <span>좋아요 {post.likes || 0}</span>
+              <span>댓글 {comments.length}</span>
+              {post.views ? <span>조회 {post.views}</span> : null}
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* 본문 */}
+      <div className="max-w-3xl mx-auto px-5 lg:px-8 py-10 lg:py-12">
+        <Reveal className="space-y-6">
+          {post.body.map((blk, i) => {
+            if (blk && typeof blk === "object" && blk.type === "img") {
+              return (
+                <figure key={i} className="my-8">
+                  <div className="overflow-hidden rounded-2xl ring-1 ring-ink/5">
+                    <Img src={blk.src} alt={blk.caption || "브로피트니스"} className="w-full h-auto object-cover" />
+                  </div>
+                  {blk.caption ? <figcaption className="mt-3 text-center text-sm text-ink/45">{blk.caption}</figcaption> : null}
+                </figure>
+              );
+            }
+            const text = blk && typeof blk === "object" ? blk.text : blk;
+            return <p key={i} className="text-lg leading-[1.9] text-ink/85">{text}</p>;
+          })}
+        </Reveal>
+
+        <div className="hairline my-10" />
+
+        {/* 댓글 */}
+        <div>
+          <h2 className="text-lg font-bold mb-5">댓글 <span className="text-bro">{comments.length}</span></h2>
+          <div className="flex flex-col">
+            {comments.length === 0 ? (
+              <p className="text-ink/40 text-sm py-4">아직 댓글이 없어요. 첫 댓글을 남겨보세요!</p>
+            ) : (
+              comments.map((c, i) => (
+                <div key={i} className="flex gap-3 py-4 border-t border-ink/7 first:border-t-0">
+                  <Avatar name={c.author} size={38} />
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-sm text-ink">{c.author}</span>
+                      <span className="text-ink/35 text-xs">{c.date}</span>
+                    </div>
+                    <p className="text-ink/80 text-[15px] mt-1 leading-relaxed">{c.text}</p>
+                    {c.likes ? <div className="mt-1.5 text-ink/35 text-xs">좋아요 {c.likes}</div> : null}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+          <CommentComposer />
+        </div>
+
+        <div className="hairline my-10" />
+
+        {/* 글 하단 CTA */}
+        <Reveal className="relative overflow-hidden rounded-3xl bg-ink text-white p-8 lg:p-10 text-center">
+          <span className="orb drift" style={{ width: "16rem", height: "16rem", background: "rgba(255,106,26,.28)", top: "-4rem", right: "-3rem" }} />
+          <div className="relative z-10">
+            <p className="font-display tracking-wider2 text-bro text-sm mb-3">JOIN THE CREW</p>
+            <p className="text-2xl lg:text-3xl font-bold leading-snug">청주에서 같이 운동해요.</p>
+            <p className="text-white/60 mt-3">한 달 34,900원 · 약정 없이 무료체험으로 시작해보세요.</p>
+            <div className="mt-7 flex flex-wrap justify-center gap-3">
+              <Btn variant="bro" onClick={() => go("/booking")}>무료체험 예약하기</Btn>
+              <Btn variant="ghost" onClick={() => go("/community")}>커뮤니티 더 보기</Btn>
+            </div>
+          </div>
+        </Reveal>
+      </div>
+
+      {/* 다른 글 추천 */}
+      {more.length > 0 && (
+        <section className="bg-ivory py-14 lg:py-20">
+          <div className="max-w-3xl mx-auto px-5 lg:px-8">
+            <Reveal className="mb-6"><Eyebrow>MORE FROM CREW</Eyebrow><SectionTitle>다른 이야기</SectionTitle></Reveal>
+            <div className="flex flex-col gap-4">
+              {more.map((p, i) => (
+                <Reveal key={p.id} delay={i * 80}>
+                  <button onClick={() => go("/community/" + p.id)}
+                    className="group w-full text-left bg-white rounded-2xl ring-1 ring-ink/5 shadow-sm hover:shadow-lg transition-shadow duration-300 p-5 flex gap-4">
+                    <Avatar name={p.author} size={40} />
+                    <div className="flex-1 min-w-0">
+                      <span className="text-bro font-semibold text-xs">#{p.cat}</span>
+                      <h3 className="text-base font-bold leading-snug tracking-tight group-hover:text-bro transition-colors line-clamp-2 mt-1">{p.title}</h3>
+                      <div className="mt-2 text-ink/40 text-xs flex gap-3">
+                        <span className="font-semibold text-ink/60">{p.author}</span>
+                        <span>{p.date}</span>
+                      </div>
+                    </div>
+                  </button>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+    </main>
+  );
+}
+
+/* ===========================================================================
  *  라우터 / 루트
  * ======================================================================== */
 function App() {
@@ -2079,6 +2361,7 @@ function App() {
   let page;
   const branch = route.match(/^\/branch(?:es)?(?:\/(\w+))?/);
   const columnPost = route.match(/^\/column\/(.+)/);
+  const communityPost = route.match(/^\/community\/(.+)/);
   if (route === "/" || route === "") page = <Home />;
   else if (route === "/about") page = <BroAbout />;
   else if (route === "/pricing") page = <Pricing />;
@@ -2087,6 +2370,8 @@ function App() {
   else if (branch) page = <Branches targetId={branch[1]} />;
   else if (columnPost) page = <ColumnPost id={decodeURIComponent(columnPost[1])} />;
   else if (route === "/column") page = <Column />;
+  else if (communityPost) page = <CommunityPost id={decodeURIComponent(communityPost[1])} />;
+  else if (route === "/community") page = <Community />;
   else if (route === "/careers") page = <Careers />;
   else if (route === "/booking") page = <Booking />;
   else page = <Home />;

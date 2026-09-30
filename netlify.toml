@@ -8,7 +8,7 @@
 # 핑이 배포 완료보다 수십 초 앞서지만, 검색봇이 그보다 빨리 오지는 않는다.
 # 핑 실패는 배포를 막지 않는다(ping() 내부에서 예외를 삼킴).
 [build]
-  command = "python3 tools/publish.py && python3 tools/publish.py --ping-new"
+  command = "python3 tools/publish.py && python3 tools/build_community.py && python3 tools/publish.py --ping-new"
   publish = "."
 
 [build.environment]
