@@ -45,21 +45,6 @@ def avatar_color(name):
     return "hsl(%d, 42%%, 46%%)" % hue
 
 
-# 카테고리 구분용 작은 점 색 (프론트 CAT_DOT 와 동일 유지)
-CAT_DOT = {
-    "운동 질문": "#3B82F6",
-    "오운완": "#22C55E",
-    "식단·꿀팁": "#F59E0B",
-    "루틴 공유": "#8B5CF6",
-    "자유수다": "#EC4899",
-    "지점 이야기": "#14B8A6",
-}
-
-
-def cat_dot(cat):
-    return CAT_DOT.get(cat, "#9CA3AF")
-
-
 def body_text(body):
     parts = []
     for blk in body or []:
@@ -121,7 +106,6 @@ POST_TMPL = """<!DOCTYPE html>
  .top{{padding:28px 0 6px;}}
  .back{{display:inline-block;margin:0 0 14px;color:#555;font-weight:600;text-decoration:none;font-size:14px;}}
  .cat{{color:#888;font-weight:600;font-size:13px;}}
- .cat .dot{{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:middle;}}
  h1{{font-size:26px;line-height:1.32;letter-spacing:-.01em;margin:8px 0 16px;}}
  .byline{{display:flex;align-items:center;gap:10px;color:rgba(14,14,16,.55);font-size:14px;margin-bottom:6px;}}
  .av{{width:34px;height:34px;border-radius:999px;color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:15px;flex:0 0 auto;}}
@@ -133,11 +117,11 @@ POST_TMPL = """<!DOCTYPE html>
  .cmt .body{{flex:1;}} .cmt .who{{font-weight:700;font-size:14px;}} .cmt .when{{color:rgba(14,14,16,.4);font-size:12px;margin-left:6px;}}
  .cmt p{{margin:6px 0 0;font-size:15px;color:rgba(14,14,16,.82);}}
  .cta{{position:relative;background:var(--ink);color:#fff;border-radius:20px;padding:30px 26px;text-align:center;margin:30px 0;}}
- .cta .ey{{color:var(--bro);font-weight:700;font-size:13px;letter-spacing:.12em;}}
+ .cta .ey{{color:rgba(255,255,255,.55);font-weight:700;font-size:13px;letter-spacing:.12em;}}
  .cta .big{{font-size:21px;font-weight:800;margin:8px 0 6px;}} .cta .sub{{color:rgba(255,255,255,.62);font-size:15px;margin:0;}}
  .btns{{margin-top:16px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}}
  .btn{{display:inline-block;text-decoration:none;font-weight:700;padding:12px 22px;border-radius:999px;}}
- .btn.p{{background:var(--bro);color:#fff;}} .btn.s{{border:1px solid rgba(255,255,255,.45);color:#fff;}}
+ .btn.p{{background:#fff;color:#111;}} .btn.s{{border:1px solid rgba(255,255,255,.45);color:#fff;}}
  .related{{background:#f7f7f7;margin-top:8px;padding:36px 0;}}
  .related h2{{font-size:19px;margin:0 0 16px;}} .rgrid{{display:grid;gap:12px;}}
  .rcard{{display:block;background:#fff;border:1px solid rgba(14,14,16,.06);border-radius:14px;padding:16px 18px;text-decoration:none;}}
@@ -151,7 +135,7 @@ POST_TMPL = """<!DOCTYPE html>
 <div class="wrap">
   <div class="top">
     <a class="back" href="/#/community">← 브로 커뮤니티</a>
-    <div class="cat"><span class="dot" style="background:{catcolor}"></span>[{cat}]</div>
+    <div class="cat">[{cat}]</div>
     <h1>{title}</h1>
     <div class="byline"><span class="av" style="background:{avcolor}">{avchar}</span> <span>{author}</span></div>
     <div class="stat"><span>{date}</span><span>좋아요 {likes}</span><span>댓글 {ccount}</span></div>
@@ -266,7 +250,6 @@ def write_posts(data):
             logo=LOGO,
             schema=build_schema(post),
             cat=esc(post.get("cat", "")),
-            catcolor=cat_dot(post.get("cat", "")),
             author=esc(author),
             avcolor=avatar_color(author),
             avchar=esc(author[:1]),
@@ -293,10 +276,10 @@ def _index_row(p, num):
     return (
         '<tr onclick="location.href=\'/community/%s.html\'">'
         '<td class="num">%s</td>'
-        '<td class="tit"><span class="dot" style="background:%s"></span>'
-        '<span class="cat">[%s]</span> <a href="/community/%s.html">%s</a>%s</td>'
+        '<td class="tit"><span class="cat">[%s]</span> '
+        '<a href="/community/%s.html">%s</a>%s</td>'
         '<td class="who">%s</td><td class="dt">%s</td><td class="vw">%d</td></tr>'
-        % (esc(p["id"]), numcell, cat_dot(p.get("cat", "")), esc(p.get("cat", "")),
+        % (esc(p["id"]), numcell, esc(p.get("cat", "")),
            esc(p["id"]), esc(p.get("title", "")), cchtml,
            esc(p.get("author", "")), esc(date_short), p.get("views", 0))
     )
@@ -310,7 +293,7 @@ def write_index(data):
     total = len(rest)
 
     tabs = "".join(
-        '<span class="tab"><i style="background:%s"></i>%s</span>' % (cat_dot(c), esc(c))
+        '<span class="tab">%s</span>' % esc(c)
         for c in data.get("categories", [])
     )
     rows = [_index_row(p, None) for p in pinned]
@@ -330,14 +313,12 @@ def write_index(data):
         '.back{color:#555;font-weight:600;text-decoration:none;font-size:14px}'
         'h1{font-size:24px;margin:14px 0 4px}.s{color:#888;margin:0 0 18px;font-size:14px}'
         '.tabs{display:flex;flex-wrap:wrap;gap:14px;border-top:1px solid #eee;border-bottom:1px solid #eee;padding:12px 0;margin:0 0 14px;font-size:14px;color:#555}'
-        '.tabs .tab{display:inline-flex;align-items:center;gap:6px}'
-        '.tabs .tab i{width:7px;height:7px;border-radius:50%%;display:inline-block}'
+        '.tabs .tab{display:inline-flex;align-items:center}'
         'table{width:100%%;border-collapse:collapse;border-top:2px solid #444;font-size:14px}'
         'thead th{color:#999;font-weight:500;font-size:12px;padding:10px 4px;border-bottom:1px solid #eee}'
         'tbody td{padding:11px 4px;border-bottom:1px solid #f0f0f0;text-align:center;color:#888;font-size:13px}'
         'tbody tr{cursor:pointer}tbody tr:hover{background:#fafafa}'
         'td.num{width:56px}td.tit{text-align:left;padding-left:8px}td.who{width:96px}td.dt{width:72px}td.vw{width:56px}'
-        'td.tit .dot{display:inline-block;width:7px;height:7px;border-radius:50%%;margin-right:6px;vertical-align:middle}'
         'td.tit .cat{color:#aaa;font-size:13px}td.tit a{color:#222;text-decoration:none;font-size:14px}'
         'td.tit a:hover{text-decoration:underline}td.tit .cc{color:#888;font-weight:700;font-size:13px}'
         '.notice{font-size:11px;font-weight:700;color:#666;background:#eee;border-radius:4px;padding:2px 6px}'

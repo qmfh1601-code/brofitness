@@ -118,6 +118,8 @@ function Header({ route }) {
 
   // 칼럼 상세(다크 시네마틱 히어로)에서는 스크롤 전 내비를 흰색으로
   const darkTop = route.startsWith("/column/") && !scrolled;
+  // 커뮤니티(게시판)는 무채색 톤 — 내비/버튼의 브랜드 오렌지 미적용
+  const neutral = route === "/community" || route.startsWith("/community/");
 
   return (
     <header className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${scrolled ? "bg-cream/90 backdrop-blur border-b border-ink/5 shadow-sm" : "bg-transparent"}`}>
@@ -147,12 +149,12 @@ function Header({ route }) {
               </div>
             ) : (
               <button key={l.path} onClick={() => go(l.path)}
-                className={`relative transition-colors hover:text-bro ${route === l.path ? "text-bro" : ""}`}>
+                className={`relative transition-colors ${neutral ? "hover:text-ink" : "hover:text-bro"} ${route === l.path ? (neutral ? "text-ink font-bold" : "text-bro") : ""}`}>
                 {l.label}
               </button>
             )
           )}
-          <Btn size="sm" variant="bro" onClick={() => go("/booking")}>예약·상담</Btn>
+          <Btn size="sm" variant={neutral ? "dark" : "bro"} onClick={() => go("/booking")}>예약·상담</Btn>
         </nav>
 
         <button className="lg:hidden p-2 -mr-2" onClick={() => setOpen(!open)} aria-label="메뉴">
@@ -181,7 +183,7 @@ function Header({ route }) {
                 <button key={l.path} onClick={() => go(l.path)} className="text-left py-3 px-2 rounded-lg hover:bg-ink/5 font-semibold text-ink">{l.label}</button>
               )
             )}
-            <Btn className="mt-2 w-full" variant="bro" onClick={() => go("/booking")}>예약·상담 신청</Btn>
+            <Btn className="mt-2 w-full" variant={neutral ? "dark" : "bro"} onClick={() => go("/booking")}>예약·상담 신청</Btn>
           </div>
         </div>
       )}
@@ -196,10 +198,15 @@ function FloatingCTA({ route }) {
   if (route === "/booking") return null;
   const branchMatch = route.match(/^\/branch(?:es)?\/(\w+)/);
   const branch = C.branches.find((b) => b.id === (branchMatch ? branchMatch[1] : "yongam")) || C.branches[0];
+  // 커뮤니티(게시판)에서는 오렌지 대신 무채색(흰 버튼)으로
+  const neutral = route === "/community" || route.startsWith("/community/");
+  const bookCls = neutral
+    ? "bg-white text-ink hover:bg-white/90"
+    : "bg-bro hover:bg-broDark text-white";
   return (
     <div className="fixed bottom-0 inset-x-0 z-40 lg:bottom-5 lg:inset-x-auto lg:right-5">
       <div className="lg:rounded-2xl lg:shadow-2xl overflow-hidden flex divide-x divide-white/15 bg-ink/95 backdrop-blur">
-        <button onClick={() => go("/booking")} className="flex-1 lg:flex-none lg:w-36 py-3.5 lg:px-4 text-white text-sm font-bold bg-bro hover:bg-broDark">무료체험 예약</button>
+        <button onClick={() => go("/booking")} className={`flex-1 lg:flex-none lg:w-36 py-3.5 lg:px-4 text-sm font-bold ${bookCls}`}>무료체험 예약</button>
         {branch.kakao ? (
           <a href={branch.kakao} target="_blank" rel="noopener noreferrer" className="flex-1 lg:flex-none lg:w-28 py-3.5 lg:px-4 text-center text-white text-sm font-medium hover:bg-white/10">상담 문의</a>
         ) : (
@@ -2095,19 +2102,6 @@ function firstParaText(post) {
   return b ? (typeof b === "object" ? b.text : b) : "";
 }
 
-/* 카테고리 구분용 작은 점 색 (중립 게시판 톤 — 브랜드 오렌지 미사용) */
-const CAT_DOT = {
-  "운동 질문": "#3B82F6",
-  "오운완": "#22C55E",
-  "식단·꿀팁": "#F59E0B",
-  "루틴 공유": "#8B5CF6",
-  "자유수다": "#EC4899",
-  "지점 이야기": "#14B8A6",
-};
-function catDot(cat) {
-  return CAT_DOT[cat] || "#9CA3AF";
-}
-
 /* ===========================================================================
  *  커뮤니티 — 글 목록 (클래식 게시판형: 번호·제목·글쓴이·작성일·조회 표)
  * ======================================================================== */
@@ -2142,11 +2136,10 @@ function Community() {
         {/* 카테고리 탭 */}
         <div className="flex flex-wrap gap-x-4 gap-y-1.5 text-sm border-b border-ink/10 pb-3">
           {tabs.map((t) => (
-            <button key={t} onClick={() => setActive(t)}
-              className={`inline-flex items-center gap-1.5 py-1 transition-colors ${
+            <button key={t} onClick={() => { setActive(t); setUnanswered(false); }}
+              className={`py-1 transition-colors ${
                 active === t ? "text-ink font-bold" : "text-ink/50 hover:text-ink/80"
               }`}>
-              {t !== "전체보기" && <span className="w-1.5 h-1.5 rounded-full flex-none" style={{ background: catDot(t) }} />}
               {t}
             </button>
           ))}
@@ -2192,10 +2185,9 @@ function Community() {
                         : <span className="text-ink/35">{num}</span>}
                     </td>
                     <td className="py-2.5 pl-2 pr-2">
-                      <span className="inline-block w-1.5 h-1.5 rounded-full mr-1.5 align-middle" style={{ background: catDot(p.cat) }} />
                       <span className="text-ink/40">[{p.cat}]</span>{" "}
                       <span className="text-ink hover:underline">{p.title}</span>
-                      {cc > 0 && <span className="text-ink/45 font-semibold ml-1">[{cc}]</span>}
+                      {cc > 0 && <span className="text-ink/50 font-semibold ml-1">[{cc}]</span>}
                     </td>
                     <td className="py-2.5 text-center text-ink/55 text-xs">{p.author}</td>
                     <td className="py-2.5 text-center text-ink/40 text-xs hidden sm:table-cell">{p.date ? p.date.slice(5) : ""}</td>
@@ -2223,7 +2215,7 @@ function CommentComposer() {
       <div className="mt-6 rounded-2xl bg-ink/[.03] ring-1 ring-ink/10 p-6 text-center">
         <p className="font-semibold text-ink">브로 커뮤니티는 회원과 함께 채워가는 공간이에요.</p>
         <p className="text-ink/60 text-sm mt-1.5">무료체험으로 시작하면 커뮤니티 참여도 함께 열려요. 청주 용암·금천·복대에서 같이 운동해요!</p>
-        <Btn className="mt-4" variant="bro" onClick={() => go("/booking")}>무료체험 예약하기</Btn>
+        <Btn className="mt-4" variant="dark" onClick={() => go("/booking")}>무료체험 예약하기</Btn>
       </div>
     );
   }
@@ -2232,9 +2224,9 @@ function CommentComposer() {
     <div className="mt-6">
       <textarea value={val} onChange={(e) => setVal(e.target.value)}
         placeholder="따뜻한 댓글을 남겨보세요…"
-        className="w-full rounded-2xl bg-white ring-1 ring-ink/10 focus:ring-bro/50 outline-none p-4 text-ink text-sm resize-none h-24 transition-shadow" />
+        className="w-full rounded-2xl bg-white ring-1 ring-ink/10 focus:ring-ink/30 outline-none p-4 text-ink text-sm resize-none h-24 transition-shadow" />
       <div className="mt-2.5 flex justify-end">
-        <Btn size="sm" variant="bro" onClick={() => setSent(true)}>댓글 등록</Btn>
+        <Btn size="sm" variant="dark" onClick={() => setSent(true)}>댓글 등록</Btn>
       </div>
     </div>
   );
@@ -2252,7 +2244,7 @@ function CommunityPost({ id }) {
     return (
       <main className="bg-cream text-ink min-h-screen pt-36 pb-24 text-center">
         <p className="text-ink/50 text-lg">글을 찾을 수 없습니다.</p>
-        <Btn className="mt-6" variant="bro" onClick={() => go("/community")}>커뮤니티 목록으로</Btn>
+        <Btn className="mt-6" variant="dark" onClick={() => go("/community")}>커뮤니티 목록으로</Btn>
       </main>
     );
   }
@@ -2270,9 +2262,7 @@ function CommunityPost({ id }) {
           <Reveal>
             <button onClick={() => go("/community")} className="text-ink/45 text-sm hover:text-ink transition-colors mb-5 inline-flex items-center gap-1.5">← 브로 커뮤니티</button>
             <div className="flex items-center gap-2 mb-3">
-              <span className="inline-flex items-center gap-1.5 text-ink/55 font-semibold text-sm">
-                <span className="w-2 h-2 rounded-full flex-none" style={{ background: catDot(post.cat) }} />[{post.cat}]
-              </span>
+              <span className="text-ink/55 font-semibold text-sm">[{post.cat}]</span>
               {post.pinned && <span className="text-[11px] font-semibold text-white bg-ink/70 rounded-full px-2 py-0.5">공지</span>}
             </div>
             <h1 className="text-2xl md:text-4xl font-bold leading-snug tracking-tight">{post.title}</h1>
@@ -2342,13 +2332,13 @@ function CommunityPost({ id }) {
 
         {/* 글 하단 CTA */}
         <Reveal className="relative overflow-hidden rounded-3xl bg-ink text-white p-8 lg:p-10 text-center">
-          <span className="orb drift" style={{ width: "16rem", height: "16rem", background: "rgba(255,106,26,.28)", top: "-4rem", right: "-3rem" }} />
+          <span className="orb drift" style={{ width: "16rem", height: "16rem", background: "rgba(255,255,255,.10)", top: "-4rem", right: "-3rem" }} />
           <div className="relative z-10">
-            <p className="font-display tracking-wider2 text-bro text-sm mb-3">JOIN THE CREW</p>
+            <p className="font-display tracking-wider2 text-white/55 text-sm mb-3">JOIN THE CREW</p>
             <p className="text-2xl lg:text-3xl font-bold leading-snug">청주에서 같이 운동해요.</p>
             <p className="text-white/60 mt-3">한 달 34,900원 · 약정 없이 무료체험으로 시작해보세요.</p>
             <div className="mt-7 flex flex-wrap justify-center gap-3">
-              <Btn variant="bro" onClick={() => go("/booking")}>무료체험 예약하기</Btn>
+              <Btn variant="light" onClick={() => go("/booking")}>무료체험 예약하기</Btn>
               <Btn variant="ghost" onClick={() => go("/community")}>커뮤니티 더 보기</Btn>
             </div>
           </div>
@@ -2367,9 +2357,7 @@ function CommunityPost({ id }) {
                     className="group w-full text-left bg-white rounded-2xl ring-1 ring-ink/5 shadow-sm hover:shadow-lg transition-shadow duration-300 p-5 flex gap-4">
                     <Avatar name={p.author} size={40} />
                     <div className="flex-1 min-w-0">
-                      <span className="inline-flex items-center gap-1.5 text-ink/50 font-semibold text-xs">
-                        <span className="w-1.5 h-1.5 rounded-full flex-none" style={{ background: catDot(p.cat) }} />[{p.cat}]
-                      </span>
+                      <span className="text-ink/50 font-semibold text-xs">[{p.cat}]</span>
                       <h3 className="text-base font-bold leading-snug tracking-tight group-hover:underline line-clamp-2 mt-1">{p.title}</h3>
                       <div className="mt-2 text-ink/40 text-xs flex gap-3">
                         <span className="font-semibold text-ink/60">{p.author}</span>
