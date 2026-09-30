@@ -2095,88 +2095,118 @@ function firstParaText(post) {
   return b ? (typeof b === "object" ? b.text : b) : "";
 }
 
+/* 카테고리 구분용 작은 점 색 (중립 게시판 톤 — 브랜드 오렌지 미사용) */
+const CAT_DOT = {
+  "운동 질문": "#3B82F6",
+  "오운완": "#22C55E",
+  "식단·꿀팁": "#F59E0B",
+  "루틴 공유": "#8B5CF6",
+  "자유수다": "#EC4899",
+  "지점 이야기": "#14B8A6",
+};
+function catDot(cat) {
+  return CAT_DOT[cat] || "#9CA3AF";
+}
+
 /* ===========================================================================
- *  커뮤니티 — 글 목록 (포럼형: 필터 + 고정글 + 카드 리스트)
+ *  커뮤니티 — 글 목록 (클래식 게시판형: 번호·제목·글쓴이·작성일·조회 표)
  * ======================================================================== */
 function Community() {
   const data = window.COMMUNITY || { posts: [], categories: [], meta: {} };
   const posts = data.posts || [];
   const meta = data.meta || {};
   const [active, setActive] = useState("전체보기");
+  const [sort, setSort] = useState("최신"); // 최신 | 인기
+  const [unanswered, setUnanswered] = useState(false);
   const tabs = ["전체보기", ...(data.categories || [])];
 
-  const filtered = active === "전체보기" ? posts : posts.filter((p) => p.cat === active);
-  const ordered = [...filtered.filter((p) => p.pinned), ...filtered.filter((p) => !p.pinned)];
+  let list = active === "전체보기" ? posts : posts.filter((p) => p.cat === active);
+  if (unanswered) list = list.filter((p) => (p.comments || []).length === 0);
+  const pinned = list.filter((p) => p.pinned);
+  const rest = list.filter((p) => !p.pinned);
+  if (sort === "인기") rest.sort((a, b) => (b.likes || 0) - (a.likes || 0));
+  const total = rest.length;
+  const ordered = [...pinned, ...rest];
 
   return (
-    <main className="bg-cream text-ink min-h-screen">
-      {/* 헤더 */}
-      <section className="pt-28 lg:pt-36 pb-8 lg:pb-10 bg-ivory text-center">
-        <div className="max-w-8xl mx-auto px-5 lg:px-8">
-          <Reveal>
-            <p className="font-display tracking-wider2 text-bro text-sm mb-3">{meta.eyebrow || "BRO COMMUNITY"}</p>
-            <h1 className="text-4xl md:text-6xl font-bold tracking-tight">{meta.title || "브로 커뮤니티"}</h1>
-            <p className="text-ink/55 mt-4 text-lg">{meta.subtitle}</p>
-            {meta.notice && (
-              <p className="mt-5 inline-block rounded-full bg-bro/10 text-broDark text-sm font-medium px-5 py-2">{meta.notice}</p>
+    <main className="bg-white text-ink min-h-screen">
+      {/* 헤더 (중립) */}
+      <section className="pt-28 lg:pt-32 pb-5 border-b border-ink/10 bg-white">
+        <div className="max-w-4xl mx-auto px-5 lg:px-8">
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">{meta.title || "브로 커뮤니티"}</h1>
+          {meta.subtitle && <p className="text-ink/50 mt-1.5 text-sm">{meta.subtitle}</p>}
+        </div>
+      </section>
+
+      <div className="max-w-4xl mx-auto px-5 lg:px-8 py-5">
+        {/* 카테고리 탭 */}
+        <div className="flex flex-wrap gap-x-4 gap-y-1.5 text-sm border-b border-ink/10 pb-3">
+          {tabs.map((t) => (
+            <button key={t} onClick={() => setActive(t)}
+              className={`inline-flex items-center gap-1.5 py-1 transition-colors ${
+                active === t ? "text-ink font-bold" : "text-ink/50 hover:text-ink/80"
+              }`}>
+              {t !== "전체보기" && <span className="w-1.5 h-1.5 rounded-full flex-none" style={{ background: catDot(t) }} />}
+              {t}
+            </button>
+          ))}
+        </div>
+
+        {/* 정렬 / 필터 */}
+        <div className="flex items-center justify-between py-3 text-xs text-ink/50">
+          <div className="flex items-center gap-2.5">
+            <span className="text-ink/35">정렬</span>
+            <button onClick={() => setSort("최신")} className={sort === "최신" ? "text-ink font-semibold" : "hover:text-ink/80"}>최신</button>
+            <span className="text-ink/20">·</span>
+            <button onClick={() => setSort("인기")} className={sort === "인기" ? "text-ink font-semibold" : "hover:text-ink/80"}>인기</button>
+            <span className="text-ink/20">·</span>
+            <button onClick={() => setUnanswered((v) => !v)} className={unanswered ? "text-ink font-semibold" : "hover:text-ink/80"}>미답변</button>
+          </div>
+          <span>전체 {total}</span>
+        </div>
+
+        {/* 게시판 표 */}
+        <table className="w-full text-sm border-t-2 border-ink/70">
+          <thead>
+            <tr className="text-ink/45 text-xs border-b border-ink/10">
+              <th className="w-14 py-2.5 font-medium hidden sm:table-cell">번호</th>
+              <th className="py-2.5 font-medium text-left pl-2">제목</th>
+              <th className="w-24 py-2.5 font-medium">글쓴이</th>
+              <th className="w-20 py-2.5 font-medium hidden sm:table-cell">작성일</th>
+              <th className="w-14 py-2.5 font-medium hidden sm:table-cell">조회</th>
+            </tr>
+          </thead>
+          <tbody>
+            {ordered.length === 0 ? (
+              <tr><td colSpan={5} className="text-center text-ink/40 py-16">아직 이 분류의 글이 없어요.</td></tr>
+            ) : (
+              ordered.map((p) => {
+                const cc = (p.comments || []).length;
+                const num = p.pinned ? null : total - rest.indexOf(p);
+                return (
+                  <tr key={p.id} onClick={() => go("/community/" + p.id)}
+                    className="border-b border-ink/[.07] hover:bg-ink/[.02] cursor-pointer">
+                    <td className="py-2.5 text-center hidden sm:table-cell">
+                      {p.pinned
+                        ? <span className="text-[11px] font-bold text-ink/70 bg-ink/[.07] rounded px-1.5 py-0.5">공지</span>
+                        : <span className="text-ink/35">{num}</span>}
+                    </td>
+                    <td className="py-2.5 pl-2 pr-2">
+                      <span className="inline-block w-1.5 h-1.5 rounded-full mr-1.5 align-middle" style={{ background: catDot(p.cat) }} />
+                      <span className="text-ink/40">[{p.cat}]</span>{" "}
+                      <span className="text-ink hover:underline">{p.title}</span>
+                      {cc > 0 && <span className="text-ink/45 font-semibold ml-1">[{cc}]</span>}
+                    </td>
+                    <td className="py-2.5 text-center text-ink/55 text-xs">{p.author}</td>
+                    <td className="py-2.5 text-center text-ink/40 text-xs hidden sm:table-cell">{p.date ? p.date.slice(5) : ""}</td>
+                    <td className="py-2.5 text-center text-ink/40 text-xs hidden sm:table-cell">{p.views || 0}</td>
+                  </tr>
+                );
+              })
             )}
-          </Reveal>
-        </div>
-      </section>
-
-      {/* 분류 필터 칩 */}
-      <section className="bg-ivory pb-10">
-        <div className="max-w-5xl mx-auto px-5 lg:px-8">
-          <Reveal className="flex flex-wrap justify-center gap-2.5">
-            {tabs.map((t) => (
-              <button key={t} onClick={() => setActive(t)}
-                className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 ${
-                  active === t
-                    ? "bg-bro text-white shadow-lg shadow-bro/25"
-                    : "bg-cream text-ink/70 ring-1 ring-ink/10 hover:text-bro hover:ring-bro/40"
-                }`}>
-                {t}
-              </button>
-            ))}
-          </Reveal>
-        </div>
-      </section>
-
-      {/* 글 리스트 */}
-      <section className="py-10 lg:py-14">
-        <div className="max-w-3xl mx-auto px-5 lg:px-8">
-          {ordered.length === 0 ? (
-            <p className="text-center text-ink/40 py-20">아직 이 분류의 글이 없어요.</p>
-          ) : (
-            <div className="flex flex-col gap-4">
-              {ordered.map((p, i) => (
-                <Reveal key={p.id} delay={(i % 4) * 60}>
-                  <button onClick={() => go("/community/" + p.id)}
-                    className="group w-full text-left bg-white rounded-2xl ring-1 ring-ink/5 shadow-sm hover:shadow-lg transition-shadow duration-300 p-5 lg:p-6 flex gap-4">
-                    <Avatar name={p.author} size={44} />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1.5">
-                        <span className="text-bro font-semibold text-xs">#{p.cat}</span>
-                        {p.pinned && (
-                          <span className="text-[11px] font-semibold text-white bg-bro/90 rounded-full px-2 py-0.5">고정</span>
-                        )}
-                      </div>
-                      <h3 className="text-base lg:text-lg font-bold leading-snug tracking-tight group-hover:text-bro transition-colors line-clamp-2">{p.title}</h3>
-                      <p className="text-ink/50 text-sm mt-1.5 line-clamp-1">{firstParaText(p)}</p>
-                      <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-ink/40 text-xs">
-                        <span className="font-semibold text-ink/60">{p.author}</span>
-                        <span>{p.date}</span>
-                        <span>댓글 {(p.comments || []).length}</span>
-                        <span>좋아요 {p.likes || 0}</span>
-                      </div>
-                    </div>
-                  </button>
-                </Reveal>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
+          </tbody>
+        </table>
+      </div>
     </main>
   );
 }
@@ -2190,7 +2220,7 @@ function CommentComposer() {
 
   if (sent) {
     return (
-      <div className="mt-6 rounded-2xl bg-bro/8 ring-1 ring-bro/20 p-6 text-center">
+      <div className="mt-6 rounded-2xl bg-ink/[.03] ring-1 ring-ink/10 p-6 text-center">
         <p className="font-semibold text-ink">브로 커뮤니티는 회원과 함께 채워가는 공간이에요.</p>
         <p className="text-ink/60 text-sm mt-1.5">무료체험으로 시작하면 커뮤니티 참여도 함께 열려요. 청주 용암·금천·복대에서 같이 운동해요!</p>
         <Btn className="mt-4" variant="bro" onClick={() => go("/booking")}>무료체험 예약하기</Btn>
@@ -2238,10 +2268,12 @@ function CommunityPost({ id }) {
       <section className="pt-28 lg:pt-32 pb-8 bg-ivory">
         <div className="max-w-3xl mx-auto px-5 lg:px-8">
           <Reveal>
-            <button onClick={() => go("/community")} className="text-ink/45 text-sm hover:text-bro transition-colors mb-5 inline-flex items-center gap-1.5">← 브로 커뮤니티</button>
+            <button onClick={() => go("/community")} className="text-ink/45 text-sm hover:text-ink transition-colors mb-5 inline-flex items-center gap-1.5">← 브로 커뮤니티</button>
             <div className="flex items-center gap-2 mb-3">
-              <span className="text-bro font-semibold text-sm">#{post.cat}</span>
-              {post.pinned && <span className="text-[11px] font-semibold text-white bg-bro/90 rounded-full px-2 py-0.5">고정</span>}
+              <span className="inline-flex items-center gap-1.5 text-ink/55 font-semibold text-sm">
+                <span className="w-2 h-2 rounded-full flex-none" style={{ background: catDot(post.cat) }} />[{post.cat}]
+              </span>
+              {post.pinned && <span className="text-[11px] font-semibold text-white bg-ink/70 rounded-full px-2 py-0.5">공지</span>}
             </div>
             <h1 className="text-2xl md:text-4xl font-bold leading-snug tracking-tight">{post.title}</h1>
             <div className="mt-5 flex items-center gap-3">
@@ -2283,7 +2315,7 @@ function CommunityPost({ id }) {
 
         {/* 댓글 */}
         <div>
-          <h2 className="text-lg font-bold mb-5">댓글 <span className="text-bro">{comments.length}</span></h2>
+          <h2 className="text-lg font-bold mb-5">댓글 <span className="text-ink/60">{comments.length}</span></h2>
           <div className="flex flex-col">
             {comments.length === 0 ? (
               <p className="text-ink/40 text-sm py-4">아직 댓글이 없어요. 첫 댓글을 남겨보세요!</p>
@@ -2335,8 +2367,10 @@ function CommunityPost({ id }) {
                     className="group w-full text-left bg-white rounded-2xl ring-1 ring-ink/5 shadow-sm hover:shadow-lg transition-shadow duration-300 p-5 flex gap-4">
                     <Avatar name={p.author} size={40} />
                     <div className="flex-1 min-w-0">
-                      <span className="text-bro font-semibold text-xs">#{p.cat}</span>
-                      <h3 className="text-base font-bold leading-snug tracking-tight group-hover:text-bro transition-colors line-clamp-2 mt-1">{p.title}</h3>
+                      <span className="inline-flex items-center gap-1.5 text-ink/50 font-semibold text-xs">
+                        <span className="w-1.5 h-1.5 rounded-full flex-none" style={{ background: catDot(p.cat) }} />[{p.cat}]
+                      </span>
+                      <h3 className="text-base font-bold leading-snug tracking-tight group-hover:underline line-clamp-2 mt-1">{p.title}</h3>
                       <div className="mt-2 text-ink/40 text-xs flex gap-3">
                         <span className="font-semibold text-ink/60">{p.author}</span>
                         <span>{p.date}</span>

@@ -45,6 +45,21 @@ def avatar_color(name):
     return "hsl(%d, 42%%, 46%%)" % hue
 
 
+# 카테고리 구분용 작은 점 색 (프론트 CAT_DOT 와 동일 유지)
+CAT_DOT = {
+    "운동 질문": "#3B82F6",
+    "오운완": "#22C55E",
+    "식단·꿀팁": "#F59E0B",
+    "루틴 공유": "#8B5CF6",
+    "자유수다": "#EC4899",
+    "지점 이야기": "#14B8A6",
+}
+
+
+def cat_dot(cat):
+    return CAT_DOT.get(cat, "#9CA3AF")
+
+
 def body_text(body):
     parts = []
     for blk in body or []:
@@ -98,14 +113,15 @@ POST_TMPL = """<!DOCTYPE html>
 </script>
 <style>
  :root{{--ink:#0E0E10;--bro:#FF6A1A;--broDark:#E2540A;--cream:#FBF8F2;--ivory:#F6F2EA;}}
- *{{box-sizing:border-box;}} body{{margin:0;font-family:'Pretendard',system-ui,sans-serif;background:var(--cream);color:var(--ink);line-height:1.75;-webkit-font-smoothing:antialiased;}}
+ *{{box-sizing:border-box;}} body{{margin:0;font-family:'Pretendard',system-ui,sans-serif;background:#fff;color:var(--ink);line-height:1.75;-webkit-font-smoothing:antialiased;}}
  a{{color:inherit;}} .wrap{{max-width:740px;margin:0 auto;padding:0 20px;}}
- header.site{{border-bottom:1px solid rgba(14,14,16,.08);background:var(--cream);}}
+ header.site{{border-bottom:1px solid rgba(14,14,16,.08);background:#fff;}}
  header.site .wrap{{display:flex;align-items:center;height:64px;}}
  .logo img{{height:40px;width:auto;display:block;}}
  .top{{padding:28px 0 6px;}}
- .back{{display:inline-block;margin:0 0 14px;color:var(--bro);font-weight:600;text-decoration:none;font-size:14px;}}
- .cat{{color:var(--bro);font-weight:700;font-size:13px;}}
+ .back{{display:inline-block;margin:0 0 14px;color:#555;font-weight:600;text-decoration:none;font-size:14px;}}
+ .cat{{color:#888;font-weight:600;font-size:13px;}}
+ .cat .dot{{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:middle;}}
  h1{{font-size:26px;line-height:1.32;letter-spacing:-.01em;margin:8px 0 16px;}}
  .byline{{display:flex;align-items:center;gap:10px;color:rgba(14,14,16,.55);font-size:14px;margin-bottom:6px;}}
  .av{{width:34px;height:34px;border-radius:999px;color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:15px;flex:0 0 auto;}}
@@ -122,10 +138,10 @@ POST_TMPL = """<!DOCTYPE html>
  .btns{{margin-top:16px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}}
  .btn{{display:inline-block;text-decoration:none;font-weight:700;padding:12px 22px;border-radius:999px;}}
  .btn.p{{background:var(--bro);color:#fff;}} .btn.s{{border:1px solid rgba(255,255,255,.45);color:#fff;}}
- .related{{background:var(--ivory);margin-top:8px;padding:36px 0;}}
+ .related{{background:#f7f7f7;margin-top:8px;padding:36px 0;}}
  .related h2{{font-size:19px;margin:0 0 16px;}} .rgrid{{display:grid;gap:12px;}}
  .rcard{{display:block;background:#fff;border:1px solid rgba(14,14,16,.06);border-radius:14px;padding:16px 18px;text-decoration:none;}}
- .rcard .rc{{color:var(--bro);font-size:12px;font-weight:700;}} .rcard h3{{font-size:15px;margin:6px 0 0;line-height:1.4;}}
+ .rcard .rc{{color:#888;font-size:12px;font-weight:600;}} .rcard h3{{font-size:15px;margin:6px 0 0;line-height:1.4;}}
  footer.site{{border-top:1px solid rgba(14,14,16,.08);padding:24px 0;color:rgba(14,14,16,.5);font-size:14px;}}
  @media(min-width:768px){{h1{{font-size:32px;}}}}
 </style>
@@ -135,7 +151,7 @@ POST_TMPL = """<!DOCTYPE html>
 <div class="wrap">
   <div class="top">
     <a class="back" href="/#/community">← 브로 커뮤니티</a>
-    <div class="cat">#{cat}</div>
+    <div class="cat"><span class="dot" style="background:{catcolor}"></span>[{cat}]</div>
     <h1>{title}</h1>
     <div class="byline"><span class="av" style="background:{avcolor}">{avchar}</span> <span>{author}</span></div>
     <div class="stat"><span>{date}</span><span>좋아요 {likes}</span><span>댓글 {ccount}</span></div>
@@ -226,7 +242,7 @@ def render_related(posts, current):
     out = []
     for p in picks:
         out.append(
-            '<a class="rcard" href="/community/%s.html"><span class="rc">#%s</span><h3>%s</h3></a>'
+            '<a class="rcard" href="/community/%s.html"><span class="rc">[%s]</span><h3>%s</h3></a>'
             % (esc(p["id"]), esc(p.get("cat", "")), esc(p.get("title", "")))
         )
     return "".join(out)
@@ -250,6 +266,7 @@ def write_posts(data):
             logo=LOGO,
             schema=build_schema(post),
             cat=esc(post.get("cat", "")),
+            catcolor=cat_dot(post.get("cat", "")),
             author=esc(author),
             avcolor=avatar_color(author),
             avchar=esc(author[:1]),
@@ -267,16 +284,38 @@ def write_posts(data):
 # ---------------------------------------------------------------------------
 # 3) community/index.html
 # ---------------------------------------------------------------------------
+def _index_row(p, num):
+    cc = comment_count(p)
+    numcell = '<span class="notice">공지</span>' if num is None else str(num)
+    cchtml = ' <span class="cc">[%d]</span>' % cc if cc else ""
+    date = p.get("date", "")
+    date_short = date[5:] if len(date) >= 10 else date
+    return (
+        '<tr onclick="location.href=\'/community/%s.html\'">'
+        '<td class="num">%s</td>'
+        '<td class="tit"><span class="dot" style="background:%s"></span>'
+        '<span class="cat">[%s]</span> <a href="/community/%s.html">%s</a>%s</td>'
+        '<td class="who">%s</td><td class="dt">%s</td><td class="vw">%d</td></tr>'
+        % (esc(p["id"]), numcell, cat_dot(p.get("cat", "")), esc(p.get("cat", "")),
+           esc(p["id"]), esc(p.get("title", "")), cchtml,
+           esc(p.get("author", "")), esc(date_short), p.get("views", 0))
+    )
+
+
 def write_index(data):
     meta = data.get("meta", {})
-    rows = []
-    for p in data.get("posts", []):
-        rows.append(
-            '<a class="item" href="/community/%s.html"><span class="c">#%s</span>'
-            '<h2>%s</h2><p class="m">%s · 댓글 %d · 좋아요 %d</p></a>'
-            % (esc(p["id"]), esc(p.get("cat", "")), esc(p.get("title", "")),
-               esc(p.get("author", "")), comment_count(p), p.get("likes", 0))
-        )
+    posts = data.get("posts", [])
+    pinned = [p for p in posts if p.get("pinned")]
+    rest = [p for p in posts if not p.get("pinned")]
+    total = len(rest)
+
+    tabs = "".join(
+        '<span class="tab"><i style="background:%s"></i>%s</span>' % (cat_dot(c), esc(c))
+        for c in data.get("categories", [])
+    )
+    rows = [_index_row(p, None) for p in pinned]
+    rows += [_index_row(p, total - i) for i, p in enumerate(rest)]
+
     doc = (
         '<!DOCTYPE html>\n<html lang="ko"><head><meta charset="UTF-8"/>'
         '<meta name="viewport" content="width=device-width, initial-scale=1.0"/>'
@@ -285,14 +324,36 @@ def write_index(data):
         '<link rel="canonical" href="%s/community/"/>'
         '<link rel="icon" type="image/png" href="/img/logo-bro.png"/>'
         '<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"/>'
-        '<style>body{margin:0;font-family:\'Pretendard\',system-ui,sans-serif;background:#FBF8F2;color:#0E0E10;line-height:1.7}'
-        '.wrap{max-width:760px;margin:0 auto;padding:56px 20px}h1{font-size:32px;margin:0 0 6px}.s{color:#888;margin:0 0 28px}'
-        'a.item{display:block;padding:18px 0;border-top:1px solid #eee;text-decoration:none}a.item .c{color:#FF6A1A;font-size:13px;font-weight:700}'
-        'a.item h2{font-size:17px;margin:6px 0 4px;line-height:1.4}a.item p.m{margin:0;color:#888;font-size:13px}</style></head>'
-        '<body><div class="wrap"><a href="/" style="color:#FF6A1A;font-weight:600;text-decoration:none">← 브로피트니스</a>'
-        '<h1>%s</h1><p class="s">%s</p>%s</div></body></html>\n'
+        '<style>'
+        'body{margin:0;font-family:\'Pretendard\',system-ui,sans-serif;background:#fff;color:#111;line-height:1.6}'
+        '.wrap{max-width:900px;margin:0 auto;padding:40px 20px}'
+        '.back{color:#555;font-weight:600;text-decoration:none;font-size:14px}'
+        'h1{font-size:24px;margin:14px 0 4px}.s{color:#888;margin:0 0 18px;font-size:14px}'
+        '.tabs{display:flex;flex-wrap:wrap;gap:14px;border-top:1px solid #eee;border-bottom:1px solid #eee;padding:12px 0;margin:0 0 14px;font-size:14px;color:#555}'
+        '.tabs .tab{display:inline-flex;align-items:center;gap:6px}'
+        '.tabs .tab i{width:7px;height:7px;border-radius:50%%;display:inline-block}'
+        'table{width:100%%;border-collapse:collapse;border-top:2px solid #444;font-size:14px}'
+        'thead th{color:#999;font-weight:500;font-size:12px;padding:10px 4px;border-bottom:1px solid #eee}'
+        'tbody td{padding:11px 4px;border-bottom:1px solid #f0f0f0;text-align:center;color:#888;font-size:13px}'
+        'tbody tr{cursor:pointer}tbody tr:hover{background:#fafafa}'
+        'td.num{width:56px}td.tit{text-align:left;padding-left:8px}td.who{width:96px}td.dt{width:72px}td.vw{width:56px}'
+        'td.tit .dot{display:inline-block;width:7px;height:7px;border-radius:50%%;margin-right:6px;vertical-align:middle}'
+        'td.tit .cat{color:#aaa;font-size:13px}td.tit a{color:#222;text-decoration:none;font-size:14px}'
+        'td.tit a:hover{text-decoration:underline}td.tit .cc{color:#888;font-weight:700;font-size:13px}'
+        '.notice{font-size:11px;font-weight:700;color:#666;background:#eee;border-radius:4px;padding:2px 6px}'
+        '@media(max-width:640px){td.num,td.dt,td.vw,th.num,th.dt,th.vw{display:none}}'
+        '</style></head>'
+        '<body><div class="wrap"><a class="back" href="/">← 브로피트니스</a>'
+        '<h1>%s</h1><p class="s">%s</p>'
+        '<div class="tabs">%s</div>'
+        '<table><thead><tr>'
+        '<th class="num">번호</th><th style="text-align:left;padding-left:8px">제목</th>'
+        '<th>글쓴이</th><th class="dt">작성일</th><th class="vw">조회</th>'
+        '</tr></thead><tbody>%s</tbody></table>'
+        '</div></body></html>\n'
         % (esc(ORG), esc(meta.get("subtitle", "")), BASE_URL,
-           esc(meta.get("title", "브로 커뮤니티")), esc(meta.get("subtitle", "")), "".join(rows))
+           esc(meta.get("title", "브로 커뮤니티")), esc(meta.get("subtitle", "")),
+           tabs, "".join(rows))
     )
     with open(os.path.join(COMM_DIR, "index.html"), "w", encoding="utf-8") as f:
         f.write(doc)
