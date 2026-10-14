@@ -34,6 +34,29 @@ function Reveal({ children, className = "", delay = 0, as: Tag = "div", ...rest 
   return <Tag ref={ref} className={"reveal " + className} {...rest}>{children}</Tag>;
 }
 
+/* ---------- 숫자 카운트업 (히어로 핵심 지표 모션) ----------
+ * value: "34,900" 같은 문자열 → 숫자만 추출해 0에서 목표까지 올려붙임.
+ * delay: 요소 등장 애니메이션이 끝날 즈음 숫자가 돌기 시작하도록 맞춤.        */
+function CountUp({ value, duration = 1500, delay = 0 }) {
+  const parsed = parseInt(String(value).replace(/[^0-9]/g, ""), 10);
+  const target = Number.isFinite(parsed) ? parsed : 0;
+  const [n, setN] = useState(0);
+  useEffect(() => {
+    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) { setN(target); return; }
+    let raf, t0;
+    const ease = (t) => 1 - Math.pow(1 - t, 3);           // easeOutCubic
+    const tick = (ts) => {
+      if (!t0) t0 = ts;
+      const p = Math.min((ts - t0) / duration, 1);
+      setN(Math.round(ease(p) * target));
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    const to = setTimeout(() => { raf = requestAnimationFrame(tick); }, delay);
+    return () => { clearTimeout(to); if (raf) cancelAnimationFrame(raf); };
+  }, [target, duration, delay]);
+  return <>{n.toLocaleString("ko-KR")}</>;
+}
+
 /* ---------- 안전 이미지 (로드 실패 시 플레이스홀더) ---------- */
 function Img({ src, alt, className, dark }) {
   const [err, setErr] = useState(false);
@@ -228,39 +251,42 @@ function Home() {
       <section className="relative min-h-[100svh] flex items-center overflow-hidden pt-16">
         <div className="absolute inset-0 lg:grid lg:grid-cols-12">
           <div className="hidden lg:block lg:col-span-7" />
-          <div className="lg:col-span-5 h-full">
-            <Img src={C.hero.image} dark className="w-full h-full object-cover" alt="브로피트니스" />
+          <div className="lg:col-span-5 h-full overflow-hidden hero-photo-wipe">
+            <Img src={C.hero.image} dark className="w-full h-full object-cover hero-flow" alt="브로피트니스" />
           </div>
         </div>
         {/* 밝은 그라데이션으로 사진 위를 덮어 좌측을 화사하게 */}
         <div className="absolute inset-0 bg-gradient-to-r from-cream via-cream/95 lg:via-cream/85 to-cream/10" />
         <div className="absolute inset-0 bg-gradient-to-t from-cream/60 to-transparent lg:hidden" />
         {/* 시각 디테일: 좌측 텍스트 뒤 따뜻한 글로우 + 미세 도트 */}
-        <div className="orb bg-bro/15 w-[36rem] h-[36rem] -top-44 -left-40" />
+        <div className="orb orb-float bg-bro/15 w-[36rem] h-[36rem] -top-44 -left-40" />
+        <div className="orb orb-float2 bg-bro/10 w-[28rem] h-[28rem] bottom-[-9rem] left-[20%]" />
         <div className="absolute inset-y-0 left-0 w-1/2 bg-grid opacity-50 [mask-image:linear-gradient(to_right,black,transparent)]" />
 
         <div className="relative max-w-8xl mx-auto px-5 lg:px-8 w-full">
-          <Reveal className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 bg-ink text-white text-xs font-semibold rounded-full px-3 py-1.5 mb-6">
-              <span className="w-1.5 h-1.5 rounded-full bg-bro" /> 청주 용암 · 금천 · 복대
+          <div className="max-w-2xl">
+            <div className="hero-in inline-flex items-center gap-2 bg-ink text-white text-xs font-semibold rounded-full px-3 py-1.5 mb-6" style={{ animationDelay: "60ms" }}>
+              <span className="w-1.5 h-1.5 rounded-full bg-bro animate-pulse" /> 청주 용암 · 금천 · 복대
             </div>
-            <p className="font-display text-bro tracking-wider2 text-base md:text-lg mb-4">{C.hero.subEn}</p>
-            <h1 className="text-5xl md:text-7xl font-bold leading-[1.05] tracking-tight whitespace-pre-line mb-6">{C.hero.title}</h1>
-            <p className="text-ink/60 text-lg max-w-md mb-9">{C.hero.desc}</p>
-            <div className="flex flex-wrap gap-3 mb-12">
+            <p className="hero-in font-display text-bro tracking-wider2 text-base md:text-lg mb-4" style={{ animationDelay: "170ms" }}>{C.hero.subEn}</p>
+            <h1 className="hero-in text-5xl md:text-7xl font-bold leading-[1.05] tracking-tight whitespace-pre-line mb-6" style={{ animationDelay: "290ms" }}>{C.hero.title}</h1>
+            <p className="hero-in text-ink/60 text-lg max-w-md mb-9" style={{ animationDelay: "430ms" }}>{C.hero.desc}</p>
+            <div className="hero-in flex flex-wrap gap-3 mb-12" style={{ animationDelay: "550ms" }}>
               <Btn size="lg" variant="bro" onClick={() => go("/booking")}>무료체험 예약하기</Btn>
               <Btn size="lg" variant="outline" onClick={() => go("/pricing")}>요금 보기 →</Btn>
             </div>
-            {/* 핵심 지표 */}
+            {/* 핵심 지표 — 숫자 카운트업 */}
             <div className="flex flex-wrap gap-x-10 gap-y-4">
               {C.hero.stats.map((s, i) => (
-                <div key={i}>
-                  <p className="text-3xl font-bold tracking-tight">{s.num}<span className="text-bro text-lg ml-1">{s.unit}</span></p>
+                <div key={i} className="hero-in" style={{ animationDelay: (660 + i * 120) + "ms" }}>
+                  <p className="text-3xl font-bold tracking-tight tabular-nums">
+                    <CountUp value={s.num} delay={780 + i * 120} /><span className="text-bro text-lg ml-1">{s.unit}</span>
+                  </p>
                   <p className="text-ink/50 text-sm mt-0.5">{s.label}</p>
                 </div>
               ))}
             </div>
-          </Reveal>
+          </div>
         </div>
       </section>
 

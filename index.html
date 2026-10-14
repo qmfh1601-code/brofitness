@@ -317,7 +317,19 @@
     /* 천천히 떠오르는 배경 그라데이션(은은한 오로라) */
     @keyframes auroraShift { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
     .aurora { background: linear-gradient(120deg, #14151a, #1b1410, #0E0E10, #1a120b); background-size: 280% 280%; animation: auroraShift 24s ease infinite; }
-    @media (prefers-reduced-motion: reduce) { .kenburns,.drift,.drift2,.aurora { animation: none !important; } }
+    /* ── 히어로 모션그래픽 ── 요소 순차 등장 + 글로우 유영 + 영문 셰인 + 사진 슬로우 줌 (숫자 카운트업은 app.jsx) */
+    @keyframes heroIn { from { opacity:0; transform: translateY(26px); filter: blur(3px); } to { opacity:1; transform:none; filter:none; } }
+    .hero-in { opacity:0; animation: heroIn .9s cubic-bezier(.22,.61,.36,1) both; }
+    @keyframes orbFloat  { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(44px,34px) scale(1.14); } }
+    @keyframes orbFloat2 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-40px,-28px) scale(1.1); } }
+    .orb-float  { animation: orbFloat  15s ease-in-out infinite; }
+    .orb-float2 { animation: orbFloat2 19s ease-in-out infinite; }
+    /* 히어로 사진: 한쪽에서 흘러들어오며 드러나는 와이프 + 이후 느린 가로 흐름(패닝) */
+    @keyframes photoWipe { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+    .hero-photo-wipe { animation: photoWipe 1.5s cubic-bezier(.22,.61,.36,1) .15s both; }
+    @keyframes photoFlow { from { transform: scale(1.14) translateX(3.2%); } to { transform: scale(1.14) translateX(-3.2%); } }
+    .hero-flow { transform-origin: center; animation: photoFlow 26s ease-in-out infinite alternate; will-change: transform; }
+    @media (prefers-reduced-motion: reduce) { .kenburns,.drift,.drift2,.aurora,.hero-in,.orb-float,.orb-float2,.hero-photo-wipe,.hero-flow { animation: none !important; } .hero-in { opacity:1 !important; filter:none !important; transform:none !important; } .hero-flow { transform:none !important; } }
   </style>
 </head>
 <body class="bg-cream text-ink">
