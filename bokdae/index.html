@@ -191,49 +191,10 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <a class="paybtn" data-pay href="https://m.booking.naver.com/booking/13/bizes/1089101/items/6078633?area=pll&amp;lang=ko&amp;theme=place" target="_blank" rel="noopener">네이버로 지금 9,900원 결제·예약 →<span class="s2">네이버페이 안전결제 · 결제하면 선착순 확정</span></a>
     <p class="paynote">⏰ 선착순 5명 — 결제한 분부터 먼저 확정됩니다</p>
 
-    <div class="choice-div">또는 상담 먼저</div>
+    <div class="choice-div">또는 궁금하면</div>
 
-    <div id="formBox" class="form-card">
-      <p class="lead">결제까진 부담되시면, <b>연락처만</b> 남겨주세요 — 체험 안내 드릴게요.</p>
-      <div class="spots">⏰ 선착순 5명 — 곧 마감돼요. 지금 신청하세요</div>
-
-      <div class="row">
-        <label for="name">이름 *</label>
-        <input id="name" class="field" type="text" placeholder="성함" autocomplete="name" />
-      </div>
-      <div class="row">
-        <label for="phone">연락처 *</label>
-        <input id="phone" class="field" type="tel" inputmode="numeric" placeholder="010-0000-0000" autocomplete="tel" />
-      </div>
-      <div class="row">
-        <label for="when">연락받기 편한 시간</label>
-        <select id="when" class="field">
-          <option value="상관없음">아무 때나 괜찮아요</option>
-          <option value="오전">오전 (9~12시)</option>
-          <option value="오후">오후 (12~18시)</option>
-          <option value="저녁">저녁 (18시 이후)</option>
-        </select>
-      </div>
-      <div class="row">
-        <label for="memo">궁금한 점 (선택)</label>
-        <input id="memo" class="field" type="text" placeholder="예) 운동 처음이에요 / 다이어트 목표" />
-      </div>
-
-      <button id="submitBtn" class="submit" type="button">9,900원 PT 체험 신청하기</button>
-      <div class="trust"><span>1인 1회 한정</span><span>개인정보는 상담 목적만</span></div>
-
-      <p class="or">— 또는 지금 바로 —</p>
-      <a id="kakaoBtn" class="kakao" href="https://pf.kakao.com/_jxmqzX/chat" target="_blank" rel="noopener nofollow">💬 복대점 카카오톡으로 바로 문의</a>
-    </div>
-
-    <div id="doneBox" class="done" style="display:none;">
-      <div class="em">✅</div>
-      <h3>신청이 접수되었어요!</h3>
-      <p>복대점 담당자가 빠르게 연락드릴게요.</p>
-      <p style="margin-top:14px;">
-        <a class="kakao" style="display:inline-flex;" href="https://pf.kakao.com/_jxmqzX/chat" target="_blank" rel="noopener nofollow">💬 더 빨리 답받기 — 카카오톡</a>
-      </p>
-    </div>
+    <a id="kakaoBtn" class="kakao" href="https://pf.kakao.com/_jxmqzX/chat" target="_blank" rel="noopener nofollow">💬 복대점 카카오톡으로 먼저 물어보기</a>
+    <p class="paynote">결제 전에 궁금한 거 있으면 편하게 물어보세요</p>
   </section>
 
   <!-- 복대점 담당 트레이너 (사진 자동 모션) -->
@@ -317,72 +278,30 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     tick(); setInterval(tick, 60000);
   })();
 
-  var NOTIFY = "https://bro-fitness-three.vercel.app/api/booking?key=A37gTKJSMTH1oM_Y031JexzL";
-  var SHEET  = "https://script.google.com/macros/s/AKfycbyTywuWCLiIljnaYhmMCzLz4p3qyhHddloYv4Q2du2zEg7tI7oaV3qvzDz_f1nMrpmClQ/exec";
-
-  var btn = document.getElementById('submitBtn');
-  var formBox = document.getElementById('formBox');
-  var doneBox = document.getElementById('doneBox');
-  var sending = false;
-
   function utm(){ try { return (window.getBroUTM && window.getBroUTM()) || {}; } catch(e){ return {}; } }
 
-  function pushLead(program){
+  function dl(event, program){
     try {
       window.dataLayer = window.dataLayer || [];
       var u = utm();
-      window.dataLayer.push({ event:'generate_lead_bro', lead_branch:'복대점', lead_program:program,
+      window.dataLayer.push({ event:event, lead_branch:'복대점', lead_program:program,
         utm_source:u.utm_source||'danggeun', utm_medium:u.utm_medium||'', utm_campaign:u.utm_campaign||'' });
     } catch(e){}
   }
-  function post(url, payload){
-    return fetch(url, { method:'POST', mode:'no-cors',
-      headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body:JSON.stringify(payload) }).catch(function(){});
-  }
 
-  btn.addEventListener('click', function(){
-    var name = document.getElementById('name').value.trim();
-    var phone = document.getElementById('phone').value.trim();
-    var when = document.getElementById('when').value;
-    var memo = document.getElementById('memo').value.trim();
-    if (!name || !phone){ alert('이름과 연락처를 입력해 주세요.'); return; }
-    if (sending) return;
-    sending = true; btn.disabled = true; btn.textContent = '신청 중…';
-
-    var u = utm();
-    var payload = {
-      program: '9,900원 PT 체험',
-      branch: '복대점',
-      name: name, phone: phone, date: '미정',
-      memo: '[당근광고]' + (when ? ' 연락 ' + when : '') + (memo ? ' / ' + memo : ''),
-      utm_source: u.utm_source || 'danggeun', utm_medium: u.utm_medium || 'cpc', utm_campaign: u.utm_campaign || 'bokdae-pt'
-    };
-
-    Promise.all([post(NOTIFY, payload), post(SHEET, payload)]).then(function(){
-      try { window.karrotPixel.track('SubmitApplication'); } catch(e){}
-      pushLead('9,900원 PT 체험');
-      formBox.style.display = 'none';
-      doneBox.style.display = 'block';
-      doneBox.scrollIntoView({ behavior:'smooth', block:'center' });
-    });
-  });
-
-  document.getElementById('kakaoBtn').addEventListener('click', function(){
+  // 카카오톡 문의 → 당근 'Lead'
+  var k = document.getElementById('kakaoBtn');
+  if (k) k.addEventListener('click', function(){
     try { window.karrotPixel.track('Lead'); } catch(e){}
-    pushLead('카카오톡 문의');
+    dl('generate_lead_bro', '카카오톡 문의');
   });
 
-  // 네이버 결제·예약 버튼 클릭 추적 — '결제 진행(AddToCart)'로 카운트.
-  // (실제 '결제 완료' 인원은 네이버 스마트플레이스 예약/결제 내역에서 확인)
+  // 네이버 결제·예약 버튼 → 당근 'AddToCart'(=결제 진행).
+  // 실제 '결제 완료' 인원은 네이버 스마트플레이스 예약/결제 내역에서 확인.
   [].forEach.call(document.querySelectorAll('.paybtn[data-pay]'), function(a){
     a.addEventListener('click', function(){
       try { window.karrotPixel.track('AddToCart'); } catch(e){}
-      try {
-        window.dataLayer = window.dataLayer || [];
-        var u = utm();
-        window.dataLayer.push({ event:'naver_pay_click', lead_branch:'복대점', lead_program:'9,900원 PT 체험(결제)',
-          utm_source:u.utm_source||'danggeun', utm_medium:u.utm_medium||'', utm_campaign:u.utm_campaign||'' });
-      } catch(e){}
+      dl('naver_pay_click', '9,900원 PT 체험(결제)');
     });
   });
 })();
