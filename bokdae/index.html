@@ -110,8 +110,12 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   .done h3{font-size:22px;font-weight:800;margin-bottom:8px;}
   .done p{color:rgba(14,14,16,.6);font-size:15px;margin-bottom:4px;}
 
-  /* 트레이너 */
-  .trainer img{width:100%;border-radius:18px;}
+  /* 트레이너 캐러셀 */
+  .trainers-scroll{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding:2px 2px 8px;scrollbar-width:none;}
+  .trainers-scroll::-webkit-scrollbar{display:none;}
+  .trainers-scroll .tc{flex:0 0 86%;scroll-snap-align:start;}
+  .trainers-scroll .tc img{width:100%;border-radius:16px;display:block;}
+  .swipe-hint{text-align:center;color:rgba(14,14,16,.42);font-size:12.5px;font-weight:600;margin-top:4px;}
 
   /* 갤러리 */
   .gal{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
@@ -218,11 +222,19 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     </div>
   </section>
 
-  <!-- 담당 트레이너 -->
+  <!-- 복대점 담당 트레이너 전원 -->
   <section class="trainer">
-    <p class="kicker">담당 트레이너</p>
+    <p class="kicker">복대점 담당 트레이너</p>
     <h2>"운동 횟수만 채우는 PT,<br />하지 않습니다"</h2>
-    <img src="/img/tr-b1.jpg" alt="브로피트니스 복대점 박건후 트레이너 (CSCS)" loading="lazy" />
+    <div class="trainers-scroll">
+      <div class="tc"><img src="/img/tr-b1.jpg" alt="브로피트니스 복대점 박건후 트레이너" loading="lazy" /></div>
+      <div class="tc"><img src="/img/tr-b2.jpg" alt="브로피트니스 복대점 박지민 트레이너" loading="lazy" /></div>
+      <div class="tc"><img src="/img/tr-b3.jpg" alt="브로피트니스 복대점 임성민 트레이너" loading="lazy" /></div>
+      <div class="tc"><img src="/img/tr-b5.jpg" alt="브로피트니스 복대점 최세규 트레이너" loading="lazy" /></div>
+      <div class="tc"><img src="/img/tr-b6.jpg" alt="브로피트니스 복대점 홍원성 매니저" loading="lazy" /></div>
+      <div class="tc"><img src="/img/tr-b7.jpg" alt="브로피트니스 복대점 김병준 트레이너" loading="lazy" /></div>
+    </div>
+    <p class="swipe-hint">← 밀어서 트레이너 전체 보기 →</p>
   </section>
 
   <!-- 시설 -->
