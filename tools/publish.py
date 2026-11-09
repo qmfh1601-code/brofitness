@@ -949,7 +949,15 @@ def sitemap_lastmod(urls, base, today):
         path = _url_to_file(u, base.rstrip("/"))
         try:
             with open(path, "rb") as f:
-                h = hashlib.sha1(f.read()).hexdigest()
+                raw = f.read()
+            # ★ '이어서 읽어보세요'(관련글) 블록은 새 글이 하나 늘 때마다 바뀌지만
+            #    그 페이지의 본문이 바뀐 건 아니다. 이걸 해시에 넣으면 글 한 편 추가로
+            #    기존 페이지 수십 개의 lastmod 가 매번 오늘로 재스탬프돼(네이버 churn),
+            #    오히려 순위가 흔들린다. 그래서 '해시 계산에서만' 관련글 블록을 뺀다.
+            #    (페이지 출력물 자체는 그대로 — lastmod 판정에만 영향)
+            txt = re.sub(r'<div class="related">.*?</div></div></div>', "",
+                         raw.decode("utf-8", "ignore"), flags=re.S)
+            h = hashlib.sha1(txt.encode("utf-8")).hexdigest()
         except OSError:
             h = None
         prev = state.get(u) or {}
