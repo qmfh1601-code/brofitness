@@ -4,8 +4,8 @@
   "date": "2026-11-12"
  },
  "https://brofitness.kr/column/": {
-  "hash": "801c24396b395924b873112dc534c40939d3a909",
-  "date": "2026-11-14"
+  "hash": "02d1db9763697e13e62b82556d8e44f81ee073be",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/pricing.html": {
   "hash": "67b2e1069f3b124a048f88ed15908f91a68f3947",
@@ -22,6 +22,14 @@
  "https://brofitness.kr/branch/bokdae.html": {
   "hash": "0ab3b534203e05d1e7707ce459c310822f1d0b39",
   "date": "2026-09-07"
+ },
+ "https://brofitness.kr/column/bokdae-pt-who.html": {
+  "hash": "ea017586ed4156234bb5fa586e5bec7aec840400",
+  "date": "2026-11-15"
+ },
+ "https://brofitness.kr/column/geumcheon-pt-firstclass.html": {
+  "hash": "03e5c911994ddbf02a2aba3b1d603b4920408952",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/bokdae-gym-subscribe.html": {
   "hash": "14f7ffd930a8c6e11fc9f5d19970123bc644b298",
@@ -100,8 +108,8 @@
   "date": "2026-11-02"
  },
  "https://brofitness.kr/column/member-story-fifties-male-first-gym-cheongju.html": {
-  "hash": "c7aff49a72c8bab1355f34d662323fcc9b79ec01",
-  "date": "2026-11-01"
+  "hash": "a7e07a1f5c8cb552464ab2a56d0f53c9c290a716",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/workout-habit-spillover-effect-cheongju.html": {
   "hash": "a291722e96f34cf035dc7633534bdbbf8d27c6e8",
@@ -128,8 +136,8 @@
   "date": "2026-11-14"
  },
  "https://brofitness.kr/column/member-story-dad-young-kids-cheongju.html": {
-  "hash": "dedca92b750bb4d81cee9e7a91ad1eeae5659487",
-  "date": "2026-11-01"
+  "hash": "85c17c8ea83030142baa2e4329d792bc9c5c09bf",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/winter-workout-habit-design-cheongju.html": {
   "hash": "750408328f0af4f5fd0e1716c65767851fce5c5d",
@@ -152,8 +160,8 @@
   "date": "2026-11-11"
  },
  "https://brofitness.kr/column/member-story-job-seeker-cheongju.html": {
-  "hash": "238693632ae5b9872dfae2bef0f26edc33501321",
-  "date": "2026-11-01"
+  "hash": "78034e745b4613ed0c71230502c50010294ca19a",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/yearend-q4-subscription-habit-guide.html": {
   "hash": "6108441633139364d890c04dc7f95ab85dddf3ab",
@@ -176,8 +184,8 @@
   "date": "2026-11-11"
  },
  "https://brofitness.kr/column/member-story-grad-school-worker-cheongju.html": {
-  "hash": "3f4c1b181472c589cabe40657bd25e3ba4fb9a79",
-  "date": "2026-11-01"
+  "hash": "4251c83f0199e6bf1e6b7c0c27feb154ce01eea8",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/hydration-workout-guide-cheongju.html": {
   "hash": "2243aa72db23abc8c8e2d77dd5e309688f0269b2",
@@ -200,8 +208,8 @@
   "date": "2026-11-02"
  },
  "https://brofitness.kr/column/member-story-empty-nest-fifties-cheongju.html": {
-  "hash": "273e5d3b5e51d81a332c1a07371f46c3da0dfb59",
-  "date": "2026-11-01"
+  "hash": "1e76bba9bc0ebfc777734ad2c927fb493c2ad7db",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/sodium-exercise-guide-cheongju.html": {
   "hash": "baa88e24f29c92f524593cc5da935340573692a8",
@@ -224,8 +232,8 @@
   "date": "2026-11-11"
  },
  "https://brofitness.kr/column/member-story-couple-subscription-cheongju.html": {
-  "hash": "891ef69caf96b5b037c66072612774b6e9e45895",
-  "date": "2026-11-01"
+  "hash": "3e193c605663ecdbfe790d70f1067c4a7be136c0",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/fermented-food-gut-health-fitness-guide.html": {
   "hash": "f1f4a0d5ca7b69214db058e88922a20148b75e7a",
@@ -240,8 +248,8 @@
   "date": "2026-11-14"
  },
  "https://brofitness.kr/column/member-story-civil-exam-student-cheongju.html": {
-  "hash": "0828eaf84f59f81f3686948d23e248a90e44db53",
-  "date": "2026-11-01"
+  "hash": "42551e8a3eb4cdb7c4e37fabbcf304a8b87aa3f2",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/gym-etiquette-beginner-guide.html": {
   "hash": "658406c9ba21217bb60cfbf5e5111a1f96ed4281",
@@ -268,224 +276,224 @@
   "date": "2026-11-14"
  },
  "https://brofitness.kr/column/member-story-job-transition-gap-cheongju.html": {
-  "hash": "de3aaf44e6f7d07bc238b044a06f97bc7297539d",
-  "date": "2026-11-01"
+  "hash": "09bc588d3bd2914b06b47ae25e515b301d68c72e",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/member-story-new-teacher-cheongju.html": {
-  "hash": "a659fb63bc852a3c7f121527b79d9203306d66ba",
-  "date": "2026-11-01"
+  "hash": "84b8dc2b60c9230e6d5a6b06f79bbac20bc64b59",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/monthly-subscription-review-ritual.html": {
-  "hash": "a38770f13ed30c5ca1b98f88bd60af9f422850b3",
-  "date": "2026-11-14"
+  "hash": "467ad3e2da02357391756d17817b19240f1615c5",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/home-first-vs-direct-gym-commute.html": {
-  "hash": "6a2f06c1b89c3a0d79130cc5af2c128359f026e0",
-  "date": "2026-11-14"
+  "hash": "817700bd169d38518c18121929ee8657b244b290",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/diet-maintenance-after-goal-weight.html": {
-  "hash": "9f93a7c7121df57b50099f17d919e5e4a4e73c6e",
-  "date": "2026-11-14"
+  "hash": "defef2bb11ebb25fb729df491f7e69e842acd3bd",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/iron-magnesium-exercise-fatigue.html": {
   "hash": "b7cffa9184661fbb989372116a0a6d98d3d42561",
   "date": "2026-11-04"
  },
  "https://brofitness.kr/column/seasonal-temperature-gap-workout-habits.html": {
-  "hash": "b83998584181abb52895034dfadcd69a72042626",
-  "date": "2026-11-14"
+  "hash": "5b5e2f6e4d60ef6b22b974bb833bb2ab4ba29900",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/second-month-subscription-guide.html": {
-  "hash": "b6173c2cb6125b4893150c65dbe3157387f33e02",
-  "date": "2026-11-14"
+  "hash": "97e48de15fa2e5551017a14474362968ae7bbaba",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/late-night-snack-craving-guide.html": {
-  "hash": "69a73e784de1fc1624253fb1f05d6f8dfc35069b",
-  "date": "2026-11-14"
+  "hash": "cc268af77b739d64e8e2f47ab19dd1397261466b",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/doms-muscle-soreness-beginner-guide.html": {
-  "hash": "0da06c2085b9fbac61b92a3226569bb7495fb29f",
-  "date": "2026-11-14"
+  "hash": "359b2a8bc065ad38399225ae79034654b73decf7",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/member-story-salesperson-business-trip-cheongju.html": {
-  "hash": "eb31007d2104a5a48b2c1023acbca99e860bfa75",
-  "date": "2026-11-01"
+  "hash": "0b90f405325a51bd49c31d7043d5373c9640c98c",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/chuseok-holiday-workout-routine.html": {
-  "hash": "777e83d34e9c19e0b8de15735be4fa0c8de6555e",
-  "date": "2026-11-14"
+  "hash": "8f0266465612b5bdfa3d7f56abdeccfeacda2ed4",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/eating-speed-satiety-guide.html": {
-  "hash": "ecde903ebf21d69ef36a88a99de729f880ec2ca7",
-  "date": "2026-11-14"
+  "hash": "4d8d3ab10ccfacc869929a0084f569521f43dec2",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/autumn-seasonal-food-fitness-guide.html": {
-  "hash": "5d22c398d09cc5cee390b27d7aed2ca1d64967a5",
-  "date": "2026-11-14"
+  "hash": "62bd0ca1e52970e6ab6fdc8349cde8bb1c4a2046",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/workout-log-habit-guide.html": {
-  "hash": "2348fbee12baa70ab1f9379b2429ef98bf7dbc57",
-  "date": "2026-11-14"
+  "hash": "73983fc2f9a1568f8529b2b96425890c6917b1ef",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/autumn-appetite-diet-guide.html": {
-  "hash": "452f870d41cbb71a2329d0813ca753f90aad50b3",
-  "date": "2026-11-14"
+  "hash": "a2a4f0347a1c9ebbfaa767fd276739d9a2baf778",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/machine-vs-freeweight-beginner-guide.html": {
-  "hash": "4f2bd7afc03c544395bbdb17462d08842d91e73c",
-  "date": "2026-11-14"
+  "hash": "d9fcc979cc903b66c10ee12d0b44ac8c4812aedb",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/member-story-workout-buddy-quit.html": {
-  "hash": "d41714e55a9de547da008872dfdf8bd9d225c2b1",
-  "date": "2026-11-14"
+  "hash": "009618cd31b3c9f24421f96e5d7a7ba258f08bde",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/subscription-anytime-start-guide.html": {
-  "hash": "5849038444ba38b25646eb0f2bcacf9d39926902",
-  "date": "2026-11-14"
+  "hash": "b64674b61386e084696a3452159323bd52a361c0",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/caffeine-coffee-guide-for-gym-goers.html": {
-  "hash": "a7562394ab24f6be7ab49177c0b7152abe5fcb4a",
-  "date": "2026-11-14"
+  "hash": "52685d70bc2d3f05f942fc2b97d33792f9d72dc9",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/diet-and-exercise-start-order.html": {
-  "hash": "bf96dd52ffcfa6fe8709b44689265bf55d1040f3",
-  "date": "2026-11-14"
+  "hash": "f43eed5bb96c61384cd8d8e2b3e7e68b4a5e853a",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/supplement-guide-for-gym-beginners.html": {
-  "hash": "0699d15492672b912dad806940d5cc617bfdffb9",
-  "date": "2026-11-14"
+  "hash": "fda234bddbd41b6a9f877c5826ffe39960ae42b8",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/member-story-backpain-to-routine.html": {
-  "hash": "43c88838d72d81c758e9bffcfad50cfa85ebba09",
-  "date": "2026-11-14"
+  "hash": "fc9bc68f6cd1a0879bd23f2e19971c16a898dc94",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/cheongju-sleep-exercise-lifestyle.html": {
-  "hash": "8e1e25f1d84e9940e6ebfb5b808cb1db57c6c94d",
-  "date": "2026-11-14"
+  "hash": "951538fb5b5bd00366f60793b9ba28af14552507",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/morning-vs-evening-gym-timing.html": {
-  "hash": "d8d2d0b01fb1bbf68514b42fb008ba5ee34ac10b",
-  "date": "2026-11-14"
+  "hash": "d7d4d66298d21fad27a33ce6cae50fb2ab3002fa",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/cheongju-diet-cardio-strength-balance.html": {
-  "hash": "511fb5ccdb95768da2e08695c487ac36876c7fb6",
-  "date": "2026-11-14"
+  "hash": "d6d5e6a7c786cd4b5c83315ce042ff69ef225a5f",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/carbohydrate-intake-guide-for-workers.html": {
-  "hash": "baf47e67a3451c40c2d28d60b7fabdaa629c2f84",
-  "date": "2026-11-14"
+  "hash": "7949027e0bb7653e631d7c534e173e447e707c7a",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/cheongju-beginner-doms-soreness.html": {
-  "hash": "e1a87218f21b55a6a7890d898c4b4d207c5d156b",
-  "date": "2026-11-14"
+  "hash": "1f70fd0f7671fa5d5456cd1623eeb507ca69fb66",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/member-story-shift-worker-cheongju.html": {
-  "hash": "cd3774e39bf8ccf102876fe42c12ab108f82c18b",
-  "date": "2026-11-14"
+  "hash": "54f6dd9235f290e026b77932a3da1503ee85b27f",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/cheongju-gym-stress-recovery-lifestyle.html": {
-  "hash": "eb154655940f2b537fcad0b501dd2fe30cbd5c8d",
-  "date": "2026-11-14"
+  "hash": "431740bdf14c8dad729cbfe780d5aaeb3017d01a",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/cheongju-diet-plateau-guide.html": {
-  "hash": "01c9999256922f957fb956a9280cfa3fe30f1004",
-  "date": "2026-11-14"
+  "hash": "4006e80df4bc24fde1cf9bcbd99bfcd8fb204d9d",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/cheongju-gym-first-week-guide.html": {
-  "hash": "d30429b34542c6d142b8caed3392b33ee11d7261",
-  "date": "2026-11-14"
+  "hash": "1c27de8f0d8d6938f703dbeb728b407962377ddc",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/autumn-fitness-subscription-timing.html": {
-  "hash": "bd3fde7804f592d5008cd7b40dfe09815e8e5487",
-  "date": "2026-11-14"
+  "hash": "4621518fcef60c4890fb386a4be71019cf6ed7b4",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/eating-out-nutrition-tips-for-gym-goers.html": {
-  "hash": "f780c929ae8c46d2b9439a0adcc8e338341444a4",
-  "date": "2026-11-14"
+  "hash": "40782305d5b2310c3763c9011b73e15af6d854f1",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/evening-routine-gym-consistency.html": {
-  "hash": "4486b9fa289930275066e5f8b4327272355c600a",
-  "date": "2026-11-14"
+  "hash": "48acac86c3bbcf74ed2262efa11a9101152b2844",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/member-story-health-checkup-motivation.html": {
-  "hash": "ad17f7da2dbbe98796b8c1cdf0b1c36535ca60d5",
-  "date": "2026-11-14"
+  "hash": "91923b731c63da74625a5f07ef8a6dc169acce4e",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/short-session-gym-tips.html": {
-  "hash": "ea97975c2646176bd8862654a8c3289851864a99",
-  "date": "2026-11-14"
+  "hash": "e77afaca6f03b83a76c54a2d1d202c9274f81b85",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/sleep-diet-connection-cheongju.html": {
-  "hash": "9df2c0e8db27dd7159d65190a7b11fe94f937b70",
-  "date": "2026-11-14"
+  "hash": "43ccf5e3dd30fbbc3bdf7201eb379983e6471919",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/cheongju-beginner-fitness-worries.html": {
-  "hash": "3cb2048c37e2162ae1dda45b44e764c930ebb791",
-  "date": "2026-11-14"
+  "hash": "98569c1ce2fa9485e0c466862b9bc257745c67c0",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/diet-snack-guide-for-workers.html": {
-  "hash": "c3380353f1ec3187d8c796124f8f7c5b9a5e457d",
-  "date": "2026-11-14"
+  "hash": "8e1eee5001eef7740e517bf6d7fbed309dcbb526",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/workout-day-vs-rest-day-eating.html": {
-  "hash": "3977bd32cfc48845352b2e612310b7fd885f6fe8",
-  "date": "2026-11-14"
+  "hash": "1e2d4a4c40b71016d4b93e9216f29d9fd4ab3234",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/gym-or-rest-sick-day-guide.html": {
-  "hash": "45a098a0cbfc535abb8b389c2c1f95802435311c",
-  "date": "2026-11-14"
+  "hash": "852b45cfe71ade76cf1fa466e9a3ec3984cb0e33",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/cheongju-solo-mover-gym-routine.html": {
-  "hash": "c62b5d9808605f5180559a86f463275e51c7ed56",
-  "date": "2026-11-14"
+  "hash": "1d154a584ef56d3eaee98564b83880ae9b16490b",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/first-month-subscription-guide.html": {
-  "hash": "59a01a4741d7498e8ee5d4621da536a856fe93d8",
-  "date": "2026-11-14"
+  "hash": "f901ad4662c72a12edf123a0f5c130f141e5c333",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/beginner-gym-frequency-guide.html": {
-  "hash": "e8e17d36ea6a563081637bb65fa5f651ccf479e2",
-  "date": "2026-11-14"
+  "hash": "e4cb0dc40d44eb95847e599ba6c27b85985340f9",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/cheongju-worker-lunch-diet.html": {
-  "hash": "94d49eb8834f8896b44aba0d73d194522aa69690",
-  "date": "2026-11-14"
+  "hash": "eacadd10e613742540dde0ee43325e53f8c35689",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/cheongju-24h-gym.html": {
-  "hash": "bd29b13d643a37c6fb45e599c94ede33d06a4eb5",
-  "date": "2026-11-14"
+  "hash": "1ed3315d648a6ee13c7ad28afc3c2d174167b5e5",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/post-workout-appetite-management.html": {
   "hash": "2835ad28caf772e0477f07fd3efb0662503c32cc",
   "date": "2026-11-14"
  },
  "https://brofitness.kr/column/summer-vacation-workout-recovery-routine.html": {
-  "hash": "ebbd3cdedbb09447c6465a69268cf87cab0baf8e",
-  "date": "2026-11-14"
+  "hash": "1c81c5b796fd66f19a416bb3694ec9d1ab81a20f",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/member-story-restart-after-childcare.html": {
   "hash": "42cd880d915a857824ba5481a9dd1b5eaad78be7",
   "date": "2026-11-13"
  },
  "https://brofitness.kr/column/busy-month-subscription-tips.html": {
-  "hash": "3f5f5bed1db9d355495af0537f3d025bf0940571",
-  "date": "2026-11-13"
+  "hash": "af112def6775f8c57355a73da7fffac62829b2e5",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/procrastinating-gym-start-cheongju.html": {
-  "hash": "f8f819a62044007661d38b2c31b877e8def372a9",
-  "date": "2026-11-14"
+  "hash": "f61b0a0f67f4afd951f65c8952115f5d77aea618",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/diet-alcohol-habits-for-workers.html": {
-  "hash": "2f9433ca7d10396e021ba68c53ee64096955b187",
-  "date": "2026-11-14"
+  "hash": "ec0843483dbbea9f3597ac9748a1626aaa7f8b81",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/korean-food-workout-nutrition.html": {
-  "hash": "c692fc78b2206683dd9e85477cf06f996cb34784",
-  "date": "2026-11-14"
+  "hash": "8a628d4638d094c3531d409023647ebb34ad3082",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/daily-movement-habit-for-desk-workers.html": {
-  "hash": "c281fbdaf64b5fe3250e2d1ddc4e8a51e74c6043",
-  "date": "2026-11-14"
+  "hash": "7e7d08e7178b6090b6e00a0abaeb4c1177455222",
+  "date": "2026-11-15"
  },
  "https://brofitness.kr/column/member-story-forties-office-worker.html": {
   "hash": "06dccf04aa1766a39795faa116d1bb9d60b49584",
