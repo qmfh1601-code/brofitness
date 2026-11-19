@@ -760,9 +760,9 @@ def render_branch(cfg, site, b, posts):
     desc = b["summary"]
     hero = ('<div class="hero"><img class="cover" src="/%s" alt="브로피트니스 %s 내부" />'
             '<div class="scrim"></div><div class="inner">'
-            '<p class="eyebrow">BRO FITNESS · %s</p><h1>브로피트니스 %s</h1>'
+            '<p class="eyebrow">청주 %s 헬스장 · BRO FITNESS %s</p><h1>브로피트니스 %s</h1>'
             '<p class="sub">%s</p></div></div>'
-            % (esc(b["image"]), esc(b["name"]), esc(b.get("label") or b["name"]), esc(b["name"]), esc(desc)))
+            % (esc(b["image"]), esc(b["name"]), esc(area), esc(b.get("label") or b["name"]), esc(b["name"]), esc(desc)))
     parts = ['<p class="crumb"><a href="/">홈</a> › <a href="/pricing.html">요금·지점</a> › 브로피트니스 %s</p>' % esc(b["name"])]
     parts += ["<p>%s</p>" % esc(t) for t in b["intro"]]
     parts.append("<h2>브로피트니스 %s 이용 안내</h2>" % esc(b["name"]))
@@ -957,6 +957,10 @@ def sitemap_lastmod(urls, base, today):
             #    (페이지 출력물 자체는 그대로 — lastmod 판정에만 영향)
             txt = re.sub(r'<div class="related">.*?</div></div></div>', "",
                          raw.decode("utf-8", "ignore"), flags=re.S)
+            # ★ 사진은 '사이트 전체 1회'로 전역·비결정적으로 배정돼, 빌드마다/새 글마다
+            #    기존 글의 본문 figure·대표사진(og:image·schema)이 재배정된다. 본문이
+            #    바뀐 게 아니므로 해시에서 이미지 경로를 빼 재스탬프(churn)를 막는다.
+            txt = re.sub(r'[\w./-]+\.(?:jpe?g|png|webp|gif)', "", txt, flags=re.I)
             h = hashlib.sha1(txt.encode("utf-8")).hexdigest()
         except OSError:
             h = None
